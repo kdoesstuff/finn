@@ -1,0 +1,28 @@
+name: Probe data sources
+
+# Run by hand from the Actions tab or `gh workflow run probe-sources.yml`.
+# Records which exchanges and data sites answer from GitHub's servers.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests yfinance
+      - run: python scripts/probe_sources.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe-results
+          path: pipeline/probe_results.json
