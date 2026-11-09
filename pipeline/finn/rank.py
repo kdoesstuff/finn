@@ -50,6 +50,9 @@ def score_item(a: Announcement, c: Classification) -> tuple[int, float, list[str
     if c.category == "management_change":
         if c.subtype == "auditor_exit":
             score, reasons = 100, ["An auditor leaving mid-term is a governance red flag"]
+        elif c.subtype == "demise":
+            score = 90
+            reasons.append("Death of a director or key person: succession question")
         elif c.role in KEY_ROLES:
             score = 95 if c.action in {"resignation", "cessation"} else 90
             reasons.append(f"Change at the top: {c.role.upper()} {c.action or 'change'}")
@@ -118,24 +121,62 @@ def score_item(a: Announcement, c: Classification) -> tuple[int, float, list[str
             reasons.append("Equity raise: dilution and use of proceeds")
 
     elif c.category == "M&A":
-        score = 82
-        reasons.append("Acquisition, merger or stake change: a capital allocation decision")
+        if c.subtype == "open_offer":
+            score = 90
+            reasons.append("Open offer: a change of control may be under way")
+        elif c.subtype == "disposal":
+            score = 80
+            reasons.append("Sale of a business or asset: a capital allocation decision")
+        else:
+            score = 82
+            reasons.append("Acquisition, merger or stake change: a capital allocation decision")
 
     elif c.category == "capex":
-        score = 76
-        reasons.append("Capacity spend: a capital allocation decision")
+        if c.subtype == "commissioning":
+            score = 70
+            reasons.append("New capacity has started production: capex turning into revenue")
+        else:
+            score = 76
+            reasons.append("Capacity spend: a capital allocation decision")
 
     elif c.category == "litigation":
-        score = 85
-        reasons.append("Legal or regulatory matter")
+        if c.subtype in {"default", "insolvency", "forensic_audit"}:
+            score = 100
+            reasons.append({
+                "default": "Missed interest or principal payment",
+                "insolvency": "Insolvency proceedings",
+                "forensic_audit": "Forensic audit initiated",
+            }[c.subtype])
+        elif c.subtype == "licence":
+            score = 75
+            reasons.append("Change to a key licence or regulatory approval")
+        else:
+            score = 85
+            reasons.append("Legal or regulatory matter")
 
     elif c.category == "press_release":
-        if _has(text, r"spurt|clarification"):
+        sub = c.subtype
+        if sub == "operations":
+            tier, score = Tier.BUSINESS, 82
+            reasons.append("Operations disrupted or closed")
+        elif sub == "new_business":
+            tier, score = Tier.BUSINESS, 70
+            reasons.append("Entering a new line of business: check it against the investment thesis")
+        elif sub == "guarantee":
+            score = 55
+            reasons.append("New guarantee for a third party: a contingent liability")
+        elif sub == "price_query" or _has(text, r"spurt|clarification"):
             score = 60
-            reasons.append("Exchange query or clarification")
-        elif _has(text, r"order"):
+            reasons.append("Exchange query or clarification on the stock's movement")
+        elif sub == "order" or _has(text, r"\border\b"):
             score = 50
             reasons.append("Order win")
+        elif sub == "business_update":
+            score = 50
+            reasons.append("Monthly business update")
+        elif sub in {"agreement", "launch"}:
+            score = 45
+            reasons.append("Agreement or launch" if sub == "agreement" else "Product launch")
         else:
             reasons.append("General company news")
 

@@ -116,6 +116,86 @@ RULES: list[Rule] = [
 
 _COMPILED = [(r, _rx(r.any_of), _rx(r.all_of), _rx(r.none_of)) for r in RULES]
 
+# NSE files every announcement under a fixed `desc` label (SEBI's Regulation 30 event
+# list plus housekeeping). Labels that name exactly one event map straight to a
+# category. Broad labels ("Outcome of Board Meeting", "General Updates", "Press
+# Release") are left to the text rules, because the subject decides what they are.
+DESC_MAP: dict[str, tuple[str, str]] = {
+    # results
+    "Financial Result Updates": ("results", "filing"),
+    "Integrated Filing- Financial": ("results", "filing"),
+    "Investor Presentation": ("results", "deck"),
+    # management and governance
+    "Appointment": ("management_change", ""),
+    "Resignation": ("management_change", ""),
+    "Resignation of Director/KMP/SMP": ("management_change", ""),
+    "Cessation": ("management_change", ""),
+    "Retirement": ("management_change", ""),
+    "Change in Director(s)": ("management_change", ""),
+    "Change in Management": ("management_change", ""),
+    "Demise": ("management_change", "demise"),
+    "Change in Company Secretary/Compliance Officer": ("management_change", "secretarial"),
+    "Change in Auditors": ("unclassified", "auditor_change"),
+    "Initiation of Forensic Audit": ("litigation", "forensic_audit"),
+    "Defaults on Payment of Interest/Principal": ("litigation", "default"),
+    "Corporate Insolvency Resolution Process": ("litigation", "insolvency"),
+    "Action(s) initiated or orders passed": ("litigation", ""),
+    "Action(s) taken or orders passed": ("litigation", ""),
+    "Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company": ("litigation", ""),
+    "Granting/withdrawal/surrender/cancellation/suspension of key licenses/ regulatory approvals": ("litigation", "licence"),
+    "Disclosure under SEBI Takeover Regulations": ("insider_trading", ""),
+    # deals and capital
+    "Acquisition": ("M&A", ""),
+    "Amalgamation/Merger": ("M&A", ""),
+    "Sale or disposal": ("M&A", "disposal"),
+    "Open Offer": ("M&A", "open_offer"),
+    "Public Announcement-Open Offer": ("M&A", "open_offer"),
+    "Scheme of Arrangement": ("M&A", ""),
+    "Rights Issue": ("fund_raise", ""),
+    "Issue of Securities": ("fund_raise", ""),
+    "Buyback": ("fund_raise", ""),
+    "Credit Rating": ("credit_rating", ""),
+    "Credit Rating- Revision": ("credit_rating", ""),
+    "Credit Rating- Others": ("credit_rating", ""),
+    "Capacity addition": ("capex", ""),
+    "Commencement of commercial production/operations": ("capex", "commissioning"),
+    # operations and news
+    "Bagging/Receiving of orders/contracts": ("press_release", "order"),
+    "Product launch": ("press_release", "launch"),
+    "Agreements": ("press_release", "agreement"),
+    "Memorandum of Understanding/Agreements": ("press_release", "agreement"),
+    "Arrangements for strategic, technical, manufacturing, or marketing tie up": ("press_release", "agreement"),
+    "Adoption of new line(s) of business": ("press_release", "new_business"),
+    "Disruption of Operations": ("press_release", "operations"),
+    "Closure of operations": ("press_release", "operations"),
+    "Giving guarantees/indemnity/ becoming a surety for third party": ("press_release", "guarantee"),
+    "Monthly Business Updates": ("press_release", "business_update"),
+    "Price movement": ("press_release", "price_query"),
+    "Spurt in Volume": ("press_release", "price_query"),
+    "Clarification - Financial Results": ("press_release", "price_query"),
+    # corporate actions and meetings
+    "Dividend": ("dividend", ""),
+    "Bonus": ("bonus_split", ""),
+    "Split": ("bonus_split", ""),
+    "Shareholders meeting": ("agm_egm", ""),
+    "Postal Ballot": ("postal_ballot", ""),
+    # paperwork
+    "ESOP/ESOS/ESPS": ("unclassified", "esop"),
+    "Trading Window": ("unclassified", "trading_window"),
+    "Certificate under SEBI (Depositories and Participants) Regulations, 2018": ("unclassified", "compliance"),
+    "Copy of Newspaper Publication": ("unclassified", "newspaper"),
+    "Monitoring Agency Report": ("unclassified", "compliance"),
+    "Alteration/revision(s)": ("unclassified", "compliance"),
+    "Amendment to AOA/MOA": ("unclassified", "compliance"),
+    "Committee Meeting Updates": ("unclassified", "compliance"),
+    "Loss of Share Certificates": ("unclassified", "share_certificates"),
+}
+
+# A content rule this specific overrides even an exact label (a newspaper copy of
+# results filed as "Copy of Newspaper Publication", an auditor resigning filed as
+# "Change in Auditors").
+OVERRIDE_PRIORITY = 85
+
 ROLES = [
     ("ceo", r"chief executive|\bceo\b"),
     ("cfo", r"chief financial|\bcfo\b"),
@@ -149,9 +229,20 @@ def _first(pairs, text: str) -> str:
     return ""
 
 
+def _with_people(out: Classification, text: str) -> Classification:
+    if out.category == "management_change":
+        out.role = "auditor" if out.subtype == "auditor_exit" else (
+            "secretarial" if out.subtype == "secretarial" else _first(ROLES, text))
+        out.action = "demise" if out.subtype == "demise" else _first(ACTIONS, text)
+    return out
+
+
 def classify(a: Announcement) -> Classification:
+    """Order of evidence: a very specific content rule, then NSE's exact label, then
+    the best remaining rule (content before label), then a cheap model."""
     content = f"{a.subject} {a.body[:800]}"
-    label = a.label
+    label = a.label.strip()
+    text = f"{content} {label}"
 
     best = None
     for parts in _COMPILED:
@@ -165,6 +256,14 @@ def classify(a: Announcement) -> Classification:
         if best is None or score > best[0]:
             best = (score, rule, where)
 
+    if best and best[2] == "content" and best[0] >= OVERRIDE_PRIORITY:
+        _, rule, _ = best
+        return _with_people(Classification(rule.category, rule.subtype, 0.97, f"{rule.id}@content"), text)
+
+    if label in DESC_MAP:
+        category, subtype = DESC_MAP[label]
+        return _with_people(Classification(category, subtype, 0.98, f"nse-desc:{label}"), text)
+
     if best is None:
         return Classification(category="unclassified", confidence=0.0, rule_id="", needs_model=True)
 
@@ -175,8 +274,4 @@ def classify(a: Announcement) -> Classification:
         confidence=0.95 if where == "content" else 0.7,
         rule_id=f"{rule.id}@{where}",
     )
-    if rule.category == "management_change":
-        text = f"{content} {label}"
-        out.role = "auditor" if rule.subtype == "auditor_exit" else _first(ROLES, text)
-        out.action = _first(ACTIONS, text)
-    return out
+    return _with_people(out, text)

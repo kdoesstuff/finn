@@ -43,14 +43,51 @@ def test_classifier(subject, label, category, subtype):
     assert c.subtype == subtype
 
 
+@pytest.mark.parametrize("desc,text,category,subtype", [
+    # Real NSE labels with the company's own one-line summary (attchmntText)
+    ("Action(s) taken or orders passed",
+     "Bharat Heavy Electricals Limited has informed the Exchange about Adjudication Order passed u/s 73 of",
+     "litigation", ""),
+    ("Defaults on Payment of Interest/Principal", "Intimation of delay in payment of interest on NCDs",
+     "litigation", "default"),
+    ("Change in Auditors", "Resignation of M/s XYZ & Associates as Statutory Auditors", "management_change",
+     "auditor_exit"),
+    ("Change in Auditors", "Appointment of Secretarial Auditor for FY 2026-27", "unclassified", "auditor_appointment"),
+    ("Copy of Newspaper Publication", "Newspaper publication of unaudited financial results for Q2",
+     "results", "results_ad"),
+    ("Copy of Newspaper Publication", "Notice of postal ballot published in newspapers", "unclassified", "newspaper"),
+    ("Integrated Filing- Financial", "Integrated filing for the quarter ended September 30, 2026", "results", "filing"),
+    ("Bagging/Receiving of orders/contracts", "Receipt of order worth Rs 450 crore", "press_release", "order"),
+    ("Public Announcement-Open Offer", "Open offer for acquisition of 26% shares", "M&A", "open_offer"),
+    ("Change in Company Secretary/Compliance Officer", "Appointment of Ms. A as Company Secretary",
+     "management_change", "secretarial"),
+])
+def test_nse_labels(desc, text, category, subtype):
+    c = classify(ann(text, label=desc))
+    assert (c.category, c.subtype) == (category, subtype)
+    assert not c.needs_model
+
+
+def test_nse_label_ranks_defaults_and_resignations_at_the_top():
+    d = build_digest([
+        ann("Delay in payment of interest", "Defaults on Payment of Interest/Principal", symbol="X", id_="1"),
+        ann("Resignation of Mr. A as Chief Financial Officer", "Resignation of Director/KMP/SMP", symbol="Y", id_="2"),
+        ann("Receipt of order worth Rs 40 crore", "Bagging/Receiving of orders/contracts", symbol="Z", id_="3"),
+    ], [])
+    assert [i.announcement.symbol for i in d["attention"]] == ["X", "Y"]
+    assert [i.announcement.symbol for i in d["worth"]] == ["Z"]
+
+
 def test_management_role_and_action():
     c = classify(ann("Resignation of Mr. Rajesh Kumar, Chief Financial Officer", NSE_KMP))
     assert (c.category, c.role, c.action) == ("management_change", "cfo", "resignation")
 
 
-def test_label_only_match_is_less_confident():
-    c = classify(ann("Updates", label="Credit Rating"))
-    assert c.category == "credit_rating" and c.confidence < 0.9
+def test_exact_nse_label_is_trusted_but_a_fuzzy_label_match_is_not():
+    exact = classify(ann("Updates", label="Credit Rating"))
+    assert exact.category == "credit_rating" and exact.confidence > 0.95
+    fuzzy = classify(ann("Updates", label="Rating agency communication: credit rating"))
+    assert fuzzy.category == "credit_rating" and fuzzy.confidence < 0.9
 
 
 def test_unknown_goes_to_model():
