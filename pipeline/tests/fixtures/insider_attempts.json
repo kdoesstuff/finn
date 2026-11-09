@@ -1,0 +1,35 @@
+[
+ {
+  "params": {
+   "index": "equities",
+   "from_date": "30-10-2026",
+   "to_date": "09-11-2026"
+  },
+  "rows": 0,
+  "keys": [
+   "acqNameList",
+   "data"
+  ]
+ },
+ {
+  "params": {
+   "index": "equities"
+  },
+  "rows": 0,
+  "keys": [
+   "acqNameList",
+   "data"
+  ]
+ },
+ {
+  "params": {
+   "index": "equities",
+   "symbol": "TCS"
+  },
+  "rows": 20,
+  "keys": [
+   "acqNameList",
+   "data"
+  ]
+ }
+]
