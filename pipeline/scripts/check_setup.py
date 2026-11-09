@@ -29,6 +29,10 @@ def _redact(text: str) -> str:
     return text[:120]
 
 
+GEMINI_ROLES = ("GEMINI_MODEL", "GEMINI_OVERFLOW_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_QUALITY_FALLBACK_MODEL",
+                "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")
+
+
 def gemini():
     key = config.get("GEMINI_API_KEY")
     r = requests.get("https://generativelanguage.googleapis.com/v1beta/models",
@@ -36,11 +40,11 @@ def gemini():
     if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
     names = {m["name"].split("/")[-1] for m in r.json().get("models", [])}
-    wanted = [config.get(n) for n in ("GEMINI_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")]
+    wanted = [config.get(n) for n in GEMINI_ROLES]
     missing = [w for w in wanted if w not in names]
     if missing:
         return False, f"key works, but not offered: {missing} (run with --models for the list)"
-    return True, "all four Gemini models offered: " + ", ".join(wanted)
+    return True, f"all {len(wanted)} Gemini models offered: " + ", ".join(wanted)
 
 
 def available_models(base, key) -> list[str]:
@@ -136,7 +140,7 @@ def list_models() -> None:
                            if "generateContent" in m.get("supportedGenerationMethods", []))
             embeds = sorted(m["name"].split("/")[-1] for m in r.json().get("models", [])
                             if "embedContent" in m.get("supportedGenerationMethods", []))
-            marks = {config.get(n) for n in ("GEMINI_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")}
+            marks = {config.get(n) for n in GEMINI_ROLES}
             print("  Gemini (text):", ", ".join(n + ("*" if n in marks else "") for n in names))
             print("  Gemini (embeddings):", ", ".join(n + ("*" if n in marks else "") for n in embeds))
         except Exception as exc:

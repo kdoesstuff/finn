@@ -28,8 +28,10 @@ SETTINGS = {
     # Model routing: each role names one model; the code asks for a role, never a model name.
     "GEMINI_API_KEY": "Google AI Studio key (AQ. format), used natively, never via the OpenAI-compatible route",
     "GEMINI_MODEL": "Reads documents in volume: results PDFs, transcripts, annual reports",
-    "GEMINI_QUALITY_MODEL": "Rescue tier for documents the volume model gets wrong (small daily quota)",
-    "GEMINI_VOLUME_MODEL": "Backup extraction model with a large daily quota",
+    "GEMINI_OVERFLOW_MODEL": "Second document reader with its own daily quota, used when the first runs out",
+    "GEMINI_QUALITY_MODEL": "Rescue tier for documents the volume models get wrong (small daily quota)",
+    "GEMINI_QUALITY_FALLBACK_MODEL": "Second rescue model with its own small quota",
+    "GEMINI_VOLUME_MODEL": "Short jobs only (16K tokens/min): backup for the fast Groq jobs",
     "GEMINI_EMBED_MODEL": "Embeddings for retrieval over transcripts and reports",
     "GEMINI_EMBED_DIM": "Embedding size (Matryoshka truncation keeps the vector index small)",
     "GROQ_API_KEY": "Groq key: fast jobs and the injection guard",
@@ -52,7 +54,9 @@ SETTINGS = {
 # one-line change there, never a code change. check_setup.py confirms each one exists.
 DEFAULTS = {
     "GEMINI_MODEL": "gemini-3.5-flash-lite",
+    "GEMINI_OVERFLOW_MODEL": "gemini-3.1-flash-lite",
     "GEMINI_QUALITY_MODEL": "gemini-3.8-flash",
+    "GEMINI_QUALITY_FALLBACK_MODEL": "gemini-3.6-flash",
     "GEMINI_VOLUME_MODEL": "gemma-4-31b-it",
     "GEMINI_EMBED_MODEL": "gemini-embedding-2",
     "GEMINI_EMBED_DIM": "768",

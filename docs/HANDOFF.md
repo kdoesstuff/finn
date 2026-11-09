@@ -234,27 +234,33 @@ Models each key offers (9 Nov 2026), from `check_setup.py --models`:
 - **GLM gateway (Hyde):** hyde/glm-5.3-flash, hyde/kimi-k3.
 - **OpenRouter free:** nvidia/nemotron-3-ultra-550b-a55b, nemotron-3.5-super-vl, google/gemma-4-31b-it and others.
 
-**Final assignment (researched 9 Nov 2026; settings in `.env`, verified by `check_setup.py`).**
-Free-tier daily limits decided most choices, because FINN reads documents in volume.
+**Final assignment.** Limits below are this project's actual free-tier limits, read from AI Studio's
+Rate Limit page on 9 Nov 2026 (they match published figures except Gemma's 16K tokens/min). Each model
+has its own quota, so pairs of models add capacity.
 
-| Role (setting) | Model | Free limits | Evidence |
+| Role (setting) | Model | RPM / tokens per min / per day | Notes |
 | --- | --- | --- | --- |
-| Read documents (`GEMINI_MODEL`) | gemini-3.5-flash-lite | 15/min, 500/day, 1M context, native PDF | Only Gemini text model with real daily volume |
-| Rescue tier (`GEMINI_QUALITY_MODEL`) | gemini-3.8-flash | 5/min, **20/day** | Stronger (ParseBench 71.2% vs 59.5%; AA index 59) but too scarce for volume |
-| Volume backup (`GEMINI_VOLUME_MODEL`) | gemma-4-31b-it (Gemini key) | 30/min, 14,400/day, 256K context | Strong instruction following |
-| Fast jobs (`GROQ_MODEL`, `GROQ_FALLBACK_MODEL`) | openai/gpt-oss-120b, then gpt-oss-20b | each 30/min, 1,000/day, 8K tokens/min | Same quota, so the larger model is free quality |
-| Injection guard (`GUARD_MODEL`) | meta-llama/llama-prompt-guard-2-86m (Groq) | 30/min, 14,400/day | Filing text is untrusted input |
-| Reasoning (`GLM_MODEL`) | hyde/glm-5.3-flash | Hyde quota (check its Usage page) | AA index 57, 1M context, always-on thinking |
-| Embeddings (`GEMINI_EMBED_MODEL`, `GEMINI_EMBED_DIM`) | gemini-embedding-2 at 768 dims | 1,000 requests/day; 8,192 tokens per input; batch endpoint | Matryoshka truncation keeps the pgvector index small on Supabase free tier |
-| Fallback (`OPENROUTER_MODEL`) | nvidia/nemotron-3-ultra-550b-a55b:free | 50/day ($0-capped key) | Largest free model listed |
+| Read documents (`GEMINI_MODEL`) | gemini-3.5-flash-lite | 15 / 250K / 500 | 1M context, native PDF |
+| Overflow reader (`GEMINI_OVERFLOW_MODEL`) | gemini-3.1-flash-lite | 15 / 250K / 500 | Separate quota: 1,000 documents/day together |
+| Rescue tier (`GEMINI_QUALITY_MODEL`) | gemini-3.8-flash | 5 / 250K / 20 | Stronger (ParseBench 71.2% vs 59.5%; AA index 59); for failed validations |
+| Second rescue (`GEMINI_QUALITY_FALLBACK_MODEL`) | gemini-3.6-flash | 5 / 250K / 20 | 40 rescues/day together |
+| Short-job backup (`GEMINI_VOLUME_MODEL`) | gemma-4-31b-it | 30 / **16K** / 14,400 | Too few tokens/min for whole transcripts; backs up Groq's short jobs |
+| Fast jobs (`GROQ_MODEL`, `GROQ_FALLBACK_MODEL`) | openai/gpt-oss-120b, then gpt-oss-20b | each 30 / 8K / 1,000 | Same quota, so the larger model is free quality |
+| Injection guard (`GUARD_MODEL`) | meta-llama/llama-prompt-guard-2-86m (Groq) | 30 / 15K / 14,400 | Filing text is untrusted input |
+| Reasoning (`GLM_MODEL`) | hyde/glm-5.3-flash | Hyde shows no quota; test calls took 0.4-0.7 s | AA index 57, 1M context, always-on thinking; on HTTP 429 fall back to the rescue tier, then OpenRouter |
+| Embeddings (`GEMINI_EMBED_MODEL`, `GEMINI_EMBED_DIM`) | gemini-embedding-2 at 768 dims | 100 / 30K / 1,000 | 8,192 tokens per input; batch endpoint; computed once and cached |
+| Fallback (`OPENROUTER_MODEL`) | nvidia/nemotron-3-ultra-550b-a55b:free | ~50/day ($0-capped key) | Largest free model listed |
+
+Routing rule for the model layer: rules first; document reader, then overflow reader on quota
+exhaustion; on a failed validation, rescue tier then second rescue; reasoning on GLM with fallback;
+every call cached by input hash; pace requests to each model's per-minute limit.
 
 Rejected: hyde/kimi-k3 (about 64 s to first answer token, ~43 tokens/s, listed as deprecated by
-Artificial Analysis); any `-latest` alias (moves silently). Google states limits vary per project;
-check AI Studio's rate-limit page. Routing rule for the model layer: rules first; volume model; on a
-failed validation, the rescue tier; on quota exhaustion, the backup; every call cached by input hash.
-A quick confirmation run on one real transcript is still worth doing and reporting in the writeup.
+Artificial Analysis); any `-latest` alias (moves silently). A quick confirmation run on one real
+transcript is still worth doing and reporting in the writeup.
 
-Sources: imisofts.com/blog/gemini-api-free-tier-limits (limits read 21 Oct 2026); console.groq.com/docs/rate-limits;
+Sources: AI Studio Rate Limit page for this project (9 Nov 2026); imisofts.com/blog/gemini-api-free-tier-limits;
+console.groq.com/docs/rate-limits;
 benchlm.ai/compare/gemini-3-5-flash-lite-vs-gemini-3-8-flash; benchlm.ai/models/gemma-4-31b;
 eesel.ai/blog/gemini-3-8-flash; eesel.ai/blog/glm-5-3-flash; artificialanalysis.ai/models/kimi-k3;
 apidog.com/blog/what-is-gemini-embedding-2.
