@@ -5,6 +5,10 @@ name: Capture test fixtures
 # Saves real NSE samples (filings, results XBRL, bhavcopy, pledges, a transcript) for parser tests.
 on:
   workflow_dispatch:
+    inputs:
+      steps:
+        description: "Steps to run, space separated (blank = all): announcements results bhavcopy pledges insider annual_reports transcript integrated extras"
+        default: ""
 
 permissions:
   contents: read
@@ -17,13 +21,16 @@ jobs:
       run:
         working-directory: pipeline/scripts
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install requests yfinance
-      - run: python capture_fixtures.py
-      - uses: actions/upload-artifact@v4
+      # The input goes through an environment variable, never straight into the shell line.
+      - run: python capture_fixtures.py $STEPS
+        env:
+          STEPS: ${{ inputs.steps }}
+      - uses: actions/upload-artifact@v7
         with:
           name: fixtures
           path: pipeline/scripts/fixtures/

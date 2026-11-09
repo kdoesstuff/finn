@@ -147,12 +147,69 @@ def transcript():
     save("transcript_TCS.pdf", pdf.content)
 
 
+def integrated():
+    """Results since 2025 are filed as SEBI Integrated Filings. The index is paginated
+    and mixes Financial and Governance filings; keep the financial ones."""
+    for sym in SAMPLES:
+        rows, seen, page = [], set(), 1
+        while page <= 10:
+            data = get_json("integrated-filing-results", index="equities", symbol=sym, page=page)
+            batch = data.get("data", []) if isinstance(data, dict) else []
+            fresh = [r for r in batch if r.get("seq_Id") not in seen]
+            if not fresh:
+                break
+            seen.update(r.get("seq_Id") for r in fresh)
+            rows.extend(fresh)
+            total = int(data.get("totalCount") or 0)
+            if total and len(rows) >= total:
+                break
+            page += 1
+        save(f"integrated_{sym}.json", rows)
+        fin = [r for r in rows if "financ" in str(r.get("type", "")).lower() and str(r.get("xbrl", "")).endswith(".xml")]
+        fin.sort(key=lambda r: datetime.strptime(r["qe_Date"].title(), "%d-%b-%Y"), reverse=True)
+        for r in fin[:8]:
+            x = S.get(r["xbrl"], timeout=TIMEOUT)
+            time.sleep(0.7)
+            qe = datetime.strptime(r["qe_Date"].title(), "%d-%b-%Y").date()
+            save(f"xbrl_if/{sym}_{qe:%Y-%m-%d}_{r.get('seq_Id')}.xml", x.content)
+
+
+def extras():
+    """One sample from each endpoint FINN may build on."""
+    to, frm = date.today() + timedelta(days=21), date.today() - timedelta(days=7)
+    calls = [
+        ("board_meetings.json", "corporate-board-meetings",
+         {"index": "equities", "from_date": f"{frm:%d-%m-%Y}", "to_date": f"{to:%d-%m-%Y}"}),
+        ("event_calendar.json", "event-calendar",
+         {"index": "equities", "from_date": f"{frm:%d-%m-%Y}", "to_date": f"{to:%d-%m-%Y}"}),
+        ("results_comparison_TCS.json", "results-comparision", {"index": "equities", "symbol": "TCS"}),
+        ("shareholding_TCS.json", "corporate-share-holdings-master", {"index": "equities", "symbol": "TCS"}),
+        ("corp_actions_TCS.json", "corporates-corporateActions", {"index": "equities", "symbol": "TCS"}),
+        ("credit_rating_TCS.json", "corporate-credit-rating", {"index": "equities", "symbol": "TCS"}),
+        ("rpt_TCS.json", "related-party-transactions-master", {"index": "equities", "symbol": "TCS"}),
+    ]
+    for name, path, params in calls:
+        try:
+            save(name, get_json(path, **params))
+        except Exception as exc:
+            log(f"FAILED {path}: {type(exc).__name__}: {exc}")
+
+
+STEPS = {
+    "announcements": announcements, "results": results_and_xbrl, "bhavcopy": bhavcopy, "pledges": pledges,
+    "insider": insider, "annual_reports": annual_reports, "transcript": transcript,
+    "integrated": integrated, "extras": extras,
+}
+
+
 def main():
+    """`python capture_fixtures.py` runs every step; `python capture_fixtures.py integrated extras` runs some."""
+    import sys
+
     OUT.mkdir(exist_ok=True)
-    for name, fn in [("announcements", announcements), ("results and xbrl", results_and_xbrl),
-                     ("bhavcopy", bhavcopy), ("pledges", pledges), ("insider", insider),
-                     ("annual reports", annual_reports), ("transcript", transcript)]:
-        step(name, fn)
+    wanted = sys.argv[1:] or list(STEPS)
+    for name in wanted:
+        step(name, STEPS[name])
     save("capture_log.txt", "\n".join(LOG))
 
 
