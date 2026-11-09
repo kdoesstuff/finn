@@ -1,0 +1,29 @@
+name: Capture test fixtures
+
+# Run by hand: `gh workflow run capture-fixtures.yml`, then
+# `gh run download <id> -n fixtures -D pipeline/tests/fixtures`.
+# Saves real NSE samples (filings, results XBRL, bhavcopy, pledges, a transcript) for parser tests.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: pipeline/scripts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests yfinance
+      - run: python capture_fixtures.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixtures
+          path: pipeline/scripts/fixtures/
