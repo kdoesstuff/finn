@@ -68,6 +68,21 @@ def test_nse_labels(desc, text, category, subtype):
     assert not c.needs_model
 
 
+@pytest.mark.parametrize("desc,text,category", [
+    # Misreadings found by spot-checking a real week of filings, kept as regression tests
+    ("General Updates", "Gallantt Ispat Limited has informed the Exchange about General Updates - Inter-se transfer "
+     "of shares among Promoter and Promoter Group", "insider_trading"),
+    ("Updates", "Aaron Industries Limited has informed the Exchange regarding Disclosure received under Regulation "
+     "29(2) of the SEBI (Substantial Acquisition of Shares", "insider_trading"),
+    ("General Updates", "Samvardhana Motherson International Limited has informed the Exchange about General Updates "
+     "for setting up of a new manufacturing facility in Paraguay", "capex"),
+    ("Disclosure of material issue", "PAKKA LIMITED has informed regarding Sanction of the Scheme of Amalgamation of "
+     "Pakka Impact Limited with Pakka Limited by the Hon ble National Company Law Tribunal", "M&A"),
+])
+def test_real_misreadings_stay_fixed(desc, text, category):
+    assert classify(ann(text, label=desc)).category == category
+
+
 def test_nse_label_ranks_defaults_and_resignations_at_the_top():
     d = build_digest([
         ann("Delay in payment of interest", "Defaults on Payment of Interest/Principal", symbol="X", id_="1"),

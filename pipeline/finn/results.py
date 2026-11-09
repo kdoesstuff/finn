@@ -89,42 +89,73 @@ def _margin(x: float, revenue: float) -> float | None:
     return round(x / revenue * 100, 1) if revenue else None
 
 
-def headline(quarters: list[Quarter]) -> dict:
-    """First cut for the latest quarter in `quarters`."""
+def _rows(quarters, metrics, base=None) -> tuple:
+    """QoQ and YoY for each metric of the latest quarter. `base` (if given) is the
+    denominator for margins, e.g. revenue."""
     q = max(quarters, key=lambda x: x.period_end)
     index = {(x.period_end.year, x.period_end.month): x for x in quarters}
     prev = index.get(_previous_quarter(q.period_end))
     yago = index.get(_same_quarter_last_year(q.period_end))
 
     rows = []
-    for name, get in [
-        ("Revenue", lambda x: x.revenue),
-        ("EBITDA", lambda x: x.ebitda),
-        ("PBT", lambda x: x.pbt),
-        ("PAT", lambda x: x.pat),
-    ]:
+    for name, get, has_margin in metrics:
         now = get(q)
         row = {"metric": name, "value": round(now, 2)}
-        if name != "Revenue":
-            row["margin"] = _margin(now, q.revenue)
+        if has_margin and base:
+            row["margin"] = _margin(now, base(q))
         for label, other in (("qoq", prev), ("yoy", yago)):
             if other is None:
                 row[label] = {"pct": None, "note": "not available"}
                 continue
             row[label] = pct_change(now, get(other))
-            if name != "Revenue":
-                then_margin = _margin(get(other), other.revenue)
+            if "margin" in row:
+                then_margin = _margin(get(other), base(other))
                 if row["margin"] is not None and then_margin is not None:
                     row[label]["margin_bps"] = round((row["margin"] - then_margin) * 100)
         rows.append(row)
+    return q, rows, prev is not None, yago is not None
 
+
+def headline(quarters: list[Quarter]) -> dict:
+    """First cut for the latest quarter: Revenue, EBITDA, PBT, PAT, QoQ and YoY. Values in ₹ crore."""
+    q, rows, _, _ = _rows(quarters, [
+        ("Revenue", lambda x: x.revenue, False),
+        ("EBITDA", lambda x: x.ebitda, True),
+        ("PBT", lambda x: x.pbt, True),
+        ("PAT", lambda x: x.pat, True),
+    ], base=lambda x: x.revenue)
     notes = [EBITDA_DEFINITION]
     if q.exceptional:
-        notes.append(f"Exceptional items of {q.exceptional:,.2f} are in PBT and PAT but excluded from EBITDA")
+        notes.append(f"Exceptional items of ₹{q.exceptional:,.0f} cr are in PBT and PAT but excluded from EBITDA")
     return {
+        "template": "standard",
         "period_end": q.period_end.isoformat(),
         "basis": "consolidated" if q.consolidated else "standalone",
+        "unit": "₹ crore",
         "rows": rows,
         "notes": notes,
+        "source": q.source,
+    }
+
+
+def bank_headline(quarters: list[BankQuarter]) -> dict:
+    """Banks and NBFCs: net interest income, operating profit, provisions, PAT. Values in ₹ crore."""
+    q, rows, _, _ = _rows(quarters, [
+        ("Net interest income", lambda x: x.nii, False),
+        ("Operating profit", lambda x: x.ppop, False),
+        ("Provisions", lambda x: x.provisions, False),
+        ("PAT", lambda x: x.pat, False),
+    ])
+    return {
+        "template": "bank",
+        "period_end": q.period_end.isoformat(),
+        "basis": "consolidated" if q.consolidated else "standalone",
+        "unit": "₹ crore",
+        "rows": rows,
+        "notes": [
+            "Banks have no revenue or EBITDA in the usual sense.",
+            "Net interest income = interest earned - interest expended; "
+            "operating profit = NII + other income - operating expenses (before provisions).",
+        ],
         "source": q.source,
     }

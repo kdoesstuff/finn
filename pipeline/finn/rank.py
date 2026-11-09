@@ -96,6 +96,10 @@ def score_item(a: Announcement, c: Classification) -> tuple[int, float, list[str
             score = 92
             reasons.append("Promoter shares pledged or invoked: a leverage risk at the owner level")
 
+    elif c.category == "insider_trading" and c.subtype == "inter_se":
+        tier, score = Tier.CONTEXT, 35
+        reasons.append("Transfer within the promoter group; total promoter holding unchanged")
+
     elif c.category == "insider_trading":
         promoter = _has(text, r"promoter")
         selling = _has(text, r"\bsale\b|\bsold\b|dispos|\bsell")
@@ -109,8 +113,17 @@ def score_item(a: Announcement, c: Classification) -> tuple[int, float, list[str
             tier, score = Tier.CONTEXT, 35
             reasons.append("Insider disclosure; size not material on its own")
 
+    elif c.category == "governance":
+        score, reason = {
+            "fraud": (100, "Fraud, default or arrest disclosed"),
+            "forensic_audit": (100, "Forensic audit initiated"),
+            "delayed_results": (90, "Results delayed or not submitted"),
+            "related_party": (70, "Related-party transaction: check whether value moves to the promoter"),
+        }.get(c.subtype, (80, "Governance disclosure"))
+        reasons.append(reason)
+
     elif c.category == "fund_raise":
-        if _has(text, r"commercial paper|non-convertible|\bncds?\b"):
+        if c.subtype == "debt" or _has(text, r"commercial paper|non[- ]convertible|\bncds?\b"):
             tier, score = Tier.CONTEXT, 45
             reasons.append("Routine debt issuance")
         elif _has(text, r"buy-?back"):
@@ -174,6 +187,9 @@ def score_item(a: Announcement, c: Classification) -> tuple[int, float, list[str
         elif sub == "business_update":
             score = 50
             reasons.append("Monthly business update")
+        elif sub == "agreement_end":
+            score = 55
+            reasons.append("An agreement was cancelled or terminated")
         elif sub in {"agreement", "launch"}:
             score = 45
             reasons.append("Agreement or launch" if sub == "agreement" else "Product launch")

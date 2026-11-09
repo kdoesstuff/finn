@@ -39,6 +39,9 @@ CATEGORIES = {
     "postal_ballot": Tier.ROUTINE,
     "agm_egm": Tier.ROUTINE,
     "pledging": Tier.MANAGEMENT,
+    # Not in the reference glossary: SEBI's event list has governance events that fit
+    # none of its categories (related-party deals, fraud, delayed results).
+    "governance": Tier.MANAGEMENT,
     "unclassified": Tier.ROUTINE,
 }
 
