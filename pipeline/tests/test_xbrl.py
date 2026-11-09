@@ -45,8 +45,26 @@ def test_bank_is_detected_and_uses_the_bank_template():
     assert [r["metric"] for r in h["rows"]] == ["Net interest income", "Operating profit", "Provisions", "PAT"]
 
 
-def test_all_fixture_quarters_parse():
-    for p in X.glob("*.xml"):
-        q = to_quarter(parse(p.read_bytes()))
+IF = Path(__file__).parent / "fixtures" / "xbrl_if"
+
+
+@pytest.mark.parametrize("folder", [X, IF], ids=["legacy results", "integrated filing"])
+def test_every_fixture_parses_to_a_quarter(folder):
+    files = list(folder.glob("*.xml"))
+    assert files
+    for p in files:
+        f = parse(p.read_bytes())
+        q = to_quarter(f)
         assert isinstance(q, (Quarter, BankQuarter))
+        assert 80 <= (f.period_end - f.period_start).days <= 95, p.name  # always the quarter, never year to date
         assert q.pat != 0
+
+
+def test_integrated_filing_format_reads_the_same_way():
+    # SEBI's Integrated Filing (2025 onward) uses the same tags; the same parser serves both.
+    f = parse((IF / "TCS_2026-09-30_200121.xml").read_bytes())
+    q = to_quarter(f)
+    assert f.consolidated and (f.period_start, f.period_end) == (date(2026, 7, 1), date(2026, 9, 30))
+    assert q.revenue == pytest.approx(73188, abs=1)
+    bank = parse((IF / "HDFCBANK_2026-09-30_202132.xml").read_bytes())
+    assert bank.bank and bank.consolidated
