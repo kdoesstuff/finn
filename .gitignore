@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vercel/
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.local
+
+# Pipeline outputs that should not be committed
+pipeline/probe_results.json
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
