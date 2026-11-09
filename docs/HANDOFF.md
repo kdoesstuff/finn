@@ -89,9 +89,15 @@ Sources: enam.com (About, Culture, Investment Philosophy, Management Team), ENAM
   ```
   `gh run download` refuses to overwrite existing files: download into a fresh folder, then merge.
 - **PowerShell:** `<placeholder>` breaks commands (`<` is an operator); give literal commands.
+- **Models are configuration, not code:** every provider's base URL and model name live in `.env`
+  (`GEMINI_MODEL`, `GROQ_MODEL`, `GLM_BASE_URL`, `GLM_MODEL`); code asks for a role, never a model name.
+  GLM access is through Hyde's OpenAI-compatible gateway (inference.hyde.tech), model `hyde/glm-5.3-flash`.
 - **Keys:** one local `.env` at the repo root (git-ignored; template `.env.example`).
   `python pipeline/scripts/check_setup.py` tests each key; `gh secret set -f .env` copies them to
   GitHub secrets. Code reads them through `pipeline/finn/config.py`.
+- **Supabase:** project `clwjxnbfqnxxvynjpica` (Mumbai). Uses the **new** key types:
+  `SUPABASE_PUBLISHABLE_KEY` (sb_publishable_, browser-safe with RLS) and `SUPABASE_SECRET_KEY`
+  (sb_secret_, server only). They are not JWTs: send them in the `apikey` header only.
 - **Repo security already on:** secret scanning, push protection, Dependabot alerts and security
   updates, CodeQL default setup, workflow permissions read-write.
 - **Actions versions:** checkout, setup-python, upload-artifact all at **v7** (v4 targeted a retired Node).
@@ -171,6 +177,10 @@ from run 42611747343).
 8. NSE filing text (`attchmntText`) is a one-liner, often "X has informed the Exchange about <label>".
    Generic labels ("General Updates", "Updates", ~70 "Outcome of Board Meeting held on <date>") need the
    PDF read; that is the cheap-model job.
+10. **Gemini keys now start with `AQ.`** (Google's new "Auth keys"; the old `AIza...` keys are rejected
+    since Sep 2026). They work on the **native** Gemini endpoint with the `x-goog-api-key` header (which
+    `check_setup.py` and FINN use) and can fail on Gemini's OpenAI-compatible endpoint. Call Gemini
+    natively or through Google's SDK, never through the OpenAI-compatible route.
 9. **Inter-se promoter transfers** and **SAST Reg 29 disclosures** mention "acquisition"/"transfer of
    shares" but are not M&A. **NCLT sanctioning a merger** is M&A, not litigation. All fixed and tested.
 
@@ -209,6 +219,46 @@ Dec 2025-Sep 2026, standalone and consolidated, including revisions), `integrate
 `event_calendar.json`, `results_comparison_TCS.json`, `shareholding_TCS.json`, `corp_actions_TCS.json`,
 `credit_rating_TCS.json`, `rpt_TCS.json`.
 
+## 9a. Keys and models (state at handoff)
+
+`check_setup.py`: **8 of 8 working** (Gemini, Groq, GLM via Hyde, OpenRouter, Supabase publishable and
+secret, Sentry API and web). All 13 settings copied to GitHub Actions secrets with `gh secret set -f .env`.
+
+Models each key offers (9 Nov 2026), from `check_setup.py --models`:
+- **Gemini text:** gemini-2.5-flash/-flash-lite/-pro, gemini-3-flash-preview, gemini-3.1-flash-lite,
+  gemini-3.1-pro-preview, gemini-3.5-flash, gemini-3.5-flash-lite, gemini-3.6-flash, gemini-3.7-flash,
+  gemini-3.8-flash, gemini-4-argon, gemini-flash-latest, gemini-pro-latest, gemma-4-26b/31b and others.
+- **Gemini embeddings:** gemini-embedding-001, gemini-embedding-2, gemini-embedding-2-preview.
+- **Groq:** openai/gpt-oss-20b, openai/gpt-oss-120b, qwen/qwen3.8-27b, meta-llama/llama-prompt-guard-2-22m/-86m,
+  whisper-large-v3(-turbo).
+- **GLM gateway (Hyde):** hyde/glm-5.3-flash, hyde/kimi-k3.
+- **OpenRouter free:** nvidia/nemotron-3-ultra-550b-a55b, nemotron-3.5-super-vl, google/gemma-4-31b-it and others.
+
+**Final assignment (researched 9 Nov 2026; settings in `.env`, verified by `check_setup.py`).**
+Free-tier daily limits decided most choices, because FINN reads documents in volume.
+
+| Role (setting) | Model | Free limits | Evidence |
+| --- | --- | --- | --- |
+| Read documents (`GEMINI_MODEL`) | gemini-3.5-flash-lite | 15/min, 500/day, 1M context, native PDF | Only Gemini text model with real daily volume |
+| Rescue tier (`GEMINI_QUALITY_MODEL`) | gemini-3.8-flash | 5/min, **20/day** | Stronger (ParseBench 71.2% vs 59.5%; AA index 59) but too scarce for volume |
+| Volume backup (`GEMINI_VOLUME_MODEL`) | gemma-4-31b-it (Gemini key) | 30/min, 14,400/day, 256K context | Strong instruction following |
+| Fast jobs (`GROQ_MODEL`, `GROQ_FALLBACK_MODEL`) | openai/gpt-oss-120b, then gpt-oss-20b | each 30/min, 1,000/day, 8K tokens/min | Same quota, so the larger model is free quality |
+| Injection guard (`GUARD_MODEL`) | meta-llama/llama-prompt-guard-2-86m (Groq) | 30/min, 14,400/day | Filing text is untrusted input |
+| Reasoning (`GLM_MODEL`) | hyde/glm-5.3-flash | Hyde quota (check its Usage page) | AA index 57, 1M context, always-on thinking |
+| Embeddings (`GEMINI_EMBED_MODEL`, `GEMINI_EMBED_DIM`) | gemini-embedding-2 at 768 dims | 1,000 requests/day; 8,192 tokens per input; batch endpoint | Matryoshka truncation keeps the pgvector index small on Supabase free tier |
+| Fallback (`OPENROUTER_MODEL`) | nvidia/nemotron-3-ultra-550b-a55b:free | 50/day ($0-capped key) | Largest free model listed |
+
+Rejected: hyde/kimi-k3 (about 64 s to first answer token, ~43 tokens/s, listed as deprecated by
+Artificial Analysis); any `-latest` alias (moves silently). Google states limits vary per project;
+check AI Studio's rate-limit page. Routing rule for the model layer: rules first; volume model; on a
+failed validation, the rescue tier; on quota exhaustion, the backup; every call cached by input hash.
+A quick confirmation run on one real transcript is still worth doing and reporting in the writeup.
+
+Sources: imisofts.com/blog/gemini-api-free-tier-limits (limits read 21 Oct 2026); console.groq.com/docs/rate-limits;
+benchlm.ai/compare/gemini-3-5-flash-lite-vs-gemini-3-8-flash; benchlm.ai/models/gemma-4-31b;
+eesel.ai/blog/gemini-3-8-flash; eesel.ai/blog/glm-5-3-flash; artificialanalysis.ai/models/kimi-k3;
+apidog.com/blog/what-is-gemini-embedding-2.
+
 ## 9. Decisions made
 
 | Decision | Choice |
@@ -217,7 +267,7 @@ Dec 2025-Sep 2026, standalone and consolidated, including revisions), `integrate
 | Primary data source | NSE for everything (filings, results, transcripts, pledges, prices via bhavcopy); yfinance secondary; BSE PDF links as fallback |
 | Pipeline runtime | GitHub Actions (scheduled), because only it reaches NSE |
 | Results numbers | Parsed from XBRL, never from a model |
-| Model routing (proposed) | Rules first; Groq (gpt-oss-20b) for leftover classification and one-liners; Gemini Flash for long documents and embeddings; GLM for promise-vs-delivery reasoning; OpenRouter as fallback; cache by filing ID |
+| Model routing (proposed) | Rules first; Groq (gpt-oss-20b) for leftover classification and one-liners; Gemini Flash for long documents and embeddings; GLM (hyde/glm-5.3-flash through Karthik's Hyde gateway access, valid until December) for promise-vs-delivery reasoning; OpenRouter as fallback; cache by filing ID |
 | Secrets | Local `.env` + `gh secret set -f .env`; `config.py` reads both |
 | Licence | MIT |
 

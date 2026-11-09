@@ -25,26 +25,41 @@ if load_dotenv is not None:
 
 # name -> what it is for. Keep in step with .env.example.
 SETTINGS = {
-    "GEMINI_API_KEY": "Google AI Studio: reading long documents (results PDFs, transcripts) and embeddings",
-    "GEMINI_MODEL": "Gemini model for bulk extraction (default gemini-2.5-flash)",
-    "GROQ_API_KEY": "Groq: fast, cheap classification of leftover filings and one-line summaries",
-    "GROQ_MODEL": "Groq model (default openai/gpt-oss-20b)",
-    "ZAI_API_KEY": "Z.AI GLM: promise-vs-delivery reasoning, and backup for Gemini",
-    "ZAI_BASE_URL": "Z.AI OpenAI-compatible base URL (default https://api.z.ai/api/paas/v4)",
-    "ZAI_MODEL": "GLM model (default glm-4.5-flash)",
-    "OPENROUTER_API_KEY": "OpenRouter: last-resort fallback across free models",
+    # Model routing: each role names one model; the code asks for a role, never a model name.
+    "GEMINI_API_KEY": "Google AI Studio key (AQ. format), used natively, never via the OpenAI-compatible route",
+    "GEMINI_MODEL": "Reads documents in volume: results PDFs, transcripts, annual reports",
+    "GEMINI_QUALITY_MODEL": "Rescue tier for documents the volume model gets wrong (small daily quota)",
+    "GEMINI_VOLUME_MODEL": "Backup extraction model with a large daily quota",
+    "GEMINI_EMBED_MODEL": "Embeddings for retrieval over transcripts and reports",
+    "GEMINI_EMBED_DIM": "Embedding size (Matryoshka truncation keeps the vector index small)",
+    "GROQ_API_KEY": "Groq key: fast jobs and the injection guard",
+    "GROQ_MODEL": "Fast jobs: classifying leftover filings, one-line summaries",
+    "GROQ_FALLBACK_MODEL": "Second fast model with its own daily quota",
+    "GUARD_MODEL": "Prompt-injection screen for untrusted filing text (on Groq)",
+    "GLM_API_KEY": "GLM through an OpenAI-compatible gateway (Hyde)",
+    "GLM_BASE_URL": "The gateway's OpenAI-compatible base URL, ending in /v1",
+    "GLM_MODEL": "Reasoning: promise vs delivery, narrative vs numbers, bull and bear",
+    "OPENROUTER_API_KEY": "OpenRouter key, capped at $0 so only free models can run",
+    "OPENROUTER_MODEL": "Last-resort fallback model",
     "SUPABASE_URL": "Supabase project URL (Mumbai region)",
-    "SUPABASE_ANON_KEY": "Supabase public key; safe in the browser only because every table has row-level security",
-    "SUPABASE_SERVICE_ROLE_KEY": "Supabase admin key; pipeline and API only, never the frontend",
+    "SUPABASE_PUBLISHABLE_KEY": "Supabase publishable key (sb_publishable_...); safe in the browser only because every table has row-level security",
+    "SUPABASE_SECRET_KEY": "Supabase secret key (sb_secret_...); pipeline and API only, never the frontend",
     "SENTRY_DSN_API": "Sentry error tracking for the Python API",
     "SENTRY_DSN_WEB": "Sentry error tracking for the web app",
 }
 
+# Fallbacks only. The real choice of model lives in .env, so changing a model is a
+# one-line change there, never a code change. check_setup.py confirms each one exists.
 DEFAULTS = {
-    "GEMINI_MODEL": "gemini-2.5-flash",
-    "GROQ_MODEL": "openai/gpt-oss-20b",
-    "ZAI_BASE_URL": "https://api.z.ai/api/paas/v4",
-    "ZAI_MODEL": "glm-4.5-flash",
+    "GEMINI_MODEL": "gemini-3.5-flash-lite",
+    "GEMINI_QUALITY_MODEL": "gemini-3.8-flash",
+    "GEMINI_VOLUME_MODEL": "gemma-4-31b-it",
+    "GEMINI_EMBED_MODEL": "gemini-embedding-2",
+    "GEMINI_EMBED_DIM": "768",
+    "GROQ_MODEL": "openai/gpt-oss-120b",
+    "GROQ_FALLBACK_MODEL": "openai/gpt-oss-20b",
+    "GUARD_MODEL": "meta-llama/llama-prompt-guard-2-86m",
+    "OPENROUTER_MODEL": "nvidia/nemotron-3-ultra-550b-a55b:free",
 }
 
 

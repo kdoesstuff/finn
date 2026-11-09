@@ -3,7 +3,8 @@
 Prints a table of service, set or missing, working or failing, and a short note.
 Never prints a key. Run from the repo root or pipeline/:
 
-    python pipeline/scripts/check_setup.py
+    python pipeline/scripts/check_setup.py            # test every key
+    python pipeline/scripts/check_setup.py --models   # also list the models each key can use
 """
 
 from __future__ import annotations
@@ -29,17 +30,25 @@ def _redact(text: str) -> str:
 
 
 def gemini():
-    key, model = config.get("GEMINI_API_KEY"), config.get("GEMINI_MODEL")
+    key = config.get("GEMINI_API_KEY")
     r = requests.get("https://generativelanguage.googleapis.com/v1beta/models",
                      headers={"x-goog-api-key": key}, params={"pageSize": 200}, timeout=TIMEOUT)
     if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
-    names = [m["name"].split("/")[-1] for m in r.json().get("models", [])]
-    flash = sorted(n for n in names if "flash" in n)[-4:]
-    if model not in names:
-        return False, f"key works, but model '{model}' not offered; Flash models available: {flash}"
-    embed = [n for n in names if "embedding" in n]
-    return True, f"model {model} available; embeddings: {embed[:2]}"
+    names = {m["name"].split("/")[-1] for m in r.json().get("models", [])}
+    wanted = [config.get(n) for n in ("GEMINI_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")]
+    missing = [w for w in wanted if w not in names]
+    if missing:
+        return False, f"key works, but not offered: {missing} (run with --models for the list)"
+    return True, "all four Gemini models offered: " + ", ".join(wanted)
+
+
+def available_models(base, key) -> list[str]:
+    try:
+        r = requests.get(f"{base.rstrip('/')}/models", headers={"Authorization": f"Bearer {key}"}, timeout=TIMEOUT)
+        return sorted(m.get("id", "") for m in r.json().get("data", [])) if r.status_code == 200 else []
+    except Exception:
+        return []
 
 
 def openai_compatible(base, key, model, label):
@@ -49,17 +58,26 @@ def openai_compatible(base, key, model, label):
                             "messages": [{"role": "user", "content": "Reply with the word ok."}]},
                       timeout=TIMEOUT)
     if r.status_code != 200:
-        return False, f"{label} HTTP {r.status_code}: {_redact(r.text)}"
+        offered = available_models(base, key)
+        hint = f"; models this key can use: {offered[:12]}" if offered else ""
+        return False, f"{label} HTTP {r.status_code}: {_redact(r.text)}{hint}"
     return True, f"{label} replied with model {model}"
 
 
 def groq():
-    return openai_compatible("https://api.groq.com/openai/v1", config.get("GROQ_API_KEY"),
-                             config.get("GROQ_MODEL"), "Groq")
+    base, key = "https://api.groq.com/openai/v1", config.get("GROQ_API_KEY")
+    ok, note = openai_compatible(base, key, config.get("GROQ_MODEL"), "Groq")
+    if not ok:
+        return ok, note
+    offered = set(available_models(base, key))
+    missing = [config.get(n) for n in ("GROQ_FALLBACK_MODEL", "GUARD_MODEL") if config.get(n) not in offered]
+    if missing:
+        return False, f"{note}; but not offered: {missing}"
+    return True, f"{note}; fallback and guard models offered"
 
 
-def zai():
-    return openai_compatible(config.get("ZAI_BASE_URL"), config.get("ZAI_API_KEY"), config.get("ZAI_MODEL"), "Z.AI")
+def glm():
+    return openai_compatible(config.get("GLM_BASE_URL"), config.get("GLM_API_KEY"), config.get("GLM_MODEL"), "GLM")
 
 
 def openrouter():
@@ -68,18 +86,24 @@ def openrouter():
     if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
     d = r.json().get("data", {})
-    return True, f"free tier: {d.get('is_free_tier')}, limit: {d.get('limit')}"
+    model = config.get("OPENROUTER_MODEL")
+    offered = available_models("https://openrouter.ai/api/v1", config.get("OPENROUTER_API_KEY"))
+    if offered and model not in offered:
+        return False, f"model {model} not offered (run with --models)"
+    return True, f"{model} offered; credit limit {d.get('limit')} (free models only)"
 
 
 def supabase(key_name):
-    url, key = config.get("SUPABASE_URL"), config.get(key_name)
-    r = requests.get(f"{url.rstrip('/')}/rest/v1/", headers={"apikey": key, "Authorization": f"Bearer {key}"},
-                     timeout=TIMEOUT)
-    if r.status_code not in (200, 401):
+    """Supabase's new keys (sb_publishable_/sb_secret_) are not JWTs: they go in the `apikey`
+    header only. The auth settings endpoint accepts any valid project key."""
+    url, key = config.get("SUPABASE_URL").rstrip("/"), config.get(key_name)
+    prefix = "sb_secret_" if "SECRET" in key_name else "sb_publishable_"
+    if not key.startswith(prefix):
+        return False, f"expected a key starting with {prefix}"
+    r = requests.get(f"{url}/auth/v1/settings", headers={"apikey": key}, timeout=TIMEOUT)
+    if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
-    if r.status_code == 401:
-        return False, "key rejected by the project"
-    return True, f"project reachable ({'admin' if 'SERVICE' in key_name else 'public'} key)"
+    return True, f"project reachable with the {'secret' if 'SECRET' in key_name else 'publishable'} key"
 
 
 def sentry(name):
@@ -91,13 +115,47 @@ def sentry(name):
 CHECKS = [
     ("Gemini", ["GEMINI_API_KEY"], gemini),
     ("Groq", ["GROQ_API_KEY"], groq),
-    ("Z.AI (GLM)", ["ZAI_API_KEY"], zai),
+    ("GLM (gateway)", ["GLM_API_KEY", "GLM_BASE_URL", "GLM_MODEL"], glm),
     ("OpenRouter", ["OPENROUTER_API_KEY"], openrouter),
-    ("Supabase public key", ["SUPABASE_URL", "SUPABASE_ANON_KEY"], lambda: supabase("SUPABASE_ANON_KEY")),
-    ("Supabase admin key", ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"], lambda: supabase("SUPABASE_SERVICE_ROLE_KEY")),
+    ("Supabase publishable", ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"], lambda: supabase("SUPABASE_PUBLISHABLE_KEY")),
+    ("Supabase secret", ["SUPABASE_URL", "SUPABASE_SECRET_KEY"], lambda: supabase("SUPABASE_SECRET_KEY")),
     ("Sentry (API)", ["SENTRY_DSN_API"], lambda: sentry("SENTRY_DSN_API")),
     ("Sentry (web)", ["SENTRY_DSN_WEB"], lambda: sentry("SENTRY_DSN_WEB")),
 ]
+
+
+def list_models() -> None:
+    """Every model each configured key can use, so .env can name one that exists."""
+    print("\nModels available to your keys (the one set in .env is marked *):")
+    key = config.get("GEMINI_API_KEY", required=False)
+    if key:
+        try:
+            r = requests.get("https://generativelanguage.googleapis.com/v1beta/models",
+                             headers={"x-goog-api-key": key}, params={"pageSize": 200}, timeout=TIMEOUT)
+            names = sorted(m["name"].split("/")[-1] for m in r.json().get("models", [])
+                           if "generateContent" in m.get("supportedGenerationMethods", []))
+            embeds = sorted(m["name"].split("/")[-1] for m in r.json().get("models", [])
+                            if "embedContent" in m.get("supportedGenerationMethods", []))
+            marks = {config.get(n) for n in ("GEMINI_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")}
+            print("  Gemini (text):", ", ".join(n + ("*" if n in marks else "") for n in names))
+            print("  Gemini (embeddings):", ", ".join(n + ("*" if n in marks else "") for n in embeds))
+        except Exception as exc:
+            print(f"  Gemini: could not list ({type(exc).__name__})")
+    for label, base, key_name, model_name in [
+        ("Groq", "https://api.groq.com/openai/v1", "GROQ_API_KEY", "GROQ_MODEL"),
+        ("GLM gateway", config.get("GLM_BASE_URL", required=False), "GLM_API_KEY", "GLM_MODEL"),
+        ("OpenRouter (free only)", "https://openrouter.ai/api/v1", "OPENROUTER_API_KEY", "OPENROUTER_MODEL"),
+    ]:
+        key = config.get(key_name, required=False)
+        if not (key and base):
+            continue
+        names = available_models(base, key)
+        if label.startswith("OpenRouter"):
+            names = [n for n in names if n.endswith(":free")]
+        marks = {config.get(model_name, required=False)} if model_name else set()
+        if label == "Groq":
+            marks |= {config.get("GROQ_FALLBACK_MODEL", required=False), config.get("GUARD_MODEL", required=False)}
+        print(f"  {label}:", ", ".join(n + ("*" if n in marks else "") for n in names) or "(none listed)")
 
 
 def main() -> int:
@@ -121,6 +179,8 @@ def main() -> int:
     for label, state, result, note in rows:
         print(f"{label:<{width}}  {state:<7}  {result:<4}  {note}")
     print(f"\n{len(rows) - failures} of {len(rows)} working.")
+    if "--models" in sys.argv:
+        list_models()
     return 1 if failures else 0
 
 
