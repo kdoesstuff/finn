@@ -9,7 +9,9 @@ Never prints a key. Run from the repo root or pipeline/:
 
 from __future__ import annotations
 
+import math
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 import requests
@@ -33,21 +35,46 @@ GEMINI_ROLES = ("GEMINI_MODEL", "GEMINI_OVERFLOW_MODEL", "GEMINI_QUALITY_MODEL",
                 "GEMINI_VOLUME_MODEL", "GEMINI_EMBED_MODEL")
 
 
-def gemini():
-    key = config.get("GEMINI_API_KEY")
+Check = Callable[[], tuple[bool, str]]
+
+
+def gemini() -> tuple[bool, str]:
+    key = config.require("GEMINI_API_KEY")
     r = requests.get("https://generativelanguage.googleapis.com/v1beta/models",
                      headers={"x-goog-api-key": key}, params={"pageSize": 200}, timeout=TIMEOUT)
     if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
     names = {m["name"].split("/")[-1] for m in r.json().get("models", [])}
-    wanted = [config.get(n) for n in GEMINI_ROLES]
+    wanted = [config.require(n) for n in GEMINI_ROLES]
     missing = [w for w in wanted if w not in names]
     if missing:
         return False, f"key works, but not offered: {missing} (run with --models for the list)"
     return True, f"all {len(wanted)} Gemini models offered: " + ", ".join(wanted)
 
 
-def available_models(base, key) -> list[str]:
+def embedding() -> tuple[bool, str]:
+    """One real embedContent call at the configured size. gemini-embedding-2 takes no task_type
+    (the task goes into the text) and normalises truncated vectors itself (Google's embeddings
+    docs, read 11 Nov 2026)."""
+    key, model = config.require("GEMINI_API_KEY"), config.require("GEMINI_EMBED_MODEL")
+    dim = int(config.require("GEMINI_EMBED_DIM"))
+    r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:embedContent",
+                      headers={"x-goog-api-key": key},
+                      json={"model": f"models/{model}", "output_dimensionality": dim,
+                            "content": {"parts": [{"text": "task: search result | query: promoter pledge"}]}},
+                      timeout=TIMEOUT)
+    if r.status_code != 200:
+        return False, f"HTTP {r.status_code}: {_redact(r.text)}"
+    body = r.json()
+    # The REST response shape is not documented for this model; accept both known shapes.
+    values = (body.get("embedding") or (body.get("embeddings") or [{}])[0]).get("values") or []
+    if len(values) != dim:
+        return False, f"asked for {dim} dimensions, got {len(values)}"
+    norm = math.sqrt(sum(v * v for v in values))
+    return True, f"{model} returned a {dim}-dimension vector (length {norm:.3f})"
+
+
+def available_models(base: str, key: str) -> list[str]:
     try:
         r = requests.get(f"{base.rstrip('/')}/models", headers={"Authorization": f"Bearer {key}"}, timeout=TIMEOUT)
         return sorted(m.get("id", "") for m in r.json().get("data", [])) if r.status_code == 200 else []
@@ -55,7 +82,7 @@ def available_models(base, key) -> list[str]:
         return []
 
 
-def openai_compatible(base, key, model, label):
+def openai_compatible(base: str, key: str, model: str, label: str) -> tuple[bool, str]:
     r = requests.post(f"{base.rstrip('/')}/chat/completions",
                       headers={"Authorization": f"Bearer {key}"},
                       json={"model": model, "max_tokens": 5,
@@ -68,9 +95,9 @@ def openai_compatible(base, key, model, label):
     return True, f"{label} replied with model {model}"
 
 
-def groq():
-    base, key = "https://api.groq.com/openai/v1", config.get("GROQ_API_KEY")
-    ok, note = openai_compatible(base, key, config.get("GROQ_MODEL"), "Groq")
+def groq() -> tuple[bool, str]:
+    base, key = "https://api.groq.com/openai/v1", config.require("GROQ_API_KEY")
+    ok, note = openai_compatible(base, key, config.require("GROQ_MODEL"), "Groq")
     if not ok:
         return ok, note
     offered = set(available_models(base, key))
@@ -80,27 +107,28 @@ def groq():
     return True, f"{note}; fallback and guard models offered"
 
 
-def glm():
-    return openai_compatible(config.get("GLM_BASE_URL"), config.get("GLM_API_KEY"), config.get("GLM_MODEL"), "GLM")
+def glm() -> tuple[bool, str]:
+    return openai_compatible(config.require("GLM_BASE_URL"), config.require("GLM_API_KEY"),
+                             config.require("GLM_MODEL"), "GLM")
 
 
-def openrouter():
+def openrouter() -> tuple[bool, str]:
     r = requests.get("https://openrouter.ai/api/v1/key",
                      headers={"Authorization": f"Bearer {config.get('OPENROUTER_API_KEY')}"}, timeout=TIMEOUT)
     if r.status_code != 200:
         return False, f"HTTP {r.status_code}: {_redact(r.text)}"
     d = r.json().get("data", {})
     model = config.get("OPENROUTER_MODEL")
-    offered = available_models("https://openrouter.ai/api/v1", config.get("OPENROUTER_API_KEY"))
+    offered = available_models("https://openrouter.ai/api/v1", config.require("OPENROUTER_API_KEY"))
     if offered and model not in offered:
         return False, f"model {model} not offered (run with --models)"
     return True, f"{model} offered; credit limit {d.get('limit')} (free models only)"
 
 
-def supabase(key_name):
+def supabase(key_name: str) -> tuple[bool, str]:
     """Supabase's new keys (sb_publishable_/sb_secret_) are not JWTs: they go in the `apikey`
     header only. The auth settings endpoint accepts any valid project key."""
-    url, key = config.get("SUPABASE_URL").rstrip("/"), config.get(key_name)
+    url, key = config.require("SUPABASE_URL").rstrip("/"), config.require(key_name)
     prefix = "sb_secret_" if "SECRET" in key_name else "sb_publishable_"
     if not key.startswith(prefix):
         return False, f"expected a key starting with {prefix}"
@@ -110,18 +138,20 @@ def supabase(key_name):
     return True, f"project reachable with the {'secret' if 'SECRET' in key_name else 'publishable'} key"
 
 
-def sentry(name):
-    dsn = config.get(name)
+def sentry(name: str) -> tuple[bool, str]:
+    dsn = config.require(name)
     ok = dsn.startswith("https://") and "@" in dsn and ".sentry.io/" in dsn
     return ok, "DSN format looks right" if ok else "does not look like a Sentry DSN"
 
 
-CHECKS = [
+CHECKS: list[tuple[str, list[str], Check]] = [
     ("Gemini", ["GEMINI_API_KEY"], gemini),
+    ("Gemini embeddings", ["GEMINI_API_KEY", "GEMINI_EMBED_MODEL", "GEMINI_EMBED_DIM"], embedding),
     ("Groq", ["GROQ_API_KEY"], groq),
     ("GLM (gateway)", ["GLM_API_KEY", "GLM_BASE_URL", "GLM_MODEL"], glm),
     ("OpenRouter", ["OPENROUTER_API_KEY"], openrouter),
-    ("Supabase publishable", ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"], lambda: supabase("SUPABASE_PUBLISHABLE_KEY")),
+    ("Supabase publishable", ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+     lambda: supabase("SUPABASE_PUBLISHABLE_KEY")),
     ("Supabase secret", ["SUPABASE_URL", "SUPABASE_SECRET_KEY"], lambda: supabase("SUPABASE_SECRET_KEY")),
     ("Sentry (API)", ["SENTRY_DSN_API"], lambda: sentry("SENTRY_DSN_API")),
     ("Sentry (web)", ["SENTRY_DSN_WEB"], lambda: sentry("SENTRY_DSN_WEB")),
@@ -165,7 +195,8 @@ def list_models() -> None:
 def main() -> int:
     env = config.ROOT / ".env"
     print(f".env file: {'found' if env.exists() else 'NOT FOUND'} at {env}\n")
-    rows, failures = [], 0
+    rows: list[tuple[str, str, str, str]] = []
+    failures = 0
     for label, needs, fn in CHECKS:
         missing = [n for n in needs if not config.get(n, required=False)]
         if missing:

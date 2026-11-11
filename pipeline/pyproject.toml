@@ -1,3 +1,31 @@
+[project]
+name = "finn-pipeline"
+version = "0.1.0"
+requires-python = ">=3.10"
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, imports, bugbear, pyupgrade, bandit (security), blind excepts
+select = ["E", "F", "W", "I", "B", "UP", "S", "BLE"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # pytest asserts
+# Probe and capture scripts record every failure of an outside source and carry on; that is their job.
+"scripts/probe_*.py" = ["BLE001", "S110"]
+"scripts/capture_fixtures.py" = ["BLE001"]
+"scripts/check_setup.py" = ["BLE001"]
+
+[tool.mypy]
+python_version = "3.10"
+# The probe and capture scripts are one-off discovery tools, replaced by finn/sources (task B1).
+files = ["finn", "tests", "scripts/check_setup.py", "scripts/measure_classifier.py"]
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true

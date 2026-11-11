@@ -9,6 +9,13 @@ deck "AI-led Transformation" (Aug 2026) and enam.com. Where this file and those 
 what ENAM asked for, the documents win; where they disagree on what has been built or measured, this
 file and the repo win.
 
+> **Corrections from re-verification on 11 Nov 2026** (details and evidence in `docs/DECISIONS.md`):
+> the classifier's "text rule 55.1%" includes 10.8 points of matches on summaries that only restate
+> NSE's label; Kalyan's and Asian Paints' 16.68% and 6.25% are all pledges by any holder as a share
+> of demat shares (the promoter pledge is 15.62% and 5.46% of the company); Popular Vehicles'
+> auditor exit was a subsidiary's auditor; 22 settings exist, not 20; 10 Nov 2026 was a market
+> holiday. The plan in section 16 is superseded by `docs/PLAN.md`.
+
 ---
 
 ## 0. How to use this briefing (instructions to the assistant)

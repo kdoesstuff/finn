@@ -18,8 +18,7 @@ import time
 from datetime import date, timedelta
 
 import requests
-
-from probe_sources import UA, TIMEOUT, bse_headers, nse_session
+from probe_sources import TIMEOUT, UA, bse_headers, nse_session
 
 SYMBOL = os.environ.get("PROBE_SYMBOL", "TCS")
 
@@ -38,7 +37,12 @@ def probe(name, fn):
 
 def _download(session, url, headers=None):
     r = session.get(url, headers=headers or {}, timeout=TIMEOUT)
-    kind = "pdf" if r.content[:4] == b"%PDF" else "xml" if r.content.lstrip()[:5] in (b"<?xml", b"<xbrl") else "zip" if r.content[:2] == b"PK" else "other"
+    if r.content[:4] == b"%PDF":
+        kind = "pdf"
+    elif r.content.lstrip()[:5] in (b"<?xml", b"<xbrl"):
+        kind = "xml"
+    else:
+        kind = "zip" if r.content[:2] == b"PK" else "other"
     return r, kind
 
 
@@ -139,7 +143,8 @@ def screener_documents():
     s.headers["User-Agent"] = UA
     html = s.get(f"https://www.screener.in/company/{SYMBOL}/consolidated/", timeout=TIMEOUT).text
     links = re.findall(r'href="(https?://[^"]+)"', html)
-    pdfish = [u for u in links if re.search(r"\.pdf|AttachLive|AnnualReport|Transcript|corpfiling|nsearchives", u, re.I)]
+    doc_link = r"\.pdf|AttachLive|AnnualReport|Transcript|corpfiling|nsearchives"
+    pdfish = [u for u in links if re.search(doc_link, u, re.I)]
     hosts = {}
     for u in pdfish:
         host = re.sub(r"^https?://([^/]+).*", r"\1", u)
@@ -207,7 +212,8 @@ def main():
             detail = f"{r.get('rows')} filings, {r.get('earliest')} to {r.get('latest')}"
         if "wanted_found" in r:
             detail = f"{sum(r['wanted_found'].values())}/{len(r['wanted_found'])} line items found"
-        lines.append(f"| {r['name']} | {'yes' if r['ok'] else 'NO'} | {r.get('status', '')} | {str(detail)[:140]} | {r['seconds']} |")
+        ok = "yes" if r["ok"] else "NO"
+        lines.append(f"| {r['name']} | {ok} | {r.get('status', '')} | {str(detail)[:140]} | {r['seconds']} |")
     table = "\n".join(lines)
     detail = json.dumps(results, indent=1, default=str)
     print(table)

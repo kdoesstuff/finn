@@ -75,7 +75,8 @@ def results_and_xbrl():
     for sym in SAMPLES:
         rows = get_json("corporates-financial-results", index="equities", symbol=sym, period="Quarterly")
         save(f"results_{sym}.json", rows)
-        cons = [r for r in rows if r.get("consolidated") == "Consolidated" and str(r.get("xbrl", "")).startswith("http")]
+        cons = [r for r in rows
+                if r.get("consolidated") == "Consolidated" and str(r.get("xbrl", "")).startswith("http")]
         if not cons:  # some companies (often banks) file standalone only
             cons = [r for r in rows if str(r.get("xbrl", "")).startswith("http")]
         cons.sort(key=lambda r: datetime.strptime(r["toDate"], "%d-%b-%Y"), reverse=True)
@@ -120,7 +121,8 @@ def insider():
         try:
             data = get_json("corporates-pit", **v)
             rows = data.get("data", []) if isinstance(data, dict) else data
-            attempts.append({"params": v, "rows": len(rows), "keys": list(data)[:10] if isinstance(data, dict) else "list"})
+            keys = list(data)[:10] if isinstance(data, dict) else "list"
+            attempts.append({"params": v, "rows": len(rows), "keys": keys})
             if rows:
                 save("insider.json", {"params": v, "data": rows[:300]})
                 break
@@ -165,7 +167,8 @@ def integrated():
                 break
             page += 1
         save(f"integrated_{sym}.json", rows)
-        fin = [r for r in rows if "financ" in str(r.get("type", "")).lower() and str(r.get("xbrl", "")).endswith(".xml")]
+        fin = [r for r in rows
+               if "financ" in str(r.get("type", "")).lower() and str(r.get("xbrl", "")).endswith(".xml")]
         fin.sort(key=lambda r: datetime.strptime(r["qe_Date"].title(), "%d-%b-%Y"), reverse=True)
         for r in fin[:8]:
             x = S.get(r["xbrl"], timeout=TIMEOUT)

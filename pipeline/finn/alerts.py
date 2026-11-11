@@ -36,7 +36,7 @@ class Thresholds:
 
 
 def _log_returns(closes: list[float]) -> list[float]:
-    return [math.log(b / a) for a, b in zip(closes, closes[1:]) if a > 0 and b > 0]
+    return [math.log(b / a) for a, b in zip(closes, closes[1:], strict=False) if a > 0 and b > 0]
 
 
 def signals_for(symbol: str, bars: list[Bar], th: Thresholds | None = None) -> list[Signal]:
@@ -73,13 +73,19 @@ def signals_for(symbol: str, bars: list[Bar], th: Thresholds | None = None) -> l
         by_sigma = sigma is not None and abs(sigma) >= th.move_sigma
         fired = {"pct": by_pct, "sigma": by_sigma, "either": by_pct or by_sigma}[th.move_rule]
         if fired:
+            # Report the rule that actually fired, so "why am I seeing this?" names the right threshold.
+            if th.move_rule == "either":
+                fired_by = "both" if by_pct and by_sigma else "pct" if by_pct else "sigma"
+            else:
+                fired_by = th.move_rule
             direction = "up" if pct > 0 else "down"
             detail = f"Closed {direction} {abs(pct):.1f}%"
             if sigma is not None:
                 detail += f", a {abs(sigma):.1f} sigma day against its last {len(rets)} sessions"
             out.append(Signal(
                 symbol=symbol, day=today.day, kind="move", value=round(pct, 2),
-                threshold=th.move_pct if th.move_rule == "pct" else th.move_sigma,
+                threshold=th.move_sigma if fired_by == "sigma" else th.move_pct,
                 sigma=None if sigma is None else round(sigma, 2), sample=len(rets), detail=detail,
+                fired_by=fired_by,
             ))
     return out

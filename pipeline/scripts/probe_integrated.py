@@ -75,7 +75,10 @@ def try_endpoint(path: str) -> dict:
                 entry["keys"] = list(data)[:12] if isinstance(data, dict) else "list"
                 if isinstance(rows, list) and rows:
                     entry["rows"] = len(rows)
-                    entry["first"] = {k: str(v)[:150] for k, v in list(rows[0].items())[:30]} if isinstance(rows[0], dict) else str(rows[0])[:300]
+                    if isinstance(rows[0], dict):
+                        entry["first"] = {k: str(v)[:150] for k, v in list(rows[0].items())[:30]}
+                    else:
+                        entry["first"] = str(rows[0])[:300]
             except ValueError:
                 entry["text"] = r.text[:150]
             attempts.append(entry)

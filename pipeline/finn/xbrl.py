@@ -15,9 +15,12 @@ Values in the file are whole rupees. FINN reports in ₹ crore (1 crore = 10^7).
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import date
+
+# Results files come from the internet: parse them with defusedxml, which refuses DTDs, entity
+# expansion and external entities. Real XBRL has no DTD, so nothing legitimate is refused.
+from defusedxml import ElementTree as ET
 
 from .results import BankQuarter, Quarter
 
@@ -60,14 +63,15 @@ def _date(s: str | None) -> date | None:
 
 
 def parse(xml: bytes) -> Filing:
-    root = ET.fromstring(xml)
+    root = ET.fromstring(xml, forbid_dtd=True)
     contexts: dict[str, Context] = {}
     for ctx in root.iter(f"{XBRLI}context"):
         c = Context(ctx.get("id"))
         c.start = _date(ctx.findtext(f"{XBRLI}period/{XBRLI}startDate"))
         c.end = _date(ctx.findtext(f"{XBRLI}period/{XBRLI}endDate"))
         c.instant = _date(ctx.findtext(f"{XBRLI}period/{XBRLI}instant"))
-        c.dimensional = ctx.find(f"{XBRLI}entity/{XBRLI}segment") is not None or ctx.find(f"{XBRLI}scenario") is not None
+        segment = ctx.find(f"{XBRLI}entity/{XBRLI}segment")
+        c.dimensional = segment is not None or ctx.find(f"{XBRLI}scenario") is not None
         contexts[c.id] = c
 
     by_ctx: dict[str, dict[str, str]] = {}

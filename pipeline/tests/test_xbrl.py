@@ -64,7 +64,22 @@ def test_integrated_filing_format_reads_the_same_way():
     # SEBI's Integrated Filing (2025 onward) uses the same tags; the same parser serves both.
     f = parse((IF / "TCS_2026-09-30_200121.xml").read_bytes())
     q = to_quarter(f)
+    assert isinstance(q, Quarter)
     assert f.consolidated and (f.period_start, f.period_end) == (date(2026, 7, 1), date(2026, 9, 30))
     assert q.revenue == pytest.approx(73188, abs=1)
     bank = parse((IF / "HDFCBANK_2026-09-30_202132.xml").read_bytes())
     assert bank.bank and bank.consolidated
+
+
+@pytest.mark.parametrize("payload", [
+    # Entity expansion ("billion laughs") and an external entity reading a local file.
+    b'<?xml version="1.0"?><!DOCTYPE l [<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">]>'
+    b'<xbrl xmlns="http://www.xbrl.org/2003/instance"><x contextRef="OneD">&b;</x></xbrl>',
+    b'<?xml version="1.0"?><!DOCTYPE l [<!ENTITY x SYSTEM "file:///etc/passwd">]>'
+    b'<xbrl xmlns="http://www.xbrl.org/2003/instance"><x contextRef="OneD">&x;</x></xbrl>',
+], ids=["entity expansion", "external entity"])
+def test_hostile_xml_is_refused(payload):
+    from defusedxml import DTDForbidden
+
+    with pytest.raises(DTDForbidden):
+        parse(payload)

@@ -1,0 +1,54 @@
+name: CI
+
+# Every push and pull request: lint, type check, the full test suite against real NSE fixtures,
+# a dependency audit, and a secret scan of the whole history. Nothing is merged or deployed on red.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements-dev.txt
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Type check
+        run: mypy
+      - name: Tests
+        run: python -m pytest -q
+      - name: Dependency audit
+        run: pip-audit -r requirements.txt
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # scan every commit, not just the latest
+      - name: Secret scan (gitleaks)
+        # Run as the runner's own user so git does not refuse the mounted repository as "dubious ownership".
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/repo"
+          ghcr.io/gitleaks/gitleaks:v8.30.0 git /repo --redact --verbose --exit-code 1

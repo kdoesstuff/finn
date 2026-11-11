@@ -21,6 +21,7 @@ import re
 from dataclasses import dataclass
 
 from .models import Announcement, Classification
+from .text import own_words
 
 LABEL_PENALTY = 20
 
@@ -59,7 +60,8 @@ RULES: list[Rule] = [
          none_of=(r"delay", r"default", r"non-?payment", r"not (been )?paid"), subtype="routine_notice"),
     Rule("reg-32", "unclassified", 92, (r"regulation\s*32", r"reg\.?\s*32", r"statement of deviation"),
          subtype="compliance"),
-    Rule("record-date-dividend", "dividend", 86, (r"record date",), all_of=(r"purpose of\s+(di|fi|dividend|interim|final)\b",)),
+    Rule("record-date-dividend", "dividend", 86, (r"record date",),
+         all_of=(r"purpose of\s+(di|fi|dividend|interim|final)\b",)),
     Rule("record-date-meeting", "agm_egm", 86, (r"record date",),
          all_of=(r"purpose of\s+(meeting|agm|egm|postal|e-?voting)",), subtype="record_date"),
     Rule("record-date-corp-action", "bonus_split", 86, (r"record date",),
@@ -68,7 +70,8 @@ RULES: list[Rule] = [
     Rule("debt-allotment", "fund_raise", 84,
          (r"allotment of .*non[- ]convertible", r"non[- ]convertible securities", r"commercial paper"),
          subtype="debt"),
-    Rule("convertible-allotment", "fund_raise", 82, (r"allotment of .*convertible", r"convertible (securities|warrants)"),
+    Rule("convertible-allotment", "fund_raise", 82,
+         (r"allotment of .*convertible", r"convertible (securities|warrants)"),
          none_of=(r"non[- ]convertible",), subtype="convertible"),
     Rule("esg-report", "unclassified", 92,
          (r"\bbrsr\b", r"business responsibility", r"sustainability report", r"\besg\b"), subtype="esg"),
@@ -103,12 +106,15 @@ RULES: list[Rule] = [
           r"order (passed|received) (by|from)", r"search (and|&) seizure", r"regulatory action"),
          none_of=(r"amalgamation", r"\bmerger\b", r"demerger", r"scheme of arrangement")),
     Rule("credit-rating", "credit_rating", 75,
-         (r"credit rating", r"\bcrisil\b", r"\bicra\b", r"care ratings", r"india ratings", r"\brating(s)? (action|assigned|reaffirm|upgrade|downgrade)")),
+         (r"credit rating", r"\bcrisil\b", r"\bicra\b", r"care ratings", r"india ratings",
+          r"\brating(s)? (action|assigned|reaffirm|upgrade|downgrade)")),
     Rule("m-and-a", "M&A", 74,
          (r"acqui(re|sition)", r"\bmerger\b", r"amalgamat", r"demerger", r"joint venture", r"scheme of arrangement",
-          r"divest", r"(sale|transfer) of (stake|shares|business|undertaking)", r"investment in (its )?(wholly[- ]owned )?subsidiar",
+          r"divest", r"(sale|transfer) of (stake|shares|business|undertaking)",
+          r"investment in (its )?(wholly[- ]owned )?subsidiar",
           r"incorporation of (a )?(new )?(wholly[- ]owned )?subsidiar"),
-         none_of=(r"inter[- ]?se", r"substantial acquisition", r"regulation\s*29", r"\bsast\b", r"takeover regulations")),
+         none_of=(r"inter[- ]?se", r"substantial acquisition", r"regulation\s*29", r"\bsast\b",
+                  r"takeover regulations")),
     Rule("inter-se", "insider_trading", 80, (r"inter[- ]?se transfer",), subtype="inter_se"),
     Rule("fund-raise", "fund_raise", 74,
          (r"rights issue", r"\bqip\b", r"qualified institution", r"preferential (issue|allotment)", r"buy-?back",
@@ -121,14 +127,17 @@ RULES: list[Rule] = [
          (r"\bcapex\b", r"capital expenditure", r"capacity expansion", r"new (\w+ )?(plant|facility|unit|line)",
           r"setting up (of )?(a )?(new )?(\w+ )?(plant|facility|unit)",
           r"greenfield", r"brownfield", r"commercial production", r"commission(ed|ing) of")),
-    Rule("bonus-split", "bonus_split", 70, (r"\bbonus\b", r"stock split", r"sub-?division", r"split of (equity )?shares")),
+    Rule("bonus-split", "bonus_split", 70,
+         (r"\bbonus\b", r"stock split", r"sub-?division", r"split of (equity )?shares")),
     Rule("dividend", "dividend", 69, (r"dividend",)),
     Rule("investor-meet", "investor_meetings", 68,
          (r"analysts?\s*/\s*institutional", r"investor meet", r"institutional investor", r"analyst meet",
           r"investor conference", r"one[- ]on[- ]one", r"group meeting")),
     Rule("postal-ballot", "postal_ballot", 66, (r"postal ballot", r"e-voting results?", r"scrutini[sz]er")),
-    Rule("agm-egm", "agm_egm", 65, (r"\bagm\b", r"\begm\b", r"annual general meeting", r"extra-?ordinary general meeting")),
-    Rule("investor-deck", "results", 60, (r"investor presentation", r"earnings presentation", r"shareholders?'? letter"),
+    Rule("agm-egm", "agm_egm", 65,
+         (r"\bagm\b", r"\begm\b", r"annual general meeting", r"extra-?ordinary general meeting")),
+    Rule("investor-deck", "results", 60,
+         (r"investor presentation", r"earnings presentation", r"shareholders?'? letter"),
          subtype="deck"),
     Rule("press-release", "press_release", 50,
          (r"press release", r"media release", r"order (win|received|inflow)", r"\bbags?\b", r"receipt of (an? )?order",
@@ -168,7 +177,8 @@ DESC_MAP: dict[str, tuple[str, str]] = {
     "Action(s) initiated or orders passed": ("litigation", ""),
     "Action(s) taken or orders passed": ("litigation", ""),
     "Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company": ("litigation", ""),
-    "Granting/withdrawal/surrender/cancellation/suspension of key licenses/ regulatory approvals": ("litigation", "licence"),
+    "Granting/withdrawal/surrender/cancellation/suspension of key licenses/ regulatory approvals":
+        ("litigation", "licence"),
     "Disclosure under SEBI Takeover Regulations": ("insider_trading", ""),
     # deals and capital
     "Acquisition": ("M&A", ""),
@@ -236,20 +246,50 @@ DESC_MAP: dict[str, tuple[str, str]] = {
 # "Change in Auditors").
 OVERRIDE_PRIORITY = 85
 
+# Order matters: the first role named wins. "MD" is matched case-sensitively, because "Md." is also
+# a common abbreviation in Indian personal names. "Non-executive" is written many ways in real filings
+# ("Non-Executive", "Non Executive", "Non- Executive"); _role_text folds them into one word first, so
+# "executive director" can never match inside it.
 ROLES = [
     ("ceo", r"chief executive|\bceo\b"),
     ("cfo", r"chief financial|\bcfo\b"),
-    ("md", r"managing director|\bm\.?d\.?\b|whole[- ]time director|executive director"),
+    ("md", r"managing director|(?-i:\bMD\b)"),
     ("chair", r"chair(man|person|woman)?\b"),
     ("coo", r"chief operating|\bcoo\b"),
+    ("executive_director", r"whole[- ]?time director|\bexecutive director"),
     ("secretarial", r"company secretary|compliance officer|registrar|share transfer agent"),
+    ("senior", r"chief \w+ officer|\bc[a-z]o\b|\bpresident\b|\bhead\b|senior management|\bsmp\b|\bkmp\b"),
     ("director", r"\bdirector\b"),
 ]
 ACTIONS = [
     ("resignation", r"resign|step(s|ped)? down"),
     ("cessation", r"cessation|ceas|vacat"),
     ("retirement", r"retire"),
+    ("reappointment", r"re-?appoint|re-?elect|continuation"),
     ("appointment", r"appoint|induct|designat"),
+]
+
+# A top title held for part of the group ("CEO for Americas 2 Strategic Market Unit", "CFO in
+# Subsidiary Company") is senior management, not the company's own top team.
+_PART_OF_GROUP = re.compile(r"subsidiar|\b(?:strategic |business )?(?:market |business )?unit\b|\bdivision\b|"
+                            r"\bsegment\b|\bregion(?:al)?\b|\bvertical\b", re.IGNORECASE)
+TOP_ROLES = {"ceo", "cfo", "md", "chair", "coo", "executive_director"}
+
+# Auditors other than the statutory auditor of the company itself. Their exit is not the red flag
+# a statutory auditor's resignation is.
+_OTHER_AUDITOR = re.compile(r"(secretarial|cost|internal|tax)\s+auditors?", re.IGNORECASE)
+_SUBSIDIARY = re.compile(r"subsidiar", re.IGNORECASE)
+
+# Litigation kinds, most serious first. Insolvency and payment defaults come from NSE's exact labels.
+LITIGATION_KINDS = [
+    ("insolvency", r"\binsolvency\b|\bcirp\b|\bnclt\b.*\badmit"),
+    # A regulator acting, not a filing citing SEBI's listing regulations (nearly every filing does).
+    ("regulator", r"(?:from|by|of)\s+(?:the\s+)?(?:sebi|rbi|cci|reserve bank|competition commission)\b(?!\s*\()|"
+                  r"\b(?:sebi|rbi|cci)\s+(?:order|letter|notice|warning|penalty|inspection|direction)|"
+                  r"warning letter|enforcement directorate|\bsfio\b|\bcbi\b|search\b.*\bseizure|"
+                  r"\bincome[- ]tax search|\bsurvey\b"),
+    ("tax", r"\bgst\b|\bcgst|\bsgst|\bigst|state tax|central tax|income[- ]?tax|\bcustoms\b|\bexcise\b|"
+            r"service tax|tax demand|demand notice|show[- ]cause|adjudicat|assessment order|\bdrc[- ]?\d"),
 ]
 
 
@@ -269,11 +309,33 @@ def _first(pairs, text: str) -> str:
     return ""
 
 
-def _with_people(out: Classification, text: str) -> Classification:
+def _role_text(words: str) -> str:
+    return re.sub(r"\bnon[\s-]*executive", "nonexecutive", words, flags=re.IGNORECASE)
+
+
+def _finish(out: Classification, a: Announcement) -> Classification:
+    """Details read from the company's own words, never from the exchange's label alone."""
+    words = " ".join(w for w in (own_words(a.subject, a.label), a.body[:800]) if w)
+    out.detail_in_document = not words
+
     if out.category == "management_change":
-        out.role = "auditor" if out.subtype == "auditor_exit" else (
-            "secretarial" if out.subtype == "secretarial" else _first(ROLES, text))
-        out.action = "demise" if out.subtype == "demise" else _first(ACTIONS, text)
+        if out.subtype == "auditor_exit":
+            evidence = f"{words} {a.label}"
+            if _OTHER_AUDITOR.search(evidence) and not re.search(r"statutory", evidence, re.IGNORECASE):
+                out.subtype = "auditor_exit_other"
+            elif _SUBSIDIARY.search(words):
+                out.subtype = "auditor_exit_subsidiary"
+            out.role = "auditor"
+        elif out.subtype == "secretarial":
+            out.role = "secretarial"
+        else:
+            out.role = _first(ROLES, _role_text(words))
+            if out.role in TOP_ROLES and _PART_OF_GROUP.search(words):
+                out.role = "senior"
+        out.action = "demise" if out.subtype == "demise" else _first(ACTIONS, words)
+
+    elif out.category == "litigation" and not out.subtype:
+        out.subtype = _first(LITIGATION_KINDS, f"{a.subject} {a.body[:800]}") or "legal"
     return out
 
 
@@ -282,7 +344,6 @@ def classify(a: Announcement) -> Classification:
     the best remaining rule (content before label), then a cheap model."""
     content = f"{a.subject} {a.body[:800]}"
     label = a.label.strip()
-    text = f"{content} {label}"
 
     best = None
     for parts in _COMPILED:
@@ -298,14 +359,16 @@ def classify(a: Announcement) -> Classification:
 
     if best and best[2] == "content" and best[0] >= OVERRIDE_PRIORITY:
         _, rule, _ = best
-        return _with_people(Classification(rule.category, rule.subtype, 0.97, f"{rule.id}@content"), text)
+        return _finish(Classification(rule.category, rule.subtype, 0.97, f"{rule.id}@content"), a)
 
     if label in DESC_MAP:
         category, subtype = DESC_MAP[label]
-        return _with_people(Classification(category, subtype, 0.98, f"nse-desc:{label}"), text)
+        return _finish(Classification(category, subtype, 0.98, f"nse-desc:{label}"), a)
 
     if best is None:
-        return Classification(category="unclassified", confidence=0.0, rule_id="", needs_model=True)
+        out = Classification(category="unclassified", confidence=0.0, rule_id="", needs_model=True)
+        out.detail_in_document = not own_words(a.subject, a.label) and not a.body
+        return out
 
     _, rule, where = best
     out = Classification(
@@ -314,4 +377,4 @@ def classify(a: Announcement) -> Classification:
         confidence=0.95 if where == "content" else 0.7,
         rule_id=f"{rule.id}@{where}",
     )
-    return _with_people(out, text)
+    return _finish(out, a)

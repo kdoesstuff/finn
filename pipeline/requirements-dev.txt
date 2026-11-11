@@ -1,0 +1,6 @@
+# Tools for checks, pinned so CI and a laptop run the same versions. Product dependencies are in requirements.txt.
+-r requirements.txt
+ruff==0.17.4
+mypy==2.4.1
+types-requests
+pip-audit==2.10.1

@@ -33,7 +33,7 @@ def ann(subject, label="", body="", symbol="ABC", source="NSE", ts=None, id_="1"
     ("Disclosure under Regulation 31(1) of SEBI SAST - creation of pledge", "", "pledging", ""),
     ("Resignation of Statutory Auditor", NSE_KMP, "management_change", "auditor_exit"),
     ("Appointment of M/s ABC & Co. as Secretarial Auditor", NSE_KMP, "unclassified", "auditor_appointment"),
-    ("Order received from GST department imposing penalty", "Updates", "litigation", ""),
+    ("Order received from GST department imposing penalty", "Updates", "litigation", "tax"),
     ("Company bags order worth Rs 1,200 crore from NHAI", "Press Release", "press_release", ""),
     ("Commencement of commercial production at the new plant in Dahej", "Updates", "capex", ""),
 ])
@@ -47,7 +47,7 @@ def test_classifier(subject, label, category, subtype):
     # Real NSE labels with the company's own one-line summary (attchmntText)
     ("Action(s) taken or orders passed",
      "Bharat Heavy Electricals Limited has informed the Exchange about Adjudication Order passed u/s 73 of",
-     "litigation", ""),
+     "litigation", "tax"),
     ("Defaults on Payment of Interest/Principal", "Intimation of delay in payment of interest on NCDs",
      "litigation", "default"),
     ("Change in Auditors", "Resignation of M/s XYZ & Associates as Statutory Auditors", "management_change",
@@ -111,7 +111,7 @@ def test_unknown_goes_to_model():
 
 def bars(closes, volumes=None, start=date(2026, 6, 1)):
     volumes = volumes or [1_000_000] * len(closes)
-    return [Bar(start + timedelta(days=i), c, v) for i, (c, v) in enumerate(zip(closes, volumes))]
+    return [Bar(start + timedelta(days=i), c, v) for i, (c, v) in enumerate(zip(closes, volumes, strict=True))]
 
 
 def test_volume_spike_needs_history():
@@ -127,6 +127,7 @@ def test_sigma_move_catches_a_quiet_stock():
     closes.append(closes[-1] * 1.02)  # a 2% day: under a 5% rule, far out in sigma
     sig = signals_for("ABC", bars(closes), Thresholds(move_rule="either"))
     move = [s for s in sig if s.kind == "move"][0]
+    assert move.sigma is not None
     assert abs(move.value) < 5 and move.sigma > 3
     assert signals_for("ABC", bars(closes), Thresholds(move_rule="pct")) == []
 
@@ -145,11 +146,12 @@ def test_digest_orders_management_first_and_collapses_routine():
     assert "2 items need your attention" in d["summary"]
 
 
-def test_nse_and_bse_copies_are_deduplicated():
+def test_copies_of_one_filing_make_one_card_led_by_nse():
     a = ann("Unaudited Financial Results", "Outcome of Board Meeting", source="NSE", id_="n")
     b = ann("Unaudited Financial Results", "Result", source="BSE", id_="b")
     d = build_digest([a, b], [])
     assert len(d["attention"]) == 1 and d["attention"][0].announcement.source == "NSE"
+    assert [r.source for r in d["attention"][0].related] == ["BSE"]
 
 
 def test_quiet_day_says_so():

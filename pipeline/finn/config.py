@@ -13,14 +13,13 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+
 try:
     from dotenv import load_dotenv
 except ImportError:  # dotenv is optional in the cloud, where env vars are already set
-    load_dotenv = None
-
-ROOT = Path(__file__).resolve().parents[2]
-
-if load_dotenv is not None:
+    pass
+else:
     load_dotenv(ROOT / ".env", override=False)
 
 # name -> what it is for. Keep in step with .env.example.
@@ -44,7 +43,8 @@ SETTINGS = {
     "OPENROUTER_API_KEY": "OpenRouter key, capped at $0 so only free models can run",
     "OPENROUTER_MODEL": "Last-resort fallback model",
     "SUPABASE_URL": "Supabase project URL (Mumbai region)",
-    "SUPABASE_PUBLISHABLE_KEY": "Supabase publishable key (sb_publishable_...); safe in the browser only because every table has row-level security",
+    "SUPABASE_PUBLISHABLE_KEY": "Supabase publishable key (sb_publishable_...); safe in the browser only because "
+                                "every table has row-level security",
     "SUPABASE_SECRET_KEY": "Supabase secret key (sb_secret_...); pipeline and API only, never the frontend",
     "SENTRY_DSN_API": "Sentry error tracking for the Python API",
     "SENTRY_DSN_WEB": "Sentry error tracking for the web app",
@@ -74,6 +74,15 @@ class MissingSetting(RuntimeError):
 def get(name: str, required: bool = True) -> str | None:
     value = os.environ.get(name) or DEFAULTS.get(name)
     if required and not value:
+        raise MissingSetting(f"{name} is not set. Add it to .env (local) or the platform's secrets. Used for: "
+                             f"{SETTINGS.get(name, 'unknown')}")
+    return value
+
+
+def require(name: str) -> str:
+    """A setting that must be present (from the environment, .env or the defaults above)."""
+    value = get(name, required=False)
+    if not value:
         raise MissingSetting(f"{name} is not set. Add it to .env (local) or the platform's secrets. Used for: "
                              f"{SETTINGS.get(name, 'unknown')}")
     return value
