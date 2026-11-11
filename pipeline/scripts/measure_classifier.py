@@ -13,7 +13,6 @@ from __future__ import annotations
 import collections
 import json
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,22 +21,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from finn.classify import classify  # noqa: E402
 from finn.models import Announcement  # noqa: E402
 from finn.rank import ATTENTION, WORTH, build_digest, group_events, score_item  # noqa: E402
+from finn.sources.nse import parse_announcement  # noqa: E402
 from finn.text import own_words  # noqa: E402
 
 DEFAULT = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "nse_announcements.json"
 
 
 def load(path: Path) -> list[Announcement]:
-    rows = json.loads(path.read_text())["rows"]
-    return [
-        Announcement(
-            id=r["seq_id"], symbol=r["symbol"], company=r["sm_name"],
-            ts=datetime.strptime(r["an_dt"], "%d-%b-%Y %H:%M:%S"), source="NSE",
-            label=r["desc"], subject=r.get("attchmntText") or "", url=r.get("attchmntFile") or "",
-            file_size=r.get("fileSize") or "",
-        )
-        for r in rows
-    ]
+    return [parse_announcement(r) for r in json.loads(path.read_text(encoding="utf-8"))["rows"]]
 
 
 def layer(rule_id: str, needs_model: bool, restates_label: bool = False) -> str:

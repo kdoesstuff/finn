@@ -87,3 +87,31 @@ recommends. CI is unaffected.
   tokens; batch endpoint `batchEmbedContents`. Affects task E3.
 - Exchange calendar, November 2026: Sun 8 Nov Muhurat session; Tue 10 Nov holiday (Diwali
   Balipratipada); Tue 24 Nov holiday. Affects task B3.
+
+## Gate G0 passed (11 Nov 2026, 21:45 IST)
+
+- CI run 43055989175 on `main`: lint, type check, 93 tests, dependency audit and the gitleaks
+  history scan all green (pipeline job 44 s, secrets job 20 s).
+- `check_setup.py` on Karthik's laptop: 9 of 9, including a real `embedContent` call that returned a
+  768-dimension vector of length 1.000 (the model normalises truncated vectors, as documented).
+- All 22 settings copied to GitHub Actions secrets.
+
+## B1 Fetchers (11 Nov 2026)
+
+`pipeline/finn/sources/`: one `NSEClient` (session warm-up and re-warm on 401/403, 0.7 s pacing,
+exponential backoff with jitter on timeouts, 429 and 5xx, 404 returned as "does not exist", a named
+`SourceError` when retries run out) and typed parsers for announcements, results indexes (legacy
+and Integrated Filing), bhavcopy, pledges, board meetings, annual reports, insider trades and
+corporate actions. Client behaviour is tested against a scripted session; every parser against the
+recorded NSE responses. Live check: `smoke-sources` workflow (manual).
+
+Found while testing: on Integrated Filing revision rows NSE leaves `broadcast_Date` empty and stamps
+`creation_Date`. A parser keyed on `broadcast_Date` skips every revision and serves the original
+numbers; Asian Paints' Mar 2026 results (revised 29 May and 15 Jul) would have been stale. The
+parser now orders by the first of broadcast, creation and revision time, with a test.
+
+A missing bhavcopy is returned as None, not an error: it is how a non-session day (a holiday such
+as 10 Nov 2026) shows up, and B3 builds the trading calendar from it.
+
+yfinance (secondary price source) is left to B4, where history is backfilled; the bhavcopy covers
+daily ingest.

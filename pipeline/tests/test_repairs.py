@@ -16,6 +16,7 @@ from finn.classify import classify
 from finn.models import Announcement, Bar, Signal
 from finn.pledges import parse as parse_pledge
 from finn.rank import ATTENTION, _file_key, build_digest, group_events, reaction_window, score_item
+from finn.sources.nse import parse_announcement
 from finn.text import amount_crore, own_words
 
 FIX = Path(__file__).parent / "fixtures"
@@ -24,14 +25,7 @@ FIX = Path(__file__).parent / "fixtures"
 @lru_cache(maxsize=1)
 def week() -> dict[str, Announcement]:
     rows = json.loads((FIX / "nse_announcements.json").read_text(encoding="utf-8"))["rows"]
-    return {
-        r["seq_id"]: Announcement(
-            id=r["seq_id"], symbol=r["symbol"], company=r["sm_name"],
-            ts=datetime.strptime(r["an_dt"], "%d-%b-%Y %H:%M:%S"), source="NSE", label=r["desc"],
-            subject=r.get("attchmntText") or "", url=r.get("attchmntFile") or "", file_size=r.get("fileSize") or "",
-        )
-        for r in rows
-    }
+    return {r["seq_id"]: parse_announcement(r) for r in rows}
 
 
 def filings(*ids: str) -> list[Announcement]:
