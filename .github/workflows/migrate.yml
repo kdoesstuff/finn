@@ -1,0 +1,45 @@
+name: Database migrations
+
+# Run by hand:  gh workflow run migrate.yml -f command=apply
+#   status  applied and pending migrations
+#   verify  access rules on the live database, including the REST API with the real keys
+#   apply   apply pending migrations, then verify
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "status, verify or apply"
+        type: choice
+        options: [status, verify, apply]
+        default: status
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate
+  cancel-in-progress: false  # never interrupt a migration half way
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+      - run: pip install -r requirements.txt
+      # The choice goes through an environment variable, never straight into the shell line.
+      - run: python scripts/migrate.py "$COMMAND"
+        env:
+          COMMAND: ${{ inputs.command }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}

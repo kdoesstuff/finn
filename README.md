@@ -13,8 +13,10 @@ cd pipeline
 python -m venv .venv
 .venv\Scripts\Activate.ps1                 # Windows; on macOS/Linux: source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
-python scripts/check_setup.py              # tests every key with one small request (9 checks)
-python -m pytest -q                        # tests against real NSE fixtures
+python scripts/check_setup.py              # tests every key with one small request (10 checks)
+python scripts/migrate.py status           # database migrations: status | apply | verify
+python -m pytest -q                        # tests against real NSE fixtures; database tests need
+                                           # FINN_TEST_DB_URL (a disposable Postgres), as CI sets
 ruff check . ; mypy                        # lint and type check, as CI runs them
 python scripts/measure_classifier.py       # classifier coverage on a real week of filings
 ```

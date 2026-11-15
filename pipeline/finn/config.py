@@ -46,6 +46,8 @@ SETTINGS = {
     "SUPABASE_PUBLISHABLE_KEY": "Supabase publishable key (sb_publishable_...); safe in the browser only because "
                                 "every table has row-level security",
     "SUPABASE_SECRET_KEY": "Supabase secret key (sb_secret_...); pipeline and API only, never the frontend",
+    "SUPABASE_DB_URL": "Postgres connection string (session pooler) for migrations, ingest and the API; "
+                       "full access, server side only",
     "SENTRY_DSN_API": "Sentry error tracking for the Python API",
     "SENTRY_DSN_WEB": "Sentry error tracking for the web app",
 }

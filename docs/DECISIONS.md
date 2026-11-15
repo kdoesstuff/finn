@@ -115,3 +115,56 @@ as 10 Nov 2026) shows up, and B3 builds the trading calendar from it.
 
 yfinance (secondary price source) is left to B4, where history is backfilled; the bhavcopy covers
 daily ingest.
+
+Live check, smoke-sources run 43058120274 (11 Nov 2026, 21:55 IST): 17 of 17 fetchers OK in 51 s,
+38 requests. Results XBRL to headline matched the verified figures: TCS Sep 2026 consolidated
+revenue ₹73,188 cr (YoY +11.2%), Asian Paints ₹9,977 cr (+16.9%), HDFC Bank net interest income
+₹44,464 cr (+10.5%). Bhavcopy present for Sun 8 Nov (Muhurat session) and absent for Tue 10 Nov
+(holiday) and Sat 7 Nov, confirming the calendar comes from the files, not weekdays. 814
+announcements market-wide over two days; 1,558 pledge rows; 1,464 board meetings in the next 14 days.
+
+## B2 Database (15 Nov 2026)
+
+Schema in `db/migrations/0001_foundation.sql`, applied by `finn/db.py` (`scripts/migrate.py`, or the
+manual `migrate` workflow). Considered and rejected: Supabase CLI migrations (one more tool and a
+login step for a single SQL file); tables in `public` behind RLS only (the REST API would then be one
+policy mistake away from the data).
+
+**Access model, three layers.**
+
+| Layer | What it does | Evidence |
+| --- | --- | --- |
+| Schema not exposed | Tables live in schema `finn`, which Supabase's Data API does not serve, and Supabase's API roles (`anon`, `authenticated`, `service_role`) are granted nothing in it, so neither the publishable nor the secret key can read FINN data over REST | Tests set each API role and read every table: refused. `migrate.py verify` calls the live REST API with both real keys |
+| Least-privilege roles | Pipeline and API connect with the database URL and switch at once to `finn_ingest` (writes public market data; cannot see investor tables) or `finn_api` (reads market data; writes documents, chunks and the model cache; reads and writes investor rows) | Tests: ingest refused on investor tables; API refused when changing market data or creating investors |
+| Row-level security | On every table. Investor rows are visible only to a transaction scoped to that investor (`finn.investor_id`); unscoped, nothing is visible | Tests: investor A sees only A's holdings and notes, cannot insert, update or delete B's rows; a test fails if any table ever lacks RLS. A mutation check (opening the holdings policy) made three tests fail |
+
+Honest limit: the roles are reached with `SET ROLE` from the admin connection, so code that is fully
+compromised could switch back. They limit mistakes, not an attacker who already runs code on the
+server; the database URL stays server-side only for that reason.
+
+**Found while testing.** Two things that would have been production bugs:
+
+1. On Postgres 16+, an admin that creates a role cannot switch into it until it grants the role to
+   itself (`grant ... to current_user`). Verified by logging in as a non-superuser admin; testing as
+   superuser hid it, because a superuser may switch into any role. Tests therefore log in as a
+   non-superuser admin, as Supabase's `postgres` does.
+2. Role and investor scope leaked. `as_role` sets them with `set local`, which lasts until the end
+   of the *transaction*. On a connection that already had a transaction open, the block was only a
+   savepoint, so `finn_api` and investor A's scope stayed in force after it. Fixed by running
+   connections in autocommit (each `as_role` is a real transaction) and refusing `as_role` inside an
+   open transaction. Both have tests.
+
+**Other decisions.** Constraints refuse bad data at the door: symbol pattern, https-only document
+links, positive prices, percentages in 0-100, and the year-to-date guard on results (a quarter is
+80-95 days). Embeddings are `vector(768)` with an HNSW cosine index; changing the size is a new
+migration, not a setting. NSE's pledge feed names companies but carries no symbol, so pledges are
+keyed by company name and disclosure time, with the symbol resolved at ingest. Prefs defaults match
+`Thresholds` and `Prefs` in code, with a test. Migrations run in name order, one transaction each,
+under an advisory lock, recorded with a checksum: an edited migration, or a database ahead of the
+code, is refused.
+
+Deferred to the task that first needs them, as their own migrations: promise ledger (E5), insider
+trades (D3), network people and edges (G2).
+
+CI now runs the database tests on a real Postgres 16 with pgvector (Ubuntu 24.04 packages, the
+pipeline job pinned to that runner); they fail rather than skip in CI.

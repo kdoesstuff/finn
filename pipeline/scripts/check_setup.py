@@ -13,6 +13,7 @@ import math
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from urllib.parse import quote, unquote, urlsplit
 
 import requests
 
@@ -22,13 +23,26 @@ from finn import config  # noqa: E402
 TIMEOUT = 20
 
 
-def _redact(text: str) -> str:
-    """Error bodies sometimes echo the request; never let a key reach the screen."""
+def _secrets() -> list[str]:
+    """Every secret value, longest first: keys, the database URL and the password inside it."""
+    out = []
     for name in config.SETTINGS:
         v = config.get(name, required=False)
-        if v and len(v) > 8 and "KEY" in name:
-            text = text.replace(v, "***")
-    return text[:120]
+        if v and len(v) > 8 and ("KEY" in name or name == "SUPABASE_DB_URL"):
+            out.append(v)
+    db_url = config.get("SUPABASE_DB_URL", required=False) or ""
+    password = urlsplit(db_url).password if "://" in db_url else None
+    if password:
+        out += [password, quote(password, safe=""), unquote(password)]
+    return sorted(set(out), key=len, reverse=True)
+
+
+def _redact(text: str) -> str:
+    """Error messages sometimes echo the request or the connection string; never let a secret
+    reach the screen."""
+    for secret in _secrets():
+        text = text.replace(secret, "***")
+    return text[:160]
 
 
 GEMINI_ROLES = ("GEMINI_MODEL", "GEMINI_OVERFLOW_MODEL", "GEMINI_QUALITY_MODEL", "GEMINI_QUALITY_FALLBACK_MODEL",
@@ -138,6 +152,21 @@ def supabase(key_name: str) -> tuple[bool, str]:
     return True, f"project reachable with the {'secret' if 'SECRET' in key_name else 'publishable'} key"
 
 
+def database() -> tuple[bool, str]:
+    """Connect through the session pooler and report what the schema looks like."""
+    from finn import db
+
+    with db.connect() as conn:
+        version = conn.execute("show server_version").fetchone()
+        vector = conn.execute("select extversion from pg_extension where extname = 'vector'").fetchone()
+        done = db.applied(conn)
+    if not vector:
+        return False, f"connected (Postgres {version[0] if version else '?'}), but the vector extension is not enabled"
+    pending = [m.name for m in db.migrations() if m.name not in done]
+    state = f"{len(done)} migrations applied" + (f", {len(pending)} pending (run migrate.py apply)" if pending else "")
+    return True, f"Postgres {version[0] if version else '?'}, pgvector {vector[0]}; {state}"
+
+
 def sentry(name: str) -> tuple[bool, str]:
     dsn = config.require(name)
     ok = dsn.startswith("https://") and "@" in dsn and ".sentry.io/" in dsn
@@ -153,6 +182,7 @@ CHECKS: list[tuple[str, list[str], Check]] = [
     ("Supabase publishable", ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
      lambda: supabase("SUPABASE_PUBLISHABLE_KEY")),
     ("Supabase secret", ["SUPABASE_URL", "SUPABASE_SECRET_KEY"], lambda: supabase("SUPABASE_SECRET_KEY")),
+    ("Supabase database", ["SUPABASE_DB_URL"], database),
     ("Sentry (API)", ["SENTRY_DSN_API"], lambda: sentry("SENTRY_DSN_API")),
     ("Sentry (web)", ["SENTRY_DSN_WEB"], lambda: sentry("SENTRY_DSN_WEB")),
 ]

@@ -1,5 +1,6 @@
 requests>=2.32
 defusedxml>=0.7.1
+psycopg[binary]>=3.2
 python-dotenv>=1.0
 yfinance>=0.2.50
 pytest>=8.0

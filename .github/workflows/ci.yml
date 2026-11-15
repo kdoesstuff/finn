@@ -1,7 +1,8 @@
 name: CI
 
-# Every push and pull request: lint, type check, the full test suite against real NSE fixtures,
-# a dependency audit, and a secret scan of the whole history. Nothing is merged or deployed on red.
+# Every push and pull request: lint, type check, the full test suite (real NSE fixtures, and the
+# database schema and access rules on a real Postgres), a dependency audit, and a secret scan of
+# the whole history. Nothing is merged or deployed on red.
 on:
   push:
   pull_request:
@@ -15,13 +16,26 @@ concurrency:
 
 jobs:
   pipeline:
-    runs-on: ubuntu-latest
+    # Pinned: the database tests install Ubuntu 24.04's Postgres 16 and pgvector packages, the
+    # same ones the schema was developed against.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
         working-directory: pipeline
     steps:
       - uses: actions/checkout@v7
+      - name: Postgres 16 with pgvector, for the database tests
+        working-directory: .
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16 postgresql-16-pgvector
+          pg_lsclusters -h | awk '$1 == 16 && $2 == "main"' | grep -q . || sudo pg_createcluster 16 main
+          sudo pg_ctlcluster 16 main start || true  # exits non-zero if already running; pg_isready decides
+          PORT=$(pg_lsclusters -h | awk '$1 == 16 && $2 == "main" {print $3}')
+          pg_isready -h localhost -p "$PORT" -t 30
+          sudo -u postgres psql -p "$PORT" -q -c "alter user postgres password 'postgres'"
+          echo "FINN_TEST_DB_URL=postgresql://postgres:postgres@localhost:${PORT}/postgres" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -41,7 +55,7 @@ jobs:
         run: pip-audit -r requirements.txt
 
   secrets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
