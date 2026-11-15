@@ -9,7 +9,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf
 const vercel = JSON.parse(read('../vercel.json')) as VercelConfig & {
   rewrites: { source: string; destination: string }[]
 }
-const API = 'https://finn-api.onrender.com'
+const API = 'https://finn-api-53vw.onrender.com'
 
 function fails(env: Parameters<typeof checkDeployConfig>[0]): string {
   try {
@@ -39,7 +39,7 @@ describe('build settings', () => {
 
   it('refuses an API the security policy would block, plain http, or a path', () => {
     expect(fails({ VITE_API_URL: 'https://other-api.onrender.com' })).toMatch(/does not list it/)
-    expect(fails({ VITE_API_URL: 'http://finn-api.onrender.com' })).toMatch(/must use https/)
+    expect(fails({ VITE_API_URL: 'http://finn-api-53vw.onrender.com' })).toMatch(/must use https/)
     expect(fails({ VITE_API_URL: `${API}/v1` })).toMatch(/origin only/)
     expect(fails({ VITE_API_URL: 'not a url' })).toMatch(/not a valid URL/)
   })

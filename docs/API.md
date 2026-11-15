@@ -3,7 +3,7 @@
 The only door to FINN's data. The web app never talks to the database. This file is the contract
 between the API (`api/`) and the web app (`web/`); change it first, then both sides.
 
-Base URL: the Render service (e.g. `https://finn-api.onrender.com`). All responses are JSON,
+Base URL: the Render service (e.g. `https://finn-api-53vw.onrender.com`). All responses are JSON,
 UTF-8. Times are ISO 8601 with the Indian offset (`2026-11-06T22:06:58+05:30`).
 
 ## Errors

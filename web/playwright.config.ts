@@ -51,6 +51,6 @@ export default defineConfig({
     url: 'http://localhost:4173',
     reuseExistingServer: !CI,
     timeout: 60_000,
-    env: { VITE_API_URL: 'https://finn-api.onrender.com' },
+    env: { VITE_API_URL: 'https://finn-api-53vw.onrender.com' },
   },
 })

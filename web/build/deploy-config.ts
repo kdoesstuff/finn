@@ -80,7 +80,7 @@ export function checkDeployConfig(env: BuildEnv, vercel: VercelConfig): DeployCo
   const rawApi = env.VITE_API_URL?.trim()
   if (!rawApi) {
     throw new ConfigError(
-      'VITE_API_URL is not set. Set it to the API origin, for example https://finn-api.onrender.com ' +
+      'VITE_API_URL is not set. Set it to the API origin, for example https://finn-api-53vw.onrender.com ' +
         '(on Vercel: Settings > Environment Variables; locally: web/.env.local).',
     )
   }

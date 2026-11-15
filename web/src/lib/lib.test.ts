@@ -88,9 +88,9 @@ describe('plain words', () => {
 describe('build-time settings', () => {
   it('reads the API origin, the Network switch and the DSN', async () => {
     const { readConfig } = await import('../config')
-    const env = { VITE_API_URL: 'https://finn-api.onrender.com/', VITE_NETWORK_ENABLED: 'true', VITE_SENTRY_DSN: ' ' }
+    const env = { VITE_API_URL: 'https://finn-api-53vw.onrender.com/', VITE_NETWORK_ENABLED: 'true', VITE_SENTRY_DSN: ' ' }
     expect(readConfig(env as ImportMetaEnv)).toEqual({
-      apiUrl: 'https://finn-api.onrender.com',
+      apiUrl: 'https://finn-api-53vw.onrender.com',
       networkEnabled: true,
       sentryDsn: null,
     })

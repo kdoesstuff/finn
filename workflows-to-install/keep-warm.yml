@@ -7,7 +7,7 @@ name: Keep the API warm
 # so an external monitor pinging every 5 minutes is the primary (docs/notes/B5-B7.md).
 #
 # Needs the repository variable API_URL (Settings > Secrets and variables > Actions > Variables),
-# the service's address, e.g. https://finn-api.onrender.com. A variable, not a secret: it is public.
+# the service's address, e.g. https://finn-api-53vw.onrender.com. A variable, not a secret: it is public.
 # Minutes 4, 14, ... avoid the top of the hour, when GitHub's scheduler is busiest, and the
 # ingest workflow's minutes.
 on:
@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${API_URL:-}" ]; then
-            echo "::error::Set the repository variable API_URL (e.g. https://finn-api.onrender.com)"
+            echo "::error::Set the repository variable API_URL (e.g. https://finn-api-53vw.onrender.com)"
             exit 1
           fi
           url="${API_URL%/}/health"

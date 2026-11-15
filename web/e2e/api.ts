@@ -4,7 +4,7 @@
 import type { Page, Request } from '@playwright/test'
 import { errorBody, health, liveDigest, NOW, session, snapshot } from '../src/test/fixtures/contract'
 
-export const API = 'https://finn-api.onrender.com'
+export const API = 'https://finn-api-53vw.onrender.com'
 export const APP = 'http://localhost:4173'
 export { NOW }
 
