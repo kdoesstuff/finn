@@ -411,3 +411,103 @@
     margin-top: 0;
   }
 }
+
+/* ---------- The read: the page in one screen ---------- */
+
+.read {
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--paper-raised);
+  border-top: 3px solid var(--ink);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  max-width: var(--measure);
+}
+
+.read__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--step--1);
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.read__lines {
+  margin: 0;
+}
+
+.read__line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+  border-top: var(--hairline) solid var(--rule);
+}
+
+@media (min-width: 30rem) {
+  .read__line {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+.read__line:first-child {
+  border-top: 0;
+}
+
+.read__label {
+  font-size: var(--step--1);
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-top: 0.2em;
+}
+
+.read__text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--step-0);
+  line-height: var(--leading-serif);
+}
+
+.read__line--promises .read__text {
+  font-size: var(--step-1);
+}
+
+.read__line--bull .read__label {
+  color: var(--up);
+}
+
+.read__line--bear .read__label {
+  color: var(--down);
+}
+
+.read__more {
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  white-space: nowrap;
+}
+
+/* ---------- Folded detail: one tap to open ---------- */
+
+.more {
+  margin-top: var(--space-4);
+  max-width: var(--measure);
+}
+
+.more__summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  border-top: var(--hairline) solid var(--rule-strong);
+  border-bottom: var(--hairline) solid var(--rule);
+  color: var(--accent);
+  font-weight: var(--weight-strong);
+  cursor: pointer;
+}
+
+.more[open] > .more__summary {
+  margin-bottom: var(--space-2);
+}

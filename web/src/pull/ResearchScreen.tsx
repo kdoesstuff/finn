@@ -255,13 +255,14 @@ function CompanyView({ api, symbol, navigate, heading, network }: { api: Api; sy
           ))}
         </div>
       )}
+      <TheRead company={c} />
       {c.analyses.ledger && <LedgerSection company={c} />}
       {c.results && <ResultsSection results={c.results} company={c.name} />}
       {c.analyses.snapshot && <CitedSection title="The business" points={c.analyses.snapshot.points} company={c.name} id="snapshot" />}
       {c.analyses.bull_bear && (
         <div className="cases">
-          <CitedSection title="The bull case" points={c.analyses.bull_bear.bull} company={c.name} id="bull" />
-          <CitedSection title="The bear case" points={c.analyses.bull_bear.bear} company={c.name} id="bear" />
+          <CitedSection title="The bull case" points={c.analyses.bull_bear.bull} company={c.name} id="bull" show={3} />
+          <CitedSection title="The bear case" points={c.analyses.bull_bear.bear} company={c.name} id="bear" show={3} />
         </div>
       )}
       <FilingsSection company={c} now={now} />
@@ -335,6 +336,7 @@ function EvidenceLine({ evidence, company }: { evidence: Evidence | null; compan
 }
 
 function PromiseEntry({ promise, company }: { promise: Promise_; company: string }) {
+  const open = promise.status === 'too_early' || promise.status === 'not_measurable'
   return (
     <li className={`promise promise--${promise.status}`}>
       <p className="promise__head">
@@ -347,14 +349,90 @@ function PromiseEntry({ promise, company }: { promise: Promise_; company: string
       </p>
       <blockquote className="quote">{promise.quote}</blockquote>
       <SourceLink url={promise.url} company={company} label={`Call for the quarter to ${promise.said_in}, page ${promise.page}`} />
-      <EvidenceLine evidence={promise.evidence} company={company} />
+      {(!open || promise.evidence) && <EvidenceLine evidence={promise.evidence} company={company} />}
     </li>
+  )
+}
+
+const JUDGED: Status[] = ['missed', 'partly', 'kept']
+
+/** Scroll to a section heading without leaving the page (the app's router owns plain links). */
+function jumpTo(event: MouseEvent<HTMLAnchorElement>, id: string) {
+  event.preventDefault()
+  const target = document.getElementById(id)
+  if (!target) return
+  target.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+}
+
+function promiseRecord(counts: Record<string, number>): string {
+  const kept = counts.kept ?? 0
+  const partly = counts.partly ?? 0
+  const missed = counts.missed ?? 0
+  const open = (counts.too_early ?? 0) + (counts.not_measurable ?? 0)
+  const judged = kept + partly + missed
+  const openText = `${open} still open`
+  if (judged === 0) return open > 0 ? `None can be judged yet; ${openText}.` : 'No promises on record.'
+  const parts = [`${kept} kept`]
+  if (partly > 0) parts.push(`${partly} partly`)
+  parts.push(`${missed} missed`)
+  return `${parts.join(', ')} of ${judged} that can be judged${open > 0 ? `; ${openText}` : ''}.`
+}
+
+function quarterRecord(results: Results): string | null {
+  const top = results.latest.rows[0]
+  if (!top) return null
+  const value = results.unit.includes('crore') ? `₹${crore.format(top.value)} cr` : `${crore.format(top.value)} ${results.unit}`
+  const parts = [`${top.metric} ${value}${top.yoy.pct === null ? '' : `, ${signedPct(top.yoy.pct)} YoY`}`]
+  const pat = results.latest.rows.find((r) => r.metric === 'PAT')
+  if (pat && pat !== top && pat.yoy.pct !== null) parts.push(`PAT ${signedPct(pat.yoy.pct)} YoY`)
+  return `${parts.join('; ')} (quarter to ${results.latest.period_end}).`
+}
+
+/**
+ * The page in one screen, before any detail: the promise record, the latest quarter, and the
+ * strongest point each way. Each line links to the section that proves it.
+ */
+function TheRead({ company }: { company: Company }) {
+  const ledger = company.analyses.ledger
+  const quarter = company.results ? quarterRecord(company.results) : null
+  const bull = company.analyses.bull_bear?.bull[0]
+  const bear = company.analyses.bull_bear?.bear[0]
+  const lines: { key: string; label: string; text: string; target: string }[] = []
+  if (ledger) lines.push({ key: 'promises', label: 'Promises', text: promiseRecord(ledger.counts), target: 'ledger-heading' })
+  if (quarter) lines.push({ key: 'quarter', label: 'Latest quarter', text: quarter, target: 'results-heading' })
+  if (bull) lines.push({ key: 'bull', label: 'For', text: bull.text, target: 'bull-heading' })
+  if (bear) lines.push({ key: 'bear', label: 'Against', text: bear.text, target: 'bear-heading' })
+  if (lines.length < 2) return null
+  return (
+    <section className="read" aria-labelledby="read-heading">
+      <h2 className="read__title" id="read-heading">
+        The read
+      </h2>
+      <dl className="read__lines">
+        {lines.map((l) => (
+          <div key={l.key} className={`read__line read__line--${l.key}`}>
+            <dt className="read__label">{l.label}</dt>
+            <dd className="read__text">
+              {l.text}{' '}
+              <a className="read__more" href={`#${l.target}`} onClick={(event) => jumpTo(event, l.target)}>
+                Why<span className="visually-hidden">: {l.label.toLowerCase()}</span>
+              </a>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   )
 }
 
 function LedgerSection({ company }: { company: Company }) {
   const ledger = company.analyses.ledger
   if (!ledger) return null
+  // Judged promises first, worst first; the open ones fold away behind one tap.
+  const judged = ledger.statements
+    .filter((s) => JUDGED.includes(s.status))
+    .sort((a, b) => JUDGED.indexOf(a.status) - JUDGED.indexOf(b.status))
+  const open = ledger.statements.filter((s) => !JUDGED.includes(s.status))
   return (
     <section className="section section--ledger" aria-labelledby="ledger-heading">
       <h2 className="section__title" id="ledger-heading">
@@ -362,12 +440,25 @@ function LedgerSection({ company }: { company: Company }) {
       </h2>
       <Scorecard counts={ledger.counts} />
       <p className="ledger__summary">{ledger.summary}</p>
-      {ledger.statements.length > 0 && (
+      {judged.length > 0 && (
         <ol className="promises">
-          {ledger.statements.map((s, i) => (
+          {judged.map((s, i) => (
             <PromiseEntry key={`${s.url}-${s.page}-${i}`} promise={s} company={company.name} />
           ))}
         </ol>
+      )}
+      {open.length > 0 && (
+        <details className="more" open={judged.length === 0}>
+          <summary className="more__summary">
+            {open.length} still open: what management promised, and by when
+          </summary>
+          <p className="note">Nothing filed since measures these yet; FINN checks them again with each quarter’s results.</p>
+          <ol className="promises">
+            {open.map((s, i) => (
+              <PromiseEntry key={`${s.url}-${s.page}-open-${i}`} promise={s} company={company.name} />
+            ))}
+          </ol>
+        </details>
       )}
       {ledger.gaps.map((g) => (
         <p key={g} className="note">
@@ -410,22 +501,43 @@ function Provenance({ generatedAt, model }: { generatedAt: string | null; model:
   )
 }
 
-function CitedSection({ title, points, company, id }: { title: string; points: Cited[]; company: string; id: string }) {
+function CitedPoint({ point, company }: { point: Cited; company: string }) {
+  return (
+    <li className="point">
+      <p className="point__text">{point.text}</p>
+      <blockquote className="quote">{point.quote}</blockquote>
+      <SourceLink url={point.url} company={company} label={`Page ${point.page}`} />
+    </li>
+  )
+}
+
+/** Cited points; past `show`, the rest wait behind one tap so the page stays readable. */
+function CitedSection({ title, points, company, id, show }: { title: string; points: Cited[]; company: string; id: string; show?: number }) {
   if (points.length === 0) return null
+  const first = show === undefined ? points : points.slice(0, show)
+  const rest = show === undefined ? [] : points.slice(show)
   return (
     <section className="section" aria-labelledby={`${id}-heading`}>
       <h2 className="section__title" id={`${id}-heading`}>
         {title}
       </h2>
       <ul className="points">
-        {points.map((p, i) => (
-          <li key={`${p.url}-${p.page}-${i}`} className="point">
-            <p className="point__text">{p.text}</p>
-            <blockquote className="quote">{p.quote}</blockquote>
-            <SourceLink url={p.url} company={company} label={`Page ${p.page}`} />
-          </li>
+        {first.map((p, i) => (
+          <CitedPoint key={`${p.url}-${p.page}-${i}`} point={p} company={company} />
         ))}
       </ul>
+      {rest.length > 0 && (
+        <details className="more">
+          <summary className="more__summary">
+            {rest.length} more {rest.length === 1 ? 'point' : 'points'}
+          </summary>
+          <ul className="points">
+            {rest.map((p, i) => (
+              <CitedPoint key={`${p.url}-${p.page}-more-${i}`} point={p} company={company} />
+            ))}
+          </ul>
+        </details>
+      )}
     </section>
   )
 }

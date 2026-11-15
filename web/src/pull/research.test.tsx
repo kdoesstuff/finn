@@ -117,6 +117,50 @@ describe('research', () => {
     expect(screen.getByText(/3 routine filings set aside/)).toBeInTheDocument()
   })
 
+  it('opens with the read, puts judged promises first, and folds what is still open', async () => {
+    const open = (metric: string) => ({
+      said_in: '2026-03-31', quote: `We will deliver ${metric}.`, page: 2, url: CALL,
+      metric, target: 'more', horizon: 'FY27', status: 'too_early' as const, evidence: null,
+    })
+    const point = (text: string) => ({ text, quote: text, page: 3, url: CALL })
+    const ledger = tcs.analyses.ledger!
+    const kept = ledger.statements[0]!
+    const missed = { ...kept, quote: 'We will open two plants.', metric: 'Plants', status: 'missed' as const, evidence: null }
+    const deep = {
+      ...tcs,
+      coverage: { ...tcs.coverage, missing: [] },
+      analyses: {
+        ...tcs.analyses,
+        ledger: { ...ledger, counts: { kept: 1, missed: 1, too_early: 2 }, statements: [open('Margins'), kept, open('Exports'), missed] },
+        bull_bear: { bull: ['B1', 'B2', 'B3', 'B4', 'B5'].map(point), bear: ['R1', 'R2'].map(point), generated_at: null, model: '' },
+      },
+    }
+    renderAt('/research/TCS', { 'GET /v1/company/TCS': json(deep) })
+    const read = await screen.findByRole('region', { name: 'The read' })
+    expect(within(read).getByText(/1 kept, 1 missed of 2 that can be judged; 2 still open\./)).toBeInTheDocument()
+    expect(within(read).getByText(/Revenue ₹73,188 cr, \+11\.2% YoY \(quarter to 2026-09-30\)/)).toBeInTheDocument()
+    expect(within(read).getByText('For')).toBeInTheDocument()
+    expect(within(read).getByText(/^B1/)).toBeInTheDocument()
+    expect(within(read).getByText(/^R1/)).toBeInTheDocument()
+    const sections = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
+    expect(sections.indexOf('The read')).toBeLessThan(sections.indexOf('Promised and delivered'))
+
+    const ledgerRegion = screen.getByRole('region', { name: 'Promised and delivered' })
+    // Judged first, worst first: the missed promise, then the kept one.
+    const judged = ledgerRegion.querySelector('ol.promises')!
+    expect(within(judged as HTMLElement).getAllByRole('listitem').map((li) => li.querySelector('.promise__status')?.textContent)).toEqual(['Missed', 'Kept'])
+    const fold = within(ledgerRegion).getByText('2 still open: what management promised, and by when').closest('details')!
+    expect(fold).not.toHaveAttribute('open')
+    expect(within(fold).getByText('We will deliver Margins.')).toBeInTheDocument()
+    // An open promise does not repeat "nothing measures this" under every quote.
+    expect(within(fold).queryByText('Nothing in the later filings measures this.')).not.toBeInTheDocument()
+
+    const bull = screen.getByRole('region', { name: 'The bull case' })
+    expect(within(bull).getByText('2 more points').closest('details')).not.toHaveAttribute('open')
+    const bear = screen.getByRole('region', { name: 'The bear case' })
+    expect(within(bear).queryByText(/more point/)).not.toBeInTheDocument()
+  })
+
   it('says plainly what a company outside coverage lacks', async () => {
     const basic: Company = {
       ...tcs, symbol: 'DABUR', name: 'Dabur India Limited', results: null, documents: [],
