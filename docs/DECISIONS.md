@@ -221,3 +221,26 @@ with its error and raised; the seed idempotent. 157 tests in all.
 
 Moved to D6: the daily JSON snapshot. It is the app's fallback for what the app shows, which is
 the digest, and the digest does not exist until D6; exporting raw tables now would be thrown away.
+
+Live (15 Nov 2026): migration 0002 applied (run 43699745898), every check passed including the new
+one that Supabase's API roles hold no privilege on any FINN table; demo investor seeded (18
+holdings, 3 research names, 21 covered); smoke run 43699859792: 18 of 18 fetchers OK, the equity
+master list has 2,635 companies with names and ISINs (TCS = Tata Consultancy Services Limited,
+INE467B01029), confirming the constructed sample's layout.
+
+## B4 Backfill (15 Nov 2026)
+
+**Pledge feed went empty.** The same smoke run returned 0 pledge rows (1,558 on 11 Nov). The smoke
+test had counted that as a pass. Now: an empty pledge feed is an error in the daily job (the run
+goes red, stored pledge history is kept, the other parts still run), and the smoke test fails on
+it and reports what NSE returns for other ways of asking (a 90-day date range, a period, the SME
+index, no parameters), so the fix comes from evidence. Until NSE answers again, the pledge cards
+(D3) work from the history captured on 9-11 Nov, labelled with its date.
+
+**Verification report** (`ingest.py verify --live`, also a workflow job): for every covered
+company, the quarters stored, whether the target quarter and the year-ago quarter (for YoY) are
+there, sessions of price history, filings since a date, and whether pledges are matched. A
+missing target quarter gets a reason from NSE itself: "not listed yet" is a reason; "listed but
+not stored" is a failure. TCS, Asian Paints and HDFC Bank's stored figures are compared with the
+values verified by hand. Cards are rebuilt from stored results by the same parser code that reads
+NSE's files (`finn/stored.py`), so the database can never disagree with the parser.

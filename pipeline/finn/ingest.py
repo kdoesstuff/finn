@@ -301,6 +301,10 @@ def ingest_equity_list(conn: psycopg.Connection, source: Source) -> int:
 
 def ingest_pledges(conn: psycopg.Connection, source: Source) -> dict[str, int]:
     pledges = nse.pledges(source)
+    if not pledges:
+        # On 11 Nov 2026 the feed held 1,558 companies; on Sunday 15 Nov it returned none. An empty
+        # feed is a source problem, not "no pledges anywhere": keep the stored history, fail loudly.
+        raise SourceError("NSE's pledge feed returned no rows; stored pledge history kept unchanged")
     with db.as_role(conn, "finn_ingest"):
         by_name: dict[str, str] = {}
         for symbol, name in conn.execute("select symbol, name from finn.companies where name is not null"):

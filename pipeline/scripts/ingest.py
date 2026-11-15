@@ -7,6 +7,8 @@
     python scripts/ingest.py backfill --from 2026-10-01 --to 2026-11-15 [--prices-from 2026-06-25]
     python scripts/ingest.py seed                        create the demo investor, holdings and coverage
     python scripts/ingest.py status                      last run of each job, rows per table, database size
+    python scripts/ingest.py verify [--live] [--quarter 2026-09-30] [--since 2026-10-01]
+                                                         is every covered company's data complete and right?
 
 Exits 1 if the job failed or reported errors, so the workflow goes red.
 """
@@ -25,7 +27,7 @@ from psycopg import sql
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from finn import db, ingest, seed  # noqa: E402
+from finn import db, ingest, seed, verify  # noqa: E402
 from finn.sources.client import NSEClient  # noqa: E402
 
 TABLES = ("filings", "results", "prices_eod", "trading_days", "pledges", "board_meetings", "corporate_actions",
@@ -87,6 +89,10 @@ def main() -> int:
     b.add_argument("--prices-from", dest="prices_start", type=day)
     sub.add_parser("seed")
     sub.add_parser("status")
+    v = sub.add_parser("verify")
+    v.add_argument("--live", action="store_true", help="ask NSE why a missing quarter is missing")
+    v.add_argument("--quarter", type=day, default=date(2026, 9, 30))
+    v.add_argument("--since", type=day, default=date(2026, 10, 1))
     args = p.parse_args()
 
     today = datetime.now(ingest.IST).date()
@@ -95,6 +101,15 @@ def main() -> int:
             return status(conn)
         if args.job == "seed":
             return report("seed", seed.seed_demo(conn))
+        if args.job == "verify":
+            result = verify.check(conn, args.quarter, args.since, NSEClient() if args.live else None)
+            text = verify.render(result)
+            print(text)
+            summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+            if summary_path:
+                with open(summary_path, "a", encoding="utf-8") as fh:
+                    fh.write(f"### verify\n\n```\n{text}\n```\n")
+            return 1 if result.failures else 0
         source = NSEClient()
         if args.job == "filings":
             return report("filings", ingest.ingest_filings(conn, source, today - timedelta(days=args.days - 1), today))

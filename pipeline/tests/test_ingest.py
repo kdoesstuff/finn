@@ -262,3 +262,58 @@ def test_demo_investor_seed_is_idempotent_and_fills_coverage(admin):
         assert admin.execute("select move_rule from finn.prefs").fetchone() == ("either",)
     covered = {r[0] for r in rows(admin, "select symbol from finn.coverage")}
     assert set(data["holdings"]) | set(data["research"]) <= covered
+
+
+# Empty sources, stored cards and the completeness report --------------------------------------------
+
+class NoPledges(Recorded):
+    def api(self, path: str, **params: Any) -> Any:
+        if path == "corporate-pledgedata":
+            return []
+        return super().api(path, **params)
+
+
+def test_an_empty_pledge_feed_fails_loudly_and_keeps_history(admin):
+    ingest.ingest_equity_list(admin, Recorded())
+    ingest.ingest_pledges(admin, Recorded())
+    before = rows(admin, "select count(*) from finn.pledges")[0][0]
+    with pytest.raises(SourceError, match="no rows"):
+        ingest.ingest_pledges(admin, NoPledges())
+    assert rows(admin, "select count(*) from finn.pledges")[0][0] == before > 0
+    counts = ingest.ingest_daily(admin, NoPledges(), date(2026, 11, 9))
+    assert any(e.startswith("pledges:") for e in counts["errors"])
+    (ok,), = rows(admin, "select ok from finn.ingest_runs where job = 'daily' order by id desc limit 1")
+    assert ok is False  # the run goes red, the other parts still ran
+    assert counts["board_meetings"] > 0
+
+
+def test_cards_from_stored_results_match_the_verified_figures(admin):
+    from finn import stored
+
+    for s in ("TCS", "HDFCBANK", "ASIANPAINT"):
+        ingest.ingest_results(admin, Recorded(), s)
+    tcs = stored.card(admin, "TCS")
+    assert tcs and tcs["period_end"] == "2026-09-30" and tcs["basis"] == "consolidated"
+    assert tcs["rows"][0]["metric"] == "Revenue" and tcs["rows"][0]["value"] == pytest.approx(73188, abs=1)
+    bank = stored.card(admin, "HDFCBANK")
+    assert bank and bank["rows"][0]["metric"] == "Net interest income"
+    assert bank["rows"][0]["value"] == pytest.approx(44464, abs=1)
+    assert stored.card(admin, "NOSUCHCO") is None
+
+
+def test_completeness_report_names_a_reason_for_every_gap(admin):
+    from finn import seed, verify
+
+    seed.seed_demo(admin)
+    for s in ("TCS", "HDFCBANK", "ASIANPAINT"):
+        ingest.ingest_results(admin, Recorded(), s)
+    offline = verify.check(admin, date(2026, 9, 30), date(2026, 11, 4))
+    assert offline.failures  # without asking NSE, a gap has no reason yet
+    live = verify.check(admin, date(2026, 9, 30), date(2026, 11, 4), Recorded())
+    by = {c.symbol: c for c in live.companies}
+    assert by["TCS"].has_target and by["TCS"].template == "general"
+    assert by["HDFCBANK"].template == "bank"
+    # The recorded stand-in has no results index for the other names: "not filed yet" is a reason.
+    assert by["MRF"].reason == "NSE lists no results for this quarter yet" and not by["MRF"].failed
+    assert all("OK" in k for k in live.known) and live.failures == []
+    assert "No failures." in verify.render(live)

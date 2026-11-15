@@ -15,7 +15,7 @@ on:
       job:
         description: "Which job"
         type: choice
-        options: [filings, eod, daily, results, backfill, seed, status]
+        options: [filings, eod, daily, results, backfill, seed, status, verify]
         default: status
       args:
         description: "Extra arguments, e.g. --from 2026-10-01 --to 2026-11-15, or symbols for results"
