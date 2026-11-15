@@ -234,8 +234,30 @@ INE467B01029), confirming the constructed sample's layout.
 test had counted that as a pass. Now: an empty pledge feed is an error in the daily job (the run
 goes red, stored pledge history is kept, the other parts still run), and the smoke test fails on
 it and reports what NSE returns for other ways of asking (a 90-day date range, a period, the SME
-index, no parameters), so the fix comes from evidence. Until NSE answers again, the pledge cards
-(D3) work from the history captured on 9-11 Nov, labelled with its date.
+index, no parameters), so the fix comes from evidence.
+
+Evidence (smoke run 43706393122, Sun 15 Nov): the default query, a 90-day date range and a 1-year
+period all returned no rows (the 90-day answer still had both of its keys, `comNameList` and
+`data`); the report of the remaining variants was cut off at 200 characters, which is why the probe
+now prints in full. The recorded response of 9-11 Nov shows what the feed holds: 1,558 companies,
+every row carrying the same publication time (9 Nov 2026, 16:31:32), nearly all for the quarter to
+30 Sep 2026 (1,454 rows). So it looks like a snapshot NSE regenerates, and the current one is empty.
+
+So, three changes:
+1. **The 9 Nov snapshot is loaded** (`ingest.py import-pledges`, the JSON exactly as NSE served it).
+   It is NSE's own published data, and each row keeps NSE's publication time, so the app can say
+   "as published by NSE on 9 Nov". Pledges change when companies file their quarterly
+   shareholding, so for the September quarter it is current.
+2. **An empty feed is a warning while the stored copy is under 14 days old**, and a failure after
+   that. The daily run stays green and says so (a warning annotation on the run) for a known,
+   dated gap, and goes red once the copy is stale enough to matter. Never "no pledges anywhere":
+   stored history is never touched.
+3. **The probe prints the full shape of every answer** (each list's length, the company list
+   included) for eight ways of asking, including by symbol and by company name.
+
+**Verified live** (`verify --live`, run 43706396788): all 21 covered companies have the Sep 2026
+quarter and its year-ago quarter, and 98 sessions of prices; TCS, Asian Paints and HDFC Bank match
+the figures checked by hand. "No failures."
 
 **Verification report** (`ingest.py verify --live`, also a workflow job): for every covered
 company, the quarters stored, whether the target quarter and the year-ago quarter (for YoY) are
@@ -323,3 +345,173 @@ Toubro's 9 Nov order announcement with its link and reason.
 Found and fixed: the summary read "1 routine filings set aside" (`rank.py` now says "filing" for
 one); the contract's example routine counts did not add up to its own total.
 
+## Deploying B5 and B6 (15 Nov 2026)
+
+- **A test that passed everywhere but CI.** The lint-rule test hands ESLint a forbidden line of
+  code as text. With `CI=true`, which GitHub's runners set, typescript-eslint assumes a one-off run
+  and type-checks the file on disk instead of the text, so it linted the real, clean `Summary.tsx`
+  and found nothing. Reproduced on a clean clone of the pushed commit with `CI=true`; the test now
+  turns that inference off for itself; a mutation (the rule removed) still fails it under `CI=true`.
+  Lesson kept: run every suite with `CI=true` before pushing.
+- **The API's address is `https://finn-api-53vw.onrender.com`**: Render added a suffix because
+  `finn-api` was taken. The app's CSP, its build check and its tests name it; the build refuses the
+  old address. `/health` answered `{"ok":true,"db":true,...}` from the deployed commit.
+- **Dependency alerts**: GitHub reported three advisories in the web app's build and lint tools,
+  none in what the browser downloads. `glob` and `minimatch` (moderate) are forced to patched
+  versions with `overrides` scoped to the one tool that pulls each (the tools' own latest releases
+  still ask for the old ones; each call site was read to confirm the API it uses is unchanged).
+  `deepmerge` (low) has no patched release at all; it only merges a plugin's constant defaults at
+  build time and is absent from `dist`, so the alert is to be dismissed on GitHub as "risk is
+  tolerable", with that reason. After: `npm audit` 0 moderate, 0 high; the full web suite passes
+  under `CI=true`; the service worker precaches the same 13 files. Details:
+  `docs/notes/dependency-advisories.md`.
+- **No scheduled ingest run yet.** By 11:30 UTC, about two hours after the schedule was pushed,
+  GitHub had started no scheduled run of `ingest.yml` (four filings slots had passed); the API's
+  `data_as_of` was still the backfill's last filings run (15:35 IST). GitHub warns that scheduled
+  runs can be delayed or dropped under load. B3 is not done until three scheduled runs succeed in a
+  row; if none has fired by the time of the next check, the schedule is re-registered (disable and
+  enable the workflow) and filings are run by hand meanwhile. If GitHub's scheduler stays
+  unreliable, the fix is an external trigger calling `workflow_dispatch` (the same pattern as the
+  keep-warm monitor), decided then.
+
+## Gate G1 security review (15 Nov 2026; live checks pending)
+
+Reviewed at lead commit `aa33523` (GitHub `main` at `dd42347` plus the pledge change awaiting push;
+neither touches the security surface). What is deployed: the API on Render (`finn-api-53vw`,
+Singapore, free), the web app on Vercel (`finn-lac.vercel.app` full edition; `finn-core` pending),
+the database on Supabase (Mumbai), ingest in GitHub Actions. Every test named below was run for
+this review on a local Postgres 16 with pgvector, logged in as a non-superuser admin as on Supabase:
+pipeline 175 passed (`tests/test_db.py` 30 of them), API 121 passed, web unit 79 passed under
+`CI=true`, and the browser tests named below passed in Chrome against the production build.
+
+**Database**
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Row-level security on every table | Yes, all 18 FINN tables | `test_every_table_has_row_level_security` (`db.tables_without_rls` is empty); `migrate.py verify` checks the live database (run 43699745898) |
+| Supabase's API roles locked out | `anon`, `authenticated`, `service_role` hold no privilege on any FINN table and cannot read one; the schema is not served over REST | `test_supabase_api_roles_reach_nothing`, `test_supabase_api_roles_hold_no_privilege_on_any_table`, `test_a_stray_grant_is_reported`; `finn.lockdown()` (`0002_coverage.sql:26`) runs last in every migration; live REST probe with both real keys answered `PGRST106` (B2) |
+| Ingest role | Writes market data, cannot see investor tables | `test_ingest_writes_market_data_and_never_sees_investors` |
+| API role | Reads market data, cannot change it or create investors | `test_api_reads_market_data_but_cannot_change_it` |
+| Investor scope (`finn.investor_id`) | A transaction sees only its investor's rows; unscoped, none; another investor's rows cannot be written | `test_an_investor_sees_only_their_own_rows`, `test_without_a_scope_no_investor_rows_are_visible`, `test_an_investor_cannot_write_or_change_another_investors_rows`; through the API: `test_one_investor_never_sees_another_investors_holdings`, `test_a_token_for_an_unknown_investor_sees_an_empty_portfolio` |
+| Role and scope never outlive a request | Each `as_role` is its own transaction on an autocommit connection; refused inside an open one | `test_role_and_scope_end_with_the_transaction`, `test_switching_role_inside_an_open_transaction_is_refused`, `test_api_connections_are_autocommit_scoped_and_time_limited` (the next request starts as the admin, unscoped) |
+| Every API query runs as `finn_api` | Yes: the session route (`api/app.py:189`), the digest and the health query (`pipeline/finn/digest.py:107, 181`) | Code read; no other SQL in `api/` |
+
+**API** (`api/`, deployed with `render.yaml`)
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Session tokens | HMAC-SHA256 over the claims with a context prefix; one algorithm, no header to downgrade; signature checked in constant time before parsing; exact claim set `v sub ro dep iat exp`, types checked, canonical base64url only, at most 1,024 characters; 12-hour life; refused if issued in the future (60 s skew) or longer-lived than allowed | `api/sessions.py:87-115`; `test_altered_or_foreign_tokens_are_refused`, `test_malformed_authorization_is_refused`, `test_a_session_expires_after_12_hours`, `test_tokens_from_the_future_or_too_long_lived_are_refused`, `test_verify_checks_claims_strictly`, `test_a_token_survives_a_restart_but_not_a_new_secret` |
+| Secret | `SESSION_SECRET` generated by Render (`generateValue`), at least 32 bytes or the service refuses to start, never printed | `test_a_missing_or_short_session_secret_stops_start_up`, `test_the_service_refuses_to_start_on_a_weak_secret_without_printing_secrets`, `test_secrets_never_appear_in_the_settings_repr` |
+| Origin allow-list | Two exact lists (`ALLOWED_ORIGINS_CORE`, `_FULL`): https only (http on localhost), no wildcards, no origin on both | `api/settings.py:31`; `test_origins_must_be_exact_https_origins`, `test_an_origin_cannot_belong_to_both_deployments` |
+| Deployment from the origin | Sessions start only from an allow-listed site; the token records which (`dep`); a token is refused on the other site, so `finn-core` cannot be served Network | `api/app.py:170-171, 185`; `test_sessions_start_only_from_an_allow_listed_site`, `test_core_site_gets_a_read_only_demo_session`, `test_full_site_gets_network_when_the_investor_has_it_on`, `test_a_session_works_only_on_the_site_that_started_it` |
+| CORS | Preflight from an allowed site, for GET/POST/OPTIONS with only `Authorization`/`Content-Type`: 204 with the exact origin echoed, max-age 600. Anything else: 403, no grant. A non-preflight `/v1` request carrying any other Origin is refused (403), which also stops a cross-site "simple" POST | `api/middleware.py:61-123`; `test_preflight_from_an_allowed_site_is_granted_exactly`, `test_preflight_is_refused_for_anything_else`, `test_allowed_sites_can_read_responses_including_refusals`, `test_other_sites_get_no_grant_and_v1_refuses_them`; checked end to end in Chrome with the real build (`DECISIONS.md`, "Integrated end to end") |
+| Rate limits | 60 a minute per client on `/v1`, 10 for sessions, sliding window; preflights not counted. The client is Cloudflare's `True-Client-IP` on Render, never `X-Forwarded-For` (Render's proxy appends to whatever the client sent); a missing or doubled header falls back to the connection; IPv6 counted per /64 | `api/ratelimit.py:27-56`; `test_sessions_are_limited_to_10_a_minute_per_client`, `test_v1_is_limited_to_60_a_minute_per_client_counting_sessions`, `test_on_render_the_client_is_the_true_client_ip_not_x_forwarded_for`, `test_a_missing_or_doubled_client_header_falls_back_to_the_connection`, `test_without_a_trusted_header_forwarding_headers_are_ignored` |
+| Proxy headers | uvicorn runs `--no-proxy-headers --no-server-header`; the start command is tested as written in the Blueprint | `render.yaml:26`; `test_the_blueprint_is_what_this_test_runs`, `test_the_service_answers_over_real_http` |
+| Body limit | 16 KB, by Content-Length or while reading a chunked body; a non-numeric length is refused | `test_bodies_over_16_kb_are_refused`, `test_chunked_bodies_over_16_kb_are_refused_while_reading`, `test_a_non_numeric_content_length_is_refused` |
+| Statement timeout | 5 s on every pooled connection; a slow statement is cancelled and answered 503 | `test_api_connections_are_autocommit_scoped_and_time_limited`, `test_a_slow_statement_is_cancelled_and_reported_unavailable` |
+| Errors | One shape, `{"error":{"code","message"}}`, from routes and middlewares alike; no stack trace or exception text reaches a client; database errors carry only their class name | `api/errors.py`, `api/database.py:66-68`; `test_an_unexpected_error_is_a_500_in_the_contract_shape`, `test_unknown_routes_are_404_in_the_contract_shape`, `test_wrong_methods_are_405_in_the_contract_shape`, `test_errors_have_the_contract_shape` |
+| Surface | Three routes; no docs pages; the schema only behind `API_DOCS=1` | `test_the_schema_only_behind_the_flag_and_never_a_docs_page` |
+| Security headers | On every response, refusals included: HSTS 2 years, `nosniff`, `Referrer-Policy: no-referrer`, `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, `X-Frame-Options: DENY`, `Cache-Control: no-store` | `api/middleware.py:28`; `test_security_headers_on_every_kind_of_response` |
+| Sentry and logs | `data_collection` off for user, cookies, bodies, frame variables; Authorization, cookie and client-address headers dropped; bearer tokens, FINN tokens and database URLs redacted from events, breadcrumbs and log lines, tracebacks included | `api/observability.py`; `test_sentry_options_collect_nothing_personal`, `test_scrub_removes_credentials_wherever_they_appear`, `test_a_real_error_report_carries_no_token_cookie_ip_or_database_url`, `test_log_lines_are_redacted_tracebacks_included` |
+| Dependencies | Exact pins in `api/requirements.txt`; `pip-audit`: no known vulnerabilities (API and pipeline, 15 Nov) | Command output; CI runs it on every push |
+
+**Web** (`web/`, served by Vercel)
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Content-Security-Policy | `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://finn-api-53vw.onrender.com https://*.ingest.de.sentry.io; manifest-src 'self'; worker-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`. No inline script or style anywhere | `web/vercel.json:15`; `sends a strict Content-Security-Policy on every path`, `index.html has no inline script or style`; `the security policy is enforced: an injected inline script does not run` (passed in Chrome against the production build) |
+| Other headers | HSTS 2 years, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `Cross-Origin-Opener-Policy: same-origin`, a `Permissions-Policy` denying camera, microphone, location, payment and the rest | `web/vercel.json:17-25`; `sends the other security headers on every path` |
+| API address and policy cannot drift | The build refuses a `VITE_API_URL` that `connect-src` does not list, plain http, a path, or a Sentry DSN on a host the policy does not allow; the API origin appears exactly once | `web/build/deploy-config.ts:78-137`; `refuses an API the security policy would block, plain http, or a path`, `accepts a Sentry DSN only on a host the policy allows`, `names the API origin exactly once` |
+| No HTML injection | ESLint fails the build on `dangerouslySetInnerHTML`, `innerHTML`/`outerHTML` assignment, `insertAdjacentHTML`, `document.write`, `DOMParser`, `createContextualFragment`, inline styles, `eval`/`new Function` | `web/eslint.config.js`; `refuses HTML injection and inline styles` (now also under `CI=true`; see "Deploying B5 and B6") |
+| Token in memory only | Never in localStorage, sessionStorage or a cookie; storage APIs are lint errors | `web/src/api/client.ts:109`; `keeps the token in memory only`; `web/eslint.config.js:63-68` |
+| Service worker | Precaches the app shell; one runtime route, `/snapshot.json`; never the API (no API host or `/v1/` in `sw.js`) | `web/vite.config.ts:69-92`; `the service worker caches the app shell and the saved copy, never the API` |
+| Error reporting | Loaded only when a DSN is set; collects no user details, cookies, headers, bodies or query strings; no trace headers on API calls | `web/src/sentry.ts` |
+| Dependencies | `npm audit --omit=dev`: 0 vulnerabilities in what ships. `npm audit --audit-level=high` (CI's gate) passes. Of the three advisories in build and lint tooling, `glob` and `minimatch` are fixed by scoped overrides; `deepmerge` has no patched release and is accepted (see "Deploying B5 and B6") | Command output; `docs/notes/dependency-advisories.md` |
+
+**Secrets**
+
+| Where | What | Evidence |
+| --- | --- | --- |
+| GitHub Actions secrets | The settings from `.env` (`gh secret set -f .env`). Only `ingest` (`SUPABASE_DB_URL`) and `migrate` (database URL and Supabase keys) read any; both run only on schedule or by hand, never on `pull_request`, so a fork's pull request cannot reach them | `.github/workflows/ingest.yml:51`, `migrate.yml:42-45`; triggers read from every workflow |
+| Render | `SUPABASE_DB_URL` and `SENTRY_DSN_API` entered by hand (`sync: false`), `SESSION_SECRET` generated; origins are public | `render.yaml` |
+| Vercel | Public build values only (`VITE_API_URL`, `VITE_NETWORK_ENABLED`, optional `VITE_SENTRY_DSN`, which is public by design). Nothing secret reaches the browser | `web/.env.example` |
+| Repository | `.env` and `.env.*` ignored at every level (`.env.example` kept); only the two examples are tracked | `.gitignore:17-20`; `git check-ignore` on `.env`, `pipeline/.env`, `web/.env.local`; `git ls-files` |
+| Secret scan | gitleaks 8.30.0: lead clone history (35 commits) and working tree (28.7 MB), no leaks. GitHub's own history is scanned by CI on every push (last confirmed green: run 43706005413, `1ee59da`) | Command output |
+
+**CI and supply chain**
+
+| Check | Result |
+| --- | --- |
+| Token scope | Every workflow `permissions: contents: read` |
+| Script injection | Every workflow input reaches the shell through an environment variable, never `${{ }}` inside `run:`; the ingest script validates each argument (`set -f`, argparse) |
+| Pinning | Actions pinned to major tags (`actions/*@v7`), gitleaks by image tag `v8.30.0`; Python tools pinned exactly in `requirements-dev.txt`; npm lockfile with exact versions |
+| Gates | `pip-audit`, `npm audit --audit-level=high`, gitleaks over full history, lint, types and tests on every push; Render deploys a commit only after every check on it passes (`autoDeployTrigger: checksPass`) and only when API or pipeline code changed (`buildFilter`) |
+
+**Residual risks, accepted for now**
+
+1. **The database login is the admin.** The API and ingest connect with Supabase's `postgres` login
+   and narrow to `finn_api`/`finn_ingest` per transaction (B2's honest limit). Least privilege holds
+   along every code path above, by test, but not against code that is already compromised. Before
+   phase G stores network data: create login roles for `finn_api` and `finn_ingest` with their own
+   passwords, and give Render and Actions those instead.
+2. **The demo session is public by design.** `Origin` is a browser rule, not a secret: any client
+   that sends `Origin: https://finn-lac.vercel.app` gets a read-only demo token. What it reads is
+   what the site shows anyone (public filings, fictional holdings), bounded by the rate limits. Real
+   investors would need real authentication.
+3. **Rate limits are in memory.** One instance, one worker: exact while that holds; they reset when
+   the free service sleeps or restarts.
+4. **Availability.** Render's free service sleeps after 15 idle minutes and takes about a minute to
+   wake. Mitigated by keep-warm and the external monitor (steps E, F, pending) and by the saved copy
+   (step G, pending); until G, a cold API shows a "waking up" state, then an honest error.
+5. **Actions pinned by tag, not commit SHA.** All are GitHub's own actions running with a read-only
+   token; pinning by SHA is the next hardening step.
+6. **`connect-src https://*.ingest.de.sentry.io`** allows any Sentry EU ingest host. It matters only
+   if script injection succeeded, which `script-src 'self'` and the lint rules prevent.
+7. **No HSTS preload.** `onrender.com` and `vercel.app` are not FINN's domains to list.
+
+**Not verified yet, and how to verify** (after step C, Render's origins, and step G for the saved
+copy). In PowerShell; replace `<core>` with the finn-core address. A sleeping API can take a minute
+to answer the first call.
+
+```powershell
+$api  = "https://finn-api-53vw.onrender.com"
+$full = "https://finn-lac.vercel.app"
+$core = "https://<core>"
+
+# 1. Web headers: expect each of the seven, the CSP exactly as in web/vercel.json
+curl.exe -sI "$full/" | Select-String "content-security-policy|strict-transport-security|x-frame-options|x-content-type-options|referrer-policy|cross-origin-opener-policy|permissions-policy"
+curl.exe -sI "$core/" | Select-String "content-security-policy|strict-transport-security|x-frame-options|x-content-type-options|referrer-policy|cross-origin-opener-policy|permissions-policy"
+
+# 2. API headers: expect 200, strict-transport-security, x-content-type-options: nosniff,
+#    referrer-policy: no-referrer, content-security-policy: default-src 'none'; frame-ancestors 'none',
+#    x-frame-options: DENY, cache-control: no-store
+curl.exe -sI --max-time 120 "$api/health"
+
+# 3. Preflight from each site: expect 204, access-control-allow-origin = that site,
+#    access-control-allow-methods: GET, POST, OPTIONS, access-control-allow-headers: Authorization, Content-Type
+curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: $full" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization"
+curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: $core" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization"
+
+# 4. Preflight from any other site: expect 403, no access-control-allow-origin, and
+#    {"error":{"code":"forbidden","message":"This website may not use FINN's API."}}
+curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: https://example.com" -H "Access-Control-Request-Method: GET"
+
+# 5. Sessions: full site -> "network": true; core site -> "network": false; no Origin -> 403
+#    "Sessions are started only from FINN's own web app."
+curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $full"
+curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $core"
+curl.exe -s -X POST "$api/v1/session/demo"
+
+# 6. A token works only on the site that started it: expect the summary, then 401, then 401
+$t = (curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $full" | ConvertFrom-Json).token
+(curl.exe -s "$api/v1/digest?hours=168" -H "Origin: $full" -H "Authorization: Bearer $t" | ConvertFrom-Json).summary
+curl.exe -s -o NUL -w '%{http_code}\n' "$api/v1/digest" -H "Origin: $core" -H "Authorization: Bearer $t"
+curl.exe -s -o NUL -w '%{http_code}\n' "$api/v1/digest" -H "Origin: $full"
+
+# 7. Saved copy (after step G): expect 200 (404 before it)
+curl.exe -s -o NUL -w '%{http_code}\n' "$full/snapshot.json"
+```
+
+Do not test the rate limits live: 61 requests lock the address out of `/v1` for a minute; the
+tests above cover them. Also still to see once: a deliberate test error reaching each Sentry
+project with nothing personal in it.
