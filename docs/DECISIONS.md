@@ -614,3 +614,19 @@ the lead:
 Merge fixes: both the design and controls streams gave each item an `id`, which made two elements
 share one; one anchor per item now. The controls' wrapper reused the class `.entry`, which already
 styled the landing page and put a screen of padding above every item; renamed.
+
+**Research, filtered the same way.** The first live pages showed every promise as a full card in the
+order the calls were read, so for Triveni Turbine the two promises that mattered (both missed) sat
+under fifteen "too early to tell". The company page now opens with *the read*: the promise record,
+the latest quarter's top line and PAT against a year earlier, and the strongest point for and
+against, each linking to its proof. Judged promises come first, worst first; open ones and bull and
+bear points beyond three fold behind one tap.
+
+**The analysis rerun after the judge fix** (judging in batches of six, 120-word guard windows):
+verdicts came back instead of truncated replies. Batch three: Triveni Turbine 2 missed and 15 too
+early; Elgi Equipments 1 kept and 12 too early; Manappuram 9 too early; NMDC 17 too early from the
+one transcript on NSE; Page Industries 14 not measurable, because the injection screen timed out on
+the later-results check and so the document was not sent (fail-closed, as designed). Two batches
+ran into the 60-minute job limit while sharing Groq's per-minute budget with the filing reader;
+companies finished before the limit are stored, and the rest are rerun with the same command. The
+filing reader ran over 30 days of filings in 19 minutes.
