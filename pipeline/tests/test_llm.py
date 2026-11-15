@@ -85,6 +85,8 @@ def clean_env(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
                  "GUARD_MODEL"):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(llm, "RETRY_BACKOFF_S", 0)
+    monkeypatch.setattr(guard, "GUARD_PER_MINUTE", 10**9)
+    monkeypatch.setattr(guard, "LIMIT_WAITS_S", (0.0, 0.0, 0.0))
     yield
 
 
@@ -321,6 +323,38 @@ def test_a_guard_that_cannot_answer_fails_closed(monkeypatch):
     with pytest.raises(llm.ModelError, match="injection screen could not run"):
         llm.complete_json(None, "reader", "t", "i", DOC, SCHEMA)
     assert not any("generativelanguage" in u for u in s.urls())
+
+
+def test_a_rate_limited_guard_waits_and_tries_the_same_window_again(monkeypatch):
+    refusals = iter([FakeResponse(429, {}), FakeResponse(429, {})])
+
+    def answer(url: str, body: dict[str, Any]) -> Any:
+        if is_guard(body):
+            return next(refusals, guard_says("0.01"))
+        return gemini_ok(GOOD)
+
+    s = use(monkeypatch, answer, "GEMINI_API_KEY", "GROQ_API_KEY")
+    assert llm.complete_json(None, "reader", "t-429", "i", DOC, SCHEMA) == GOOD
+    assert sum(is_guard(b) for _, _, b in s.sent) == 3 and "generativelanguage" in s.urls()[-1]
+
+
+def test_guard_calls_are_spaced_to_stay_under_the_per_minute_limit(monkeypatch):
+    clock = {"t": 1000.0}
+    slept: list[float] = []
+    monkeypatch.setattr(guard, "GUARD_PER_MINUTE", 30)
+    monkeypatch.setattr(guard, "_last_call", 0.0)
+    monkeypatch.setattr(guard.time, "monotonic", lambda: clock["t"])
+
+    def sleep(seconds: float) -> None:
+        slept.append(seconds)
+        clock["t"] += seconds
+
+    monkeypatch.setattr(guard.time, "sleep", sleep)
+    use(monkeypatch, lambda url, body: guard_says("0.01") if is_guard(body) else gemini_ok(GOOD),
+        "GEMINI_API_KEY", "GROQ_API_KEY")
+    long_doc = " ".join(f"w{i}" for i in range(guard.WINDOW_WORDS * 3))
+    llm.complete_json(None, "reader", "t-pace", "i", long_doc, SCHEMA)
+    assert len(slept) >= 2 and all(abs(x - 2.0) < 1e-6 for x in slept)
 
 
 def test_a_model_reporting_instructions_in_the_document_is_logged(monkeypatch, caplog):

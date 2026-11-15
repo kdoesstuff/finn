@@ -31,6 +31,9 @@ from .sources import nse
 from .sources.client import Source, SourceError
 
 log = logging.getLogger(__name__)
+# pypdf warns about every embedded font it cannot fully decode (fontTools is not installed); the
+# text still comes out, and the warnings buried the job's own report in the first live run.
+logging.getLogger("pypdf").setLevel(logging.ERROR)
 
 CALL_LABEL = "Analysts/Institutional Investor Meet/Con. Call Updates"
 TRANSCRIPTS = 4
