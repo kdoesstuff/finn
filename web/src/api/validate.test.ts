@@ -45,7 +45,7 @@ describe('contract checks', () => {
   it('checks results, moves and pledges, and allows null only where the contract does', () => {
     const elgi = liveDigest.attention[0]!
     expect(parseDigest(liveDigest).attention[0]!.results).toEqual(elgi.results)
-    expect(failsAt(() => parseDigest({ ...liveDigest, attention: [{ ...elgi, moves: undefined }] }))).toBe(
+    expect(failsAt(() => parseDigest({ ...liveDigest, attention: [{ ...elgi, moves: null }] }))).toBe(
       'digest.attention[0].moves',
     )
     const row = elgi.results!.rows[0]!
@@ -66,6 +66,20 @@ describe('contract checks', () => {
     expect(
       failsAt(() => parseDigest({ ...liveDigest, portfolio: { holdings: 18, pledges: [{ ...pledge, published: '9 Nov' }] } })),
     ).toBe('digest.portfolio.pledges[0].published')
+  })
+
+  it("reads a brief from before results, moves and pledges were added (an older API or saved copy)", () => {
+    const elgi = liveDigest.attention[0]!
+    const older: Record<string, unknown> = { ...elgi }
+    delete older.results
+    delete older.moves
+    const olderDigest: Record<string, unknown> = { ...liveDigest }
+    delete olderDigest.unexplained_moves
+    const parsed = parseDigest({ ...olderDigest, portfolio: { holdings: 18 }, attention: [older] })
+    expect(parsed.attention[0]!.results).toBeNull()
+    expect(parsed.attention[0]!.moves).toEqual([])
+    expect(parsed.portfolio.pledges).toEqual([])
+    expect(parsed.unexplained_moves).toEqual([])
   })
 
   it('accepts a time only with an offset', () => {

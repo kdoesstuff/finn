@@ -9,6 +9,7 @@ import { routineKinds } from '../lib/labels'
 import { formatStamp } from '../lib/time'
 import { useNow } from '../lib/useNow'
 import { Colophon, SectionNav, Wordmark } from '../screens/Chrome'
+import { NETWORK_BUILD } from '../network/flag'
 
 interface Props {
   api: Api
@@ -69,7 +70,9 @@ export function ResearchScreen({ api, config, navigate, path, focusHeading }: Pr
       </header>
       <main id="research" className="research">
         <Search api={api} navigate={navigate} heading={symbol ? null : heading} />
-        {symbol && <CompanyView key={symbol} api={api} symbol={symbol} navigate={navigate} heading={heading} />}
+        {symbol && (
+          <CompanyView key={symbol} api={api} symbol={symbol} navigate={navigate} heading={heading} network={NETWORK_BUILD && config.networkEnabled} />
+        )}
       </main>
       <Colophon networkEnabled={config.networkEnabled} onHome={() => navigate('/')} />
     </div>
@@ -168,7 +171,7 @@ function Search({ api, navigate, heading }: { api: Api; navigate: (to: string) =
 
 type Load = { kind: 'loading'; progress: Progress | null; startedAt: number } | { kind: 'ready'; company: Company } | { kind: 'failed'; message: string }
 
-function CompanyView({ api, symbol, navigate, heading }: { api: Api; symbol: string; navigate: (to: string) => void; heading: RefObject<HTMLHeadingElement | null> }) {
+function CompanyView({ api, symbol, navigate, heading, network }: { api: Api; symbol: string; navigate: (to: string) => void; heading: RefObject<HTMLHeadingElement | null>; network: boolean }) {
   const [load, setLoad] = useState<Load>(() => ({ kind: 'loading', progress: null, startedAt: Date.now() }))
   const [attempt, setAttempt] = useState(0)
   const now = useNow(60_000)
@@ -233,6 +236,14 @@ function CompanyView({ api, symbol, navigate, heading }: { api: Api; symbol: str
         {c.data_as_of && (
           <p className="masthead__asof">
             Filings as of <time dateTime={c.data_as_of}>{formatStamp(c.data_as_of)}</time> IST
+          </p>
+        )}
+        {/* --- Network: full edition only (the core build drops this branch) --- */}
+        {NETWORK_BUILD && network && (
+          <p className="company__network">
+            <InPlace to={`/network?q=${encodeURIComponent(`Who can explain ${c.name}?`)}`} navigate={navigate}>
+              Who in your network knows {c.name}?
+            </InPlace>
           </p>
         )}
       </header>

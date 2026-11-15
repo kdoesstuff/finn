@@ -54,3 +54,12 @@ jobs:
         run: python -m pytest api -q
       - name: Dependency audit
         run: pip-audit -r api/requirements.txt
+      - name: The API starts with only its own requirements, as on Render
+        # The tests run with every dev and pipeline tool installed, which can hide a missing runtime
+        # dependency: build Render's environment from api/requirements.txt alone and import the app.
+        run: |
+          python -m venv /tmp/render-env
+          /tmp/render-env/bin/pip install -q -r api/requirements.txt
+          PYTHONPATH=pipeline SESSION_SECRET=ci-only-secret-0123456789abcdef0123456789 \
+          SUPABASE_DB_URL=postgresql://ci:ci@localhost:1/ci ALLOWED_ORIGINS_CORE=https://core.example \
+          ALLOWED_ORIGINS_FULL=https://full.example /tmp/render-env/bin/python -c "import api.main"

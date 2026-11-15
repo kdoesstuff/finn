@@ -9,9 +9,10 @@ document (InjectionDetected).
 
 Pacing: Groq's free tier allows the guard about 30 requests a minute. The first live run (15 Nov,
 TCS) screened up to 48 windows per document back to back and was refused with HTTP 429 on every
-document, so nothing was read. Now: at most 12 windows per document, calls spaced to stay under
+document, so nothing was read. Now: at most 8 windows per document, calls spaced to stay under
 GUARD_PER_MINUTE, and a refused call waits and tries again (three times) before the screen fails
-closed. The sampling is a real limit on a long document; what makes an injected instruction
+closed (parallel runs split the minute: `ingest.py analyse --guard-per-minute`). The sampling is a
+real limit on a long document; what makes an injected instruction
 harmless anyway is downstream: no tools, a schema-checked answer, and every quote checked against
 the source text.
 
@@ -36,7 +37,7 @@ log = logging.getLogger("finn.guard")
 
 WINDOW_WORDS = 300   # Prompt Guard 2 reads 512 tokens; ~300 English words stays inside that
 OVERLAP_WORDS = 50   # an instruction split across two windows still lands whole in one of them
-MAX_WINDOWS = 12     # per call: about 3,000 words screened in full, longer documents sampled
+MAX_WINDOWS = 8      # per call: about 2,000 words screened in full, longer documents sampled
 GUARD_PER_MINUTE = 25  # under Groq's ~30 a minute for the guard model
 LIMIT_WAITS_S = (5.0, 15.0, 30.0)  # after a 429: wait, try the same window again, then fail closed
 THRESHOLD = 0.8      # a score at or above this is an injection

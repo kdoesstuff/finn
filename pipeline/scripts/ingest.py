@@ -33,7 +33,7 @@ from psycopg import sql
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from finn import db, ingest, ledger, network, seed, verify  # noqa: E402
+from finn import db, guard, ingest, ledger, network, seed, verify  # noqa: E402
 from finn.sources.client import NSEClient  # noqa: E402
 
 TABLES = ("filings", "results", "prices_eod", "trading_days", "pledges", "board_meetings", "corporate_actions",
@@ -110,6 +110,8 @@ def main() -> int:
     sub.add_parser("seed-network")  # --- Network stream ---
     sub.add_parser("status")
     an = sub.add_parser("analyse")
+    an.add_argument("--guard-per-minute", type=int, choices=range(1, 31), default=None, metavar="1-30",
+                    help="injection-screen calls a minute for this run; parallel runs share Groq's ~30")
     an.add_argument("symbols", nargs="*", type=symbol, help="default: every covered company")
     ip = sub.add_parser("import-pledges")
     ip.add_argument("file", type=Path)
@@ -147,6 +149,8 @@ def main() -> int:
         if args.job == "daily":
             return report("daily", ingest.ingest_daily(conn, source, today))
         if args.job == "analyse":
+            if args.guard_per_minute:
+                guard.GUARD_PER_MINUTE = args.guard_per_minute
             return report("analyse", ledger.analyse_all(conn, source, args.symbols or ingest.covered(conn), today))
         if args.job == "results":
             out = {s: ingest.ingest_results(conn, source, s) for s in args.symbols}

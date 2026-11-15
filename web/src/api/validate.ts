@@ -93,6 +93,13 @@ function related(value: Json, path: string): RelatedFiling {
   }
 }
 
+/** A field added to the contract after the first deploy: absent (an older API or saved copy) reads as
+ *  `fallback`; present, it is checked in full. Vercel publishes a new app within seconds and Render a
+ *  new API in minutes, so for a while each side meets the other's previous version. */
+function added<T>(value: Json, fallback: T, parse: () => T): T {
+  return value === undefined ? fallback : parse()
+}
+
 function change(value: Json, path: string): Change {
   const o = obj(value, path)
   return {
@@ -175,8 +182,8 @@ function item(value: Json, path: string): Item {
     alert: bool(o.alert, `${path}.alert`),
     reasons: arr(o.reasons, `${path}.reasons`, str),
     related: arr(o.related, `${path}.related`, related),
-    results: nullable(o.results, `${path}.results`, results),
-    moves: arr(o.moves, `${path}.moves`, move),
+    results: added(o.results, null, () => nullable(o.results, `${path}.results`, results)),
+    moves: added(o.moves, [], () => arr(o.moves, `${path}.moves`, move)),
     // --- Network stream: present only on the full edition ---
     // (only the full build reads it: in the core build this branch, and the parser, are dropped)
     ...(NETWORK_BUILD && o.who_to_call !== undefined
@@ -207,7 +214,7 @@ export function parseDigest(value: Json, path = 'digest'): Digest {
     summary: str(o.summary, `${path}.summary`),
     portfolio: {
       holdings: int(portfolio.holdings, `${path}.portfolio.holdings`, 0, 10_000),
-      pledges: arr(portfolio.pledges, `${path}.portfolio.pledges`, pledge),
+      pledges: added(portfolio.pledges, [], () => arr(portfolio.pledges, `${path}.portfolio.pledges`, pledge)),
     },
     attention: arr(o.attention, `${path}.attention`, item),
     worth: arr(o.worth, `${path}.worth`, item),
@@ -215,7 +222,7 @@ export function parseDigest(value: Json, path = 'digest'): Digest {
       count: int(routine.count, `${path}.routine.count`, 0, 1_000_000),
       by_kind: counts(routine.by_kind, `${path}.routine.by_kind`),
     },
-    unexplained_moves: arr(o.unexplained_moves, `${path}.unexplained_moves`, move),
+    unexplained_moves: added(o.unexplained_moves, [], () => arr(o.unexplained_moves, `${path}.unexplained_moves`, move)),
   }
 }
 

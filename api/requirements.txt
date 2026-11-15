@@ -10,6 +10,11 @@ psycopg-pool==3.3.3
 sentry-sdk==2.75.0
 pydantic==2.14.3
 starlette==1.10.0
+# The digest reads stored XBRL through the pipeline's finn.xbrl, which parses XML with defusedxml.
+# Missing from this list, the service could not start on Render and every deploy after the first
+# results change failed silently while the old version kept serving (15 Nov); CI now starts the API
+# from this file alone.
+defusedxml==0.7.1
 #
 # Transitive (fastapi, uvicorn, psycopg, sentry-sdk)
 annotated-doc==0.0.6
