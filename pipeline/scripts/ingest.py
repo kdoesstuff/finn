@@ -45,20 +45,28 @@ def symbol(text: str) -> str:
 
 
 def report(name: str, counts: Any) -> int:
+    """Errors first, up to 40 of them, so a long run's cut-off counts can never hide why it failed;
+    then the counts. Exit status 1 if there were any errors."""
+    errors = (counts.get("errors") or []) if isinstance(counts, dict) else []
+    head = f"{name}: {'FAILED, ' + str(len(errors)) + ' error(s)' if errors else 'OK'}"
+    shown = errors[:40] + ([f"... and {len(errors) - 40} more (all of them are in finn.ingest_runs)"]
+                           if len(errors) > 40 else [])
+    lines = [head] + [f"  error: {e}" for e in shown]
     text = ingest.summary(counts)
-    print(f"{name}:\n{text}")
+    print("\n".join(lines) + f"\n{text}")
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if path:
         with open(path, "a", encoding="utf-8") as fh:
-            fh.write(f"### {name}\n\n```json\n{text}\n```\n")
-    errors = counts.get("errors") if isinstance(counts, dict) else None
+            fh.write(f"### {head}\n\n" + "".join(f"- {e}\n" for e in shown) + f"\n```json\n{text}\n```\n")
     return 1 if errors else 0
 
 
 def status(conn: Any) -> int:
     with db.as_role(conn, "finn_ingest"):
         runs = conn.execute("""select distinct on (split_part(job, ' ', 1)) split_part(job, ' ', 1), started_at,
-                                      finished_at, ok, left(coalesce(error, ''), 120)
+                                      finished_at, ok,
+                                      left(coalesce(error, array_to_string(array(
+                                        select jsonb_array_elements_text(counts -> 'errors')), ' | '), ''), 400)
                                from finn.ingest_runs order by split_part(job, ' ', 1), started_at desc""").fetchall()
         counts = {t: conn.execute(sql.SQL("select count(*) from finn.{}").format(sql.Identifier(t))).fetchone()[0]
                   for t in TABLES}
@@ -123,9 +131,7 @@ def main() -> int:
             return report("results", {"results": out, "errors": [s for s, v in out.items() if v.get("error")]})
         if args.start > args.end or (args.end - args.start).days > 400:
             p.error("--from must be before --to, and the range at most 400 days")
-        out = ingest.backfill(conn, source, args.start, args.end, args.prices_start)
-        errors = [e for part in ("eod", "daily") for e in (out.get(part) or {}).get("errors", [])]
-        return report("backfill", {**out, "errors": errors})
+        return report("backfill", ingest.backfill(conn, source, args.start, args.end, args.prices_start))
 
 
 if __name__ == "__main__":

@@ -21,3 +21,16 @@ ruff check . ; mypy                        # lint and type check, as CI runs the
 python scripts/measure_classifier.py       # classifier coverage on a real week of filings
 ```
 Copy the keys to GitHub Actions secrets in one step: `gh secret set -f .env`.
+
+The API and the web app:
+```
+python -m pytest api -q                    # from the repository root; FINN_TEST_DB_URL as above
+cd web; npm ci; npm run typecheck; npm run lint; npm test; npm run e2e
+```
+
+| Part | Where it runs | Code |
+| --- | --- | --- |
+| Ingest (NSE to the database) | GitHub Actions, on a schedule | `pipeline/`, `.github/workflows/ingest.yml` |
+| Database | Supabase (Postgres, Mumbai), reachable only by the two roles | `db/migrations/` |
+| API | Render, free tier, Singapore | `api/`, `render.yaml` |
+| Web app, two editions | Vercel: `finn-core` (Push and Pull), `finn` (with Network) | `web/` |

@@ -37,6 +37,7 @@ from .xbrl import parse as parse_xbrl
 
 IST = timezone(timedelta(hours=5, minutes=30))  # India keeps no daylight saving: a fixed offset is exact
 RESULT_QUARTERS = 9  # eight quarters of trajectory, plus the year-ago quarter for the oldest YoY
+GIVE_UP_AFTER = 5    # consecutive failed days before a long job stops asking NSE (it is down, or refusing us)
 RECLASSIFY_BATCH = 5000
 
 _RULE_FILES = ("classify.py", "taxonomy.py", "text.py")
@@ -234,9 +235,20 @@ def ingest_eod(conn: psycopg.Connection, source: Source, days: Iterable[date], r
                 "select day from finn.trading_days where day = any(%s) and (is_session or day < current_date - 3)",
                 [days]).fetchall()}
         todo = [d for d in days if refetch or d not in known]
-        counts["sessions"], counts["not_sessions"], counts["rows"] = [], [], 0
+        counts["sessions"], counts["not_sessions"], counts["rows"], counts["errors"] = [], [], 0, []
+        failed_in_a_row = 0
         for d in todo:
-            rows = nse.bhavcopy(source, d)
+            try:
+                rows = nse.bhavcopy(source, d)
+            except SourceError as exc:
+                # The day stays unrecorded in trading_days, so the next run asks for it again.
+                counts["errors"].append(f"eod {d}: {exc}"[:300])
+                failed_in_a_row += 1
+                if failed_in_a_row >= GIVE_UP_AFTER:
+                    counts["errors"].append(f"eod: stopped after {GIVE_UP_AFTER} failed days in a row")
+                    break
+                continue
+            failed_in_a_row = 0
             counts["rows"] += store_eod(conn, d, rows)
             counts["sessions" if rows is not None else "not_sessions"].append(d.isoformat())
     return counts
@@ -382,14 +394,31 @@ def backfill(conn: psycopg.Connection, source: Source, start: date, end: date,
              prices_start: date | None = None) -> dict[str, Any]:
     """Everything between two dates: the daily jobs first (so names, coverage and the equity list
     are in place), then filings day by day, then prices for every day from `prices_start` (default:
-    `start`; price alerts need about 90 sessions of history, filings far less)."""
+    `start`; price alerts need about 90 sessions of history, filings far less).
+
+    A failed day is recorded and skipped, never fatal: everything is idempotent, so running the
+    same backfill again fills only what is missing. `errors` gathers every part's errors."""
     out: dict[str, Any] = {"daily": ingest_daily(conn, source, end), "filings": {}}
-    day = start
+    errors: list[str] = list(out["daily"].get("errors") or [])
+    day, failed_in_a_row = start, 0
     while day <= end:
-        out["filings"][day.isoformat()] = ingest_filings(conn, source, day, day).get("new")
+        try:
+            counts = ingest_filings(conn, source, day, day)
+        except (SourceError, psycopg.Error) as exc:  # already logged as a failed run by run()
+            out["filings"][day.isoformat()] = None
+            errors.append(f"filings {day}: {type(exc).__name__}: {exc}"[:300])
+            failed_in_a_row += 1
+            if failed_in_a_row >= GIVE_UP_AFTER:
+                errors.append(f"filings: stopped after {GIVE_UP_AFTER} failed days in a row, at {day}")
+                break
+        else:
+            failed_in_a_row = 0
+            out["filings"][day.isoformat()] = counts.get("new")
+            errors += [f"filings {day}: results {s}: {counts['results'][s].get('error')}" for s in counts["errors"]]
         day += timedelta(days=1)
     first = min(prices_start or start, start)
     out["eod"] = ingest_eod(conn, source, [first + timedelta(days=i) for i in range((end - first).days + 1)])
+    out["errors"] = errors + list(out["eod"].get("errors") or [])
     return out
 
 

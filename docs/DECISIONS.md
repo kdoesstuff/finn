@@ -244,3 +244,82 @@ missing target quarter gets a reason from NSE itself: "not listed yet" is a reas
 not stored" is a failure. TCS, Asian Paints and HDFC Bank's stored figures are compared with the
 values verified by hand. Cards are rebuilt from stored results by the same parser code that reads
 NSE's files (`finn/stored.py`), so the database can never disagree with the parser.
+
+**Live backfill** (run 43700944742, 23 min 26 s, `--from 2026-10-01 --to 2026-11-15 --prices-from
+2026-06-25`). Everything loaded; the run went red only because the pledge feed was still empty.
+
+| Part | Result |
+| --- | --- |
+| Filings, 1 Oct to 15 Nov, market-wide | 24,766 new over 46 days (1,530 on 5 Nov, the peak of results season; 21 on Sun 11 Oct) |
+| Prices, 25 Jun to 15 Nov | 98 sessions, 276,847 rows; 46 days without a bhavcopy, recorded as not sessions (weekends, 14 Sep, 2 Oct, 20 Oct, 10 Nov); Sun 8 Nov recorded as a session (Muhurat trading), as the plan predicted |
+| Results, 21 covered companies, 9 quarters, both bases | 16 companies with all 18; NMDC 17, LT 16 plus 2 that NSE lists but did not serve (asked again next run), ABB 14, Page Industries 9 (standalone only); none rejected |
+| Equity master, board meetings, corporate actions | 2,635 companies; 1,573 meetings; 384 actions |
+| Pledges | Feed empty again: the only error |
+
+**Two weaknesses the run exposed, fixed before the next one.** (1) The run's errors were printed at
+the end of a summary cut at 6,000 characters, where a long run could lose them: errors now come
+first (up to 40, all of them in `ingest_runs`), then the counts. (2) One day of filings or prices
+that NSE refused would have stopped the whole backfill with nothing after it: a failed day is now
+recorded and skipped (it is asked for again next run, since nothing is recorded for it), and after
+5 failed days in a row the job stops asking, because NSE is then down or refusing us. A damaged
+bhavcopy zip is a source error like any other. Tests for each, with a mutation check.
+
+## B5 API (15 Nov 2026)
+
+Built by one agent on a branch, reviewed and merged by the lead; details, measurements and
+sources in `docs/notes/B5-B7.md`, the contract in `docs/API.md`.
+
+- **One FastAPI service** on Render's free tier in Singapore, the only reader of the database for
+  the web apps. Each request runs as `finn_api` with the investor's id set for row-level security,
+  inside one transaction; the digest is two SQL statements, because the API (Singapore) and the
+  database are in different regions and every round trip costs.
+- **Sessions** are signed tokens (HMAC-SHA256, version, investor, read-only flag, deployment,
+  issued and expiry times), not database rows; no sign-up (decision 2). The deployment (`core` or
+  `full`) comes from the request's `Origin`, checked against two allow-lists, so `finn-core` can
+  never be served the Network layer.
+- **Limits**: 60 requests a minute on `/v1`, 10 a minute for sessions, keyed by Render's
+  `True-Client-IP` (a client can forge `X-Forwarded-For`, not that); 16 KB bodies; 5 s statement
+  timeout. Errors have one shape and never carry a stack trace. Sentry receives no request bodies,
+  headers or IP addresses.
+- **Deploys** only after CI passes (`autoDeployTrigger: checksPass`), and only when `api/` or the
+  pipeline code it imports changes.
+- Tested: 121 API tests (CORS, refusals, limits, token tampering and expiry, the digest's shape
+  against the contract, the pool recovering from a lost database); pip-audit and gitleaks clean.
+
+## B6 Web (15 Nov 2026)
+
+Built by a second agent, reviewed and merged; details in `docs/notes/B6.md`.
+
+- **The morning brief**, phone first: one sentence on what changed, then "Needs your attention",
+  "Worth knowing" and the routine filings folded away, each item with why it was chosen and a link
+  to the filing. Windows of 24 hours, 3 days and 7 days.
+- **Never a blank screen**: a "waking up" state while Render starts, then the bundled snapshot with
+  its "data as of" time if the API does not answer.
+- **Security**: a strict Content Security Policy in `web/vercel.json` (`connect-src` names only the
+  API and Sentry); the build refuses an API address the policy does not allow, so the two can
+  never drift apart; no `innerHTML`; self-hosted fonts.
+- **Look**: paper and ink, Castoro and Mukta (both drawn for Indian scripts as well as Latin),
+  tokens in one file, so Karthik's references change tokens, not components (decision 5).
+- Tested: 79 unit tests; Playwright in Chromium with axe accessibility checks (27 pass; 3 skipped
+  by design because they need the deployed site).
+
+## B7 Keep-warm (15 Nov 2026)
+
+Render's free tier sleeps after 15 idle minutes, and a reviewer must never meet a 50-second cold
+start. Primary: an external monitor (UptimeRobot, free) calls `/health` every 5 minutes. Backup: the
+`keep-warm` workflow every 10 minutes, at minutes off the hour, because GitHub delays and drops
+scheduled runs under load. Kept warm all month, the service uses about 720 of Render's 750 free
+instance-hours.
+
+## Integrated end to end, before deploying (15 Nov 2026)
+
+The real API (uvicorn, the Render start command) over a Postgres migrated by our migrations, seeded
+with the demo investor and loaded with the recorded week of filings and a session of prices; the
+real production web build, pointed at it, served as static files; driven by Chrome at 360 px. The
+demo session, CORS preflight with the `Authorization` header, and the digest for 24 hours and 7
+days all answered 200, with no console errors and no failed requests; the brief rendered Larsen &
+Toubro's 9 Nov order announcement with its link and reason.
+
+Found and fixed: the summary read "1 routine filings set aside" (`rank.py` now says "filing" for
+one); the contract's example routine counts did not add up to its own total.
+

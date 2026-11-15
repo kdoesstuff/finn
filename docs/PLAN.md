@@ -9,6 +9,10 @@ Sequence only; no clock times. Decisions settled with Karthik on 11 Nov 2026 are
   found by testing are repaired in task A3 before anything is built on them.
 - Results filed before ingestion goes live are backfilled in B4; nothing is lost, because NSE serves
   400 days of filings per symbol and every results XBRL.
+- 15 Nov: Gate G0, B1, B2 passed; B3 live, waiting on three green scheduled runs (the pledge feed is
+  empty, see `DECISIONS.md` B4); B4 backfill loaded (24,766 filings, 98 sessions of prices, results
+  for all 21 covered names); B5 API, B6 web and B7 keep-warm built, tested, integrated end to end
+  locally, and ready to deploy. Gate G1 next: deployed, and a scheduled filing on a phone.
 
 ## Rules for every task
 

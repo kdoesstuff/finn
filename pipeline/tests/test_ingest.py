@@ -235,6 +235,59 @@ def test_backfill_walks_the_range_day_by_day(admin):
     assert out["eod"]["sessions"] == ["2026-11-06"] or "2026-11-06" not in out["eod"]["not_sessions"]
 
 
+def test_a_failed_price_day_is_skipped_and_asked_for_again_next_run(admin):
+    class Flaky(Recorded):
+        def content(self, url: str) -> bytes | None:
+            if "20250303" in url:
+                raise SourceError("bhavcopy: gave up after 4 attempts")
+            return super().content(url)
+
+    days = [date(2025, 3, 3), date(2025, 3, 4)]  # days no other test in this module touches
+    counts = ingest.ingest_eod(admin, Flaky(sessions=(date(2025, 3, 4),)), days)
+    assert counts["sessions"] == ["2025-03-04"]
+    assert counts["errors"] == ["eod 2025-03-03: bhavcopy: gave up after 4 attempts"]
+    assert rows(admin, "select count(*) from finn.trading_days where day = '2025-03-03'")[0][0] == 0
+    (ok,), = rows(admin, "select ok from finn.ingest_runs where job = 'eod' order by id desc limit 1")
+    assert ok is False
+    again = Recorded(sessions=(date(2025, 3, 3), date(2025, 3, 4)))
+    ingest.ingest_eod(admin, again, days)
+    assert [u for u in again.content_calls if "BhavCopy" in u] == [nse.bhavcopy_url(date(2025, 3, 3))]
+
+
+def test_backfill_records_a_failed_day_and_carries_on(admin):
+    class Flaky(Recorded):
+        def api(self, path: str, **params: Any) -> Any:
+            if path == "corporate-announcements" and params.get("from_date") == "06-11-2026":
+                raise SourceError("corporate-announcements: gave up after 4 attempts")
+            return super().api(path, **params)
+
+    out = ingest.backfill(admin, Flaky(), date(2026, 11, 5), date(2026, 11, 7))
+    assert out["filings"]["2026-11-06"] is None and out["filings"]["2026-11-07"] is not None
+    assert "filings 2026-11-06: SourceError: corporate-announcements: gave up after 4 attempts" in out["errors"]
+    assert out["errors"] == ["filings 2026-11-06: SourceError: corporate-announcements: gave up after 4 attempts"]
+
+
+def test_backfill_stops_asking_after_five_failed_days_in_a_row(admin):
+    class Down(Recorded):
+        asked = 0
+
+        def api(self, path: str, **params: Any) -> Any:
+            if path == "corporate-announcements":
+                self.asked += 1
+                raise SourceError("corporate-announcements: 403")
+            return super().api(path, **params)
+
+    source = Down()
+    out = ingest.backfill(admin, source, date(2026, 10, 1), date(2026, 10, 31))
+    assert source.asked == ingest.GIVE_UP_AFTER and list(out["filings"]) == [f"2026-10-0{i}" for i in range(1, 6)]
+    assert out["errors"][-1].startswith("filings: stopped after 5 failed days in a row")
+
+
+def test_a_damaged_bhavcopy_is_a_source_error():
+    with pytest.raises(SourceError, match="damaged"):
+        nse.unzip_single(b"PK\x03\x04 truncated")
+
+
 def test_company_names_normalise_across_spellings():
     same = ingest.normalise_name("Kalyan Jewellers India Ltd.")
     assert same == ingest.normalise_name("KALYAN JEWELLERS INDIA LIMITED")

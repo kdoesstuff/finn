@@ -418,7 +418,7 @@ def _summary(attention, worth, unexplained, routine) -> str:
     if worth:
         tail.append(f"{len(worth)} worth knowing")
     if routine:
-        tail.append(f"{len(routine)} routine filings set aside")
+        tail.append(f"{len(routine)} routine {'filing' if len(routine) == 1 else 'filings'} set aside")
     return lead + (" " + "; ".join(tail) + "." if tail else "")
 
 

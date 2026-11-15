@@ -1,0 +1,53 @@
+name: Keep the API warm
+
+# Render's free web service sleeps after 15 minutes without inbound traffic and takes about a
+# minute to wake (https://render.com/docs/free). This pings /health every 10 minutes. It is the
+# backup, not the primary: GitHub delays scheduled runs under load and may drop some
+# (https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule),
+# so an external monitor pinging every 5 minutes is the primary (docs/notes/B5-B7.md).
+#
+# Needs the repository variable API_URL (Settings > Secrets and variables > Actions > Variables),
+# the service's address, e.g. https://finn-api.onrender.com. A variable, not a secret: it is public.
+# Minutes 4, 14, ... avoid the top of the hour, when GitHub's scheduler is busiest, and the
+# ingest workflow's minutes.
+on:
+  schedule:
+    - cron: "4,14,24,34,44,54 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-warm
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: GET /health
+        env:
+          API_URL: ${{ vars.API_URL }}
+        # Red only when the API itself does not answer; a database outage is a warning, because
+        # the API is then up and the web app shows its saved copy.
+        run: |
+          set -euo pipefail
+          if [ -z "${API_URL:-}" ]; then
+            echo "::error::Set the repository variable API_URL (e.g. https://finn-api.onrender.com)"
+            exit 1
+          fi
+          url="${API_URL%/}/health"
+          # Up to 100 s for a sleeping service to wake, then one retry 15 s later.
+          if ! body=$(curl --silent --show-error --fail --max-time 100 --retry 1 --retry-delay 15 \
+                           --retry-all-errors "$url"); then
+            echo "::error::$url did not answer, twice: the API is down"
+            exit 1
+          fi
+          echo "$body"
+          echo "$body" | jq -e '.ok == true' > /dev/null || { echo "::error::/health did not report ok"; exit 1; }
+          if [ "$(echo "$body" | jq -r '.db')" != "true" ]; then
+            echo "::warning::The API is up but cannot reach the database"
+          fi
+          echo "API up: $(echo "$body" | jq -c '{db, data_as_of, version}')" >> "$GITHUB_STEP_SUMMARY"

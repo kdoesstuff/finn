@@ -30,8 +30,8 @@ as tasks pass their gates.
 
 | Requirement | Source | Task | Status |
 | --- | --- | --- | --- |
-| EOD price and volume for the portfolio (yfinance or equivalent) | Both | B1 (NSE bhavcopy, yfinance secondary), B3, B4 | |
-| Corporate announcements from NSE/BSE; the glossary's categories are optional guidance | Both | B1, B3; classifier uses the glossary's categories plus `governance` | Classifier done |
+| EOD price and volume for the portfolio (yfinance or equivalent) | Both | B1 (NSE bhavcopy, yfinance secondary), B3, B4 | Done: 98 sessions from 25 Jun, refreshed each evening |
+| Corporate announcements from NSE/BSE; the glossary's categories are optional guidance | Both | B1, B3; classifier uses the glossary's categories plus `governance` | Done: market-wide from 1 Oct, every 30 minutes |
 | Fundamentals: annual reports and concall transcripts (screener.in or IR site) | Both | E2 (NSE filings first, BSE PDF links and screener as fallback) | |
 | Network profiles: legitimately accessed, a public dataset or realistic synthetic; say which, and how it would be done for real | Founding | G1, I3 | |
 | "Get them working; don't over-engineer them": the data layer is plumbing | Both | B1 kept to the sources the product uses | |
@@ -97,7 +97,7 @@ as tasks pass their gates.
 | Data pipelines: fetch, refresh, store, link (e.g. a filing name to a person) | `docs/ARCHITECTURE.md` | B1-B4, G3, I1 |
 | Network private to the investor; what personal data is stored and for how long; consent and access control | `docs/ARCHITECTURE.md` | G2, I1 |
 | Which steps use a model, which model and why; where agents plan, call tools or act | `docs/ARCHITECTURE.md`, `DECISIONS.md` | C1-C4, I1 |
-| Cloud services: what runs where and why | `docs/ARCHITECTURE.md` | B5-B7, I1 |
+| Cloud services: what runs where and why | `docs/ARCHITECTURE.md` (drafted from `DECISIONS.md` B5-B7) | B5-B7, I1 |
 
 ## From the campus deck (context, not requirements)
 

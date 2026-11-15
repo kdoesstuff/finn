@@ -238,11 +238,14 @@ def parse_bhavcopy(csv_bytes: bytes, series: tuple[str, ...] = ("EQ", "BE")) -> 
 def unzip_single(blob: bytes) -> bytes:
     if blob[:2] != b"PK":
         raise SourceError("bhavcopy is not a zip file")
-    with zipfile.ZipFile(io.BytesIO(blob)) as z:
-        names = z.namelist()
-        if len(names) != 1 or z.getinfo(names[0]).file_size > 50_000_000:
-            raise SourceError(f"unexpected bhavcopy archive: {names[:3]}")
-        return z.read(names[0])
+    try:
+        with zipfile.ZipFile(io.BytesIO(blob)) as z:
+            names = z.namelist()
+            if len(names) != 1 or z.getinfo(names[0]).file_size > 50_000_000:
+                raise SourceError(f"unexpected bhavcopy archive: {names[:3]}")
+            return z.read(names[0])
+    except zipfile.BadZipFile as exc:  # a truncated download: a source problem, retried next run
+        raise SourceError(f"bhavcopy archive is damaged: {exc}") from exc
 
 
 def bhavcopy(client: Source, day: date) -> list[EodRow] | None:
