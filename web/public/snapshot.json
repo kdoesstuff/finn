@@ -1,0 +1,622 @@
+{
+ "window": {
+  "hours": 168,
+  "from": "2026-11-08T19:12:50+05:30",
+  "to": "2026-11-15T19:12:50+05:30"
+ },
+ "data_as_of": "2026-11-15T19:04:08+05:30",
+ "summary": "11 items need your attention. 13 worth knowing; 34 routine filings set aside.",
+ "portfolio": {
+  "holdings": 18
+ },
+ "attention": [
+  {
+   "id": "106859256",
+   "symbol": "ABB",
+   "company": "ABB India Limited",
+   "ts": "2026-11-13T17:50:08+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/ABB_13112026174803_Reg33QuartelryResultsQ32026signed.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": []
+  },
+  {
+   "id": "106859004",
+   "symbol": "EICHERMOT",
+   "company": "Eicher Motors Limited",
+   "ts": "2026-11-13T16:51:01+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026165043_EMLOutcomeofBM13112026SignedResults.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106859143",
+     "ts": "2026-11-13T17:27:48+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026172518_EMLInvestorPresentationNovember132026Signed.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106858574",
+   "symbol": "NATCOPHARM",
+   "company": "Natco Pharma Limited",
+   "ts": "2026-11-13T14:15:07+05:30",
+   "headline": "financial results for the period ended September 30, 2026 and declaration of 2nd Interim Dividend for FY 2026-27",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026141002_Outcome_13112026.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106858828",
+     "ts": "2026-11-13T15:55:16+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026155501_Q2FY27_EarningsPresentation.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106857627",
+   "symbol": "NMDC",
+   "company": "NMDC Limited",
+   "ts": "2026-11-12T20:08:41+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/NMDC_12112026200736_NMDCresultsSE12112026.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": []
+  },
+  {
+   "id": "106856859",
+   "symbol": "MANAPPURAM",
+   "company": "Manappuram Finance Limited",
+   "ts": "2026-11-12T16:42:48+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164223_MAFILOUTCOMEFINAL.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106856872",
+     "ts": "2026-11-12T16:48:09+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164750_IPmerged.pdf"
+    },
+    {
+     "id": "106857594",
+     "ts": "2026-11-12T19:52:58+05:30",
+     "label": "Press Release",
+     "headline": "press release dated November 12, 2026, titled \"Press Release  on the unaudited financial results of the Company for the quarter and half yearended September 30, 2026",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026195139_PressReleaseFinal.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106856606",
+   "symbol": "PAGEIND",
+   "company": "Page Industries Limited",
+   "ts": "2026-11-12T14:29:53+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026142702_RESULTS30092026.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106856612",
+     "ts": "2026-11-12T14:34:44+05:30",
+     "label": "Press Release",
+     "headline": "press release dated November 12, 2026, titled \"Press Release and Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026143403_PRIPQ2FY27.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106855481",
+   "symbol": "TRITURBINE",
+   "company": "Triveni Turbine Limited",
+   "ts": "2026-11-11T18:03:18+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026180152_OutcomeofBM_11112026_signed.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106855679",
+     "ts": "2026-11-11T19:26:22+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192603_IntimationregardingInvestorPPT_11112026_sd.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106855371",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T17:20:19+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026172001_outcome_final.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106855404",
+     "ts": "2026-11-11T17:33:14+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173256_Analyst_Presentation_Q2_FY27.pdf"
+    },
+    {
+     "id": "106855421",
+     "ts": "2026-11-11T17:39:57+05:30",
+     "label": "Press Release",
+     "headline": "press release dated November 11, 2026, titled \"Press Release issued by the Company on the Audited Standalone Financial Results and Unaudited Consolidated Financial Results of the Company for the quarter and half year ended September 30, 2026",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173937_Press_Release.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106854290",
+   "symbol": "KALYANKJIL",
+   "company": "Kalyan Jewellers India Limited",
+   "ts": "2026-11-10T17:08:21+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026170450_Results_q2_Signed.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": [
+    {
+     "id": "106854528",
+     "ts": "2026-11-10T22:38:36+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026223818_IP_signed.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106854041",
+   "symbol": "MRF",
+   "company": "MRF Limited",
+   "ts": "2026-11-10T12:24:20+05:30",
+   "headline": "financial results for the period ended September 30, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026122136_BRESULTFINAL.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY"
+   ],
+   "related": []
+  },
+  {
+   "id": "106855429",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T17:42:13+05:30",
+   "headline": "Capacity addition",
+   "label": "Capacity addition",
+   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026174200_Reg_30_Capacity_Addition_Shirwata.pdf",
+   "category": "capex",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 2,
+   "score": 76,
+   "alert": false,
+   "reasons": [
+    "Capacity spend: a capital allocation decision"
+   ],
+   "related": []
+  }
+ ],
+ "worth": [
+  {
+   "id": "106855625",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T19:01:38+05:30",
+   "headline": "Appointment of Mr Sanjay Kumar Banga as additional Executive Director of the company w.e.f. November 11, 2026",
+   "label": "Appointment",
+   "url": "https://nsearchives.nseindia.in/corporate/KSTPCL_11112026190124_MD_APPT_-_Reg_30.pdf",
+   "category": "management_change",
+   "subtype": "",
+   "role": "executive_director",
+   "action": "appointment",
+   "detail_in_document": false,
+   "tier": 1,
+   "score": 70,
+   "alert": true,
+   "reasons": [
+    "Whole-time board member: appointment"
+   ],
+   "related": [
+    {
+     "id": "106855670",
+     "ts": "2026-11-11T19:22:17+05:30",
+     "label": "Updates",
+     "headline": "Reg 30 Change in Management",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026192204_Regulation_30_KMP.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106857501",
+   "symbol": "NAVINFLUOR",
+   "company": "Navin Fluorine International Limited",
+   "ts": "2026-11-12T19:20:38+05:30",
+   "headline": "Commencement of commercial production/operations",
+   "label": "Commencement of commercial production/operations",
+   "url": "https://nsearchives.nseindia.in/corporate/NAVINFLUOR_12112026192025_Intimation_under_Reg30commercialisation_of_R32Final.pdf",
+   "category": "capex",
+   "subtype": "commissioning",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 2,
+   "score": 70,
+   "alert": false,
+   "reasons": [
+    "New capacity has started production: capex turning into revenue"
+   ],
+   "related": []
+  },
+  {
+   "id": "106858944",
+   "symbol": "HDFCBANK",
+   "company": "HDFC Bank Limited",
+   "ts": "2026-11-13T16:35:23+05:30",
+   "headline": "Change in Director(s)",
+   "label": "Change in Director(s)",
+   "url": "https://nsearchives.nseindia.in/corporate/HDFCBANK3_13112026163422_SE_Intimation-_VSR.pdf",
+   "category": "management_change",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 1,
+   "score": 65,
+   "alert": true,
+   "reasons": [
+    "Management change; the summary does not say who, the filing does"
+   ],
+   "related": []
+  },
+  {
+   "id": "106859921",
+   "symbol": "PAGEIND",
+   "company": "Page Industries Limited",
+   "ts": "2026-11-13T21:16:28+05:30",
+   "headline": "Clarification on Media Reports regarding FEMA Non-Compliance in Q2-FY27 Results",
+   "label": "General Updates",
+   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_13112026211531_CLARIFICATIONQ2FY27RESULTS.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 60,
+   "alert": false,
+   "reasons": [
+    "Exchange query or clarification on the stock's movement"
+   ],
+   "related": []
+  },
+  {
+   "id": "106859276",
+   "symbol": "ABB",
+   "company": "ABB India Limited",
+   "ts": "2026-11-13T17:56:07+05:30",
+   "headline": "Appointment of Mr. N V Sivakumar as Independent Director of the company w.e.f. January 01, 2027",
+   "label": "Appointment",
+   "url": "https://nsearchives.nseindia.in/corporate/ABB_13112026175554_Reg30disclosure13112026signed.pdf",
+   "category": "management_change",
+   "subtype": "",
+   "role": "director",
+   "action": "appointment",
+   "detail_in_document": false,
+   "tier": 1,
+   "score": 55,
+   "alert": false,
+   "reasons": [
+    "Board change below the top team"
+   ],
+   "related": []
+  },
+  {
+   "id": "106853097",
+   "symbol": "LT",
+   "company": "Larsen & Toubro Limited",
+   "ts": "2026-11-09T10:37:33+05:30",
+   "headline": "Bagging/Receiving of orders/contracts",
+   "label": "Bagging/Receiving of orders/contracts",
+   "url": "https://nsearchives.nseindia.in/corporate/PAM_09112026103717_PressRelease09112026.pdf",
+   "category": "press_release",
+   "subtype": "order",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 3,
+   "score": 50,
+   "alert": false,
+   "reasons": [
+    "Order win"
+   ],
+   "related": []
+  },
+  {
+   "id": "106861044",
+   "symbol": "ABB",
+   "company": "ABB India Limited",
+   "ts": "2026-11-14T18:41:16+05:30",
+   "headline": "Investor Presentation",
+   "label": "Investor Presentation",
+   "url": "https://nsearchives.nseindia.in/corporate/ABB_14112026183836_Investor_presentationQ32026.pdf",
+   "category": "results",
+   "subtype": "deck",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 3,
+   "score": 45,
+   "alert": false,
+   "reasons": [
+    "Investor presentation; read alongside the results"
+   ],
+   "related": []
+  },
+  {
+   "id": "106857049",
+   "symbol": "HDFCBANK",
+   "company": "HDFC Bank Limited",
+   "ts": "2026-11-12T17:33:25+05:30",
+   "headline": "Approval from the Reserve Bank of India for re-appointment of Mr. V. Srinivasa Rangan asthe Whole-time Director (designated as Executive Director) of HDFC Bank Limited",
+   "label": "General Updates",
+   "url": "https://nsearchives.nseindia.in/corporate/HDFCBANK3_12112026173223_SE_Intimation-_VSR.pdf",
+   "category": "management_change",
+   "subtype": "",
+   "role": "executive_director",
+   "action": "reappointment",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 45,
+   "alert": false,
+   "reasons": [
+    "Executive director reappointed: continuity, not a change"
+   ],
+   "related": []
+  },
+  {
+   "id": "106859328",
+   "symbol": "ABB",
+   "company": "ABB India Limited",
+   "ts": "2026-11-13T18:06:07+05:30",
+   "headline": "press release dated November 13, 2026, titled \"Expanding demand across segments; solid execution",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/ABB_13112026180525_PressReleaseQ32026signed.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 40,
+   "alert": false,
+   "reasons": [
+    "General company news"
+   ],
+   "related": []
+  },
+  {
+   "id": "106859058",
+   "symbol": "EICHERMOT",
+   "company": "Eicher Motors Limited",
+   "ts": "2026-11-13T17:03:27+05:30",
+   "headline": "press release dated November 13, 2026, titled \"EICHER MOTORS DELIVERS BEST-EVER QUARTER WITH HIGHEST-EVER REVENUE AND EBITDA",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026170319_EMLPressReleaseNovember132026Signed.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 40,
+   "alert": false,
+   "reasons": [
+    "General company news"
+   ],
+   "related": []
+  },
+  {
+   "id": "106855666",
+   "symbol": "TRITURBINE",
+   "company": "Triveni Turbine Limited",
+   "ts": "2026-11-11T19:20:52+05:30",
+   "headline": "press release dated November 11, 2026, titled \"Investors  brief for Q2 & H1 FY27 ended on September 30, 2026",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192035_IntimationInvestorBrief_11112026_sd.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 40,
+   "alert": false,
+   "reasons": [
+    "General company news"
+   ],
+   "related": [
+    {
+     "id": "106855521",
+     "ts": "2026-11-11T18:20:03+05:30",
+     "label": "Giving guarantees/indemnity/ becoming a surety for third party",
+     "headline": "Giving guarantees/indemnity/ becoming a surety for third party",
+     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026181914_OutcomeofBM_11112026_signed.pdf"
+    }
+   ]
+  },
+  {
+   "id": "106854325",
+   "symbol": "KALYANKJIL",
+   "company": "Kalyan Jewellers India Limited",
+   "ts": "2026-11-10T17:37:48+05:30",
+   "headline": "press release dated November 10, 2026, titled \"Press Release",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026173732_PR.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 40,
+   "alert": false,
+   "reasons": [
+    "General company news"
+   ],
+   "related": []
+  },
+  {
+   "id": "106854117",
+   "symbol": "MRF",
+   "company": "MRF Limited",
+   "ts": "2026-11-10T14:26:40+05:30",
+   "headline": "press release dated November 10, 2026, titled \"Press Release",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026142316_Pressrelease.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 40,
+   "alert": false,
+   "reasons": [
+    "General company news"
+   ],
+   "related": []
+  }
+ ],
+ "routine": {
+  "count": 34,
+  "by_kind": {
+   "earnings_call": 15,
+   "newspaper": 6,
+   "unclassified": 5,
+   "dividend": 4,
+   "esop": 1,
+   "investor_meetings": 1,
+   "results_ad": 1,
+   "trading_window": 1
+  }
+ },
+ "unexplained_moves": [],
+ "snapshot": true,
+ "generated_at": "2026-11-15T19:12:50+05:30"
+}
