@@ -1,21 +1,1069 @@
 {
  "window": {
   "hours": 168,
-  "from": "2026-11-08T19:12:50+05:30",
-  "to": "2026-11-15T19:12:50+05:30"
+  "from": "2026-11-08T20:37:27+05:30",
+  "to": "2026-11-15T20:37:27+05:30"
  },
- "data_as_of": "2026-11-15T19:04:08+05:30",
- "summary": "11 items need your attention. 13 worth knowing; 34 routine filings set aside.",
+ "data_as_of": "2026-11-15T19:57:04+05:30",
+ "summary": "14 items need your attention, 4 unexplained price or volume moves. 16 worth knowing; 28 routine filings set aside.",
  "portfolio": {
-  "holdings": 18
+  "holdings": 18,
+  "pledges": [
+   {
+    "symbol": "ASAHIINDIA",
+    "company": "Asahi India Glass Limited",
+    "pct_of_promoter": 3.38,
+    "promoter_stake_pct": 51.57,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:31:01+05:30",
+    "change_pct_points": null
+   },
+   {
+    "symbol": "ASIANPAINT",
+    "company": "Asian Paints Limited",
+    "pct_of_promoter": 10.35,
+    "promoter_stake_pct": 52.72,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:30:32+05:30",
+    "change_pct_points": null
+   },
+   {
+    "symbol": "ELGIEQUIP",
+    "company": "Elgi Equipments Limited",
+    "pct_of_promoter": 0.87,
+    "promoter_stake_pct": 31.67,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:30:47+05:30",
+    "change_pct_points": null
+   },
+   {
+    "symbol": "KALYANKJIL",
+    "company": "Kalyan Jewellers India Limited",
+    "pct_of_promoter": 24.85,
+    "promoter_stake_pct": 62.85,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:31:54+05:30",
+    "change_pct_points": null
+   },
+   {
+    "symbol": "MANAPPURAM",
+    "company": "Manappuram Finance Limited",
+    "pct_of_promoter": 0.44,
+    "promoter_stake_pct": 41.66,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:31:36+05:30",
+    "change_pct_points": null
+   },
+   {
+    "symbol": "MRF",
+    "company": "MRF Limited",
+    "pct_of_promoter": 0.09,
+    "promoter_stake_pct": 27.61,
+    "as_of": "2026-09-30",
+    "published": "2026-11-09T16:30:56+05:30",
+    "change_pct_points": null
+   }
+  ]
  },
  "attention": [
+  {
+   "id": "106858574",
+   "symbol": "NATCOPHARM",
+   "company": "Natco Pharma Limited",
+   "ts": "2026-11-13T14:15:07+05:30",
+   "headline": "Q2 FY27 results: revenue ₹967 cr, down 29.0% YoY; PAT ₹203 cr, down 60.9% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026141002_Outcome_13112026.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 6.5x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106858828",
+     "ts": "2026-11-13T15:55:16+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026155501_Q2FY27_EarningsPresentation.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 967.3,
+      "margin": null,
+      "qoq": {
+       "pct": 31.6,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": -29.0,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 257.9,
+      "margin": 26.7,
+      "qoq": {
+       "pct": 38.3,
+       "note": "",
+       "margin_bps": 130
+      },
+      "yoy": {
+       "pct": -55.5,
+       "note": "",
+       "margin_bps": -1580
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 243.2,
+      "margin": 25.1,
+      "qoq": {
+       "pct": 31.0,
+       "note": "",
+       "margin_bps": -10
+      },
+      "yoy": {
+       "pct": -60.4,
+       "note": "",
+       "margin_bps": -1990
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 202.6,
+      "margin": 20.9,
+      "qoq": {
+       "pct": -1.9,
+       "note": "",
+       "margin_bps": -720
+      },
+      "yoy": {
+       "pct": -60.9,
+       "note": "",
+       "margin_bps": -1710
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1757276_13112026032003_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "NATCOPHARM",
+     "company": "Natco Pharma Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 6.47,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 6.5x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106856859",
+   "symbol": "MANAPPURAM",
+   "company": "Manappuram Finance Limited",
+   "ts": "2026-11-12T16:42:48+05:30",
+   "headline": "Q2 FY27 results: net interest income ₹3,339 cr, up 48.3% YoY; PAT ₹0 cr",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164223_MAFILOUTCOMEFINAL.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 7.6x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106856872",
+     "ts": "2026-11-12T16:48:09+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164750_IPmerged.pdf"
+    },
+    {
+     "id": "106857594",
+     "ts": "2026-11-12T19:52:58+05:30",
+     "label": "Press Release",
+     "headline": "Press release dated November 12, 2026, titled \"Press Release  on the unaudited financial results of the Company for the quarter and half yearended September 30, 2026",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026195139_PressReleaseFinal.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "bank",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Net interest income",
+      "value": 3339.06,
+      "margin": null,
+      "qoq": {
+       "pct": 11.4,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 48.3,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "Operating profit",
+      "value": 3349.54,
+      "margin": null,
+      "qoq": {
+       "pct": 11.5,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 48.7,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "Provisions",
+      "value": 0.0,
+      "margin": null,
+      "qoq": {
+       "pct": null,
+       "note": "no base",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": null,
+       "note": "no base",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 0.0,
+      "margin": null,
+      "qoq": {
+       "pct": null,
+       "note": "no base",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": null,
+       "note": "no base",
+       "margin_bps": null
+      }
+     }
+    ],
+    "notes": [
+     "Banks have no revenue or EBITDA in the usual sense.",
+     "Net interest income = interest earned - interest expended; operating profit = NII + other income - operating expenses (before provisions)."
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_NBFC_INDAS_1756983_12112026083425_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "MANAPPURAM",
+     "company": "Manappuram Finance Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 7.58,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.6x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106856606",
+   "symbol": "PAGEIND",
+   "company": "Page Industries Limited",
+   "ts": "2026-11-12T14:29:53+05:30",
+   "headline": "Q2 FY27 results: revenue ₹1,440 cr, up 11.5% YoY; PAT ₹203 cr, up 4.0% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026142702_RESULTS30092026.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 16.8x its 20-day average; Closed down 12.9%, a 8.9 sigma day against its last 60 sessions; Volume 8.8x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106856612",
+     "ts": "2026-11-12T14:34:44+05:30",
+     "label": "Press Release",
+     "headline": "Press release dated November 12, 2026, titled \"Press Release and Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026143403_PRIPQ2FY27.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "standalone",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 1439.61,
+      "margin": null,
+      "qoq": {
+       "pct": 1.3,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 11.5,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 300.14,
+      "margin": 20.8,
+      "qoq": {
+       "pct": 3.9,
+       "note": "",
+       "margin_bps": 50
+      },
+      "yoy": {
+       "pct": 7.4,
+       "note": "",
+       "margin_bps": -90
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 270.95,
+      "margin": 18.8,
+      "qoq": {
+       "pct": 4.8,
+       "note": "",
+       "margin_bps": 60
+      },
+      "yoy": {
+       "pct": 3.8,
+       "note": "",
+       "margin_bps": -140
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 202.54,
+      "margin": 14.1,
+      "qoq": {
+       "pct": 5.1,
+       "note": "",
+       "margin_bps": 50
+      },
+      "yoy": {
+       "pct": 4.0,
+       "note": "",
+       "margin_bps": -100
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1756615_12112026050926_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 16.8,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 16.8x its 20-day average"
+    },
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-12",
+     "kind": "move",
+     "value": -12.91,
+     "threshold": 5.0,
+     "sigma": -8.91,
+     "fired_by": "both",
+     "detail": "Closed down 12.9%, a 8.9 sigma day against its last 60 sessions"
+    },
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 8.83,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 8.8x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106855481",
+   "symbol": "TRITURBINE",
+   "company": "Triveni Turbine Limited",
+   "ts": "2026-11-11T18:03:18+05:30",
+   "headline": "Q2 FY27 results: revenue ₹491 cr, down 3.0% YoY; PAT ₹53 cr, down 41.6% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026180152_OutcomeofBM_11112026_signed.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 7.4x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106855679",
+     "ts": "2026-11-11T19:26:22+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192603_IntimationregardingInvestorPPT_11112026_sd.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 491.0,
+      "margin": null,
+      "qoq": {
+       "pct": 10.9,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": -3.0,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 63.6,
+      "margin": 13.0,
+      "qoq": {
+       "pct": 24.0,
+       "note": "",
+       "margin_bps": 140
+      },
+      "yoy": {
+       "pct": -44.5,
+       "note": "",
+       "margin_bps": -960
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 75.7,
+      "margin": 15.4,
+      "qoq": {
+       "pct": 8.6,
+       "note": "",
+       "margin_bps": -30
+      },
+      "yoy": {
+       "pct": -39.2,
+       "note": "",
+       "margin_bps": -920
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 53.3,
+      "margin": 10.9,
+      "qoq": {
+       "pct": 4.3,
+       "note": "",
+       "margin_bps": -60
+      },
+      "yoy": {
+       "pct": -41.6,
+       "note": "",
+       "margin_bps": -710
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1756265_11112026074011_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "TRITURBINE",
+     "company": "Triveni Turbine Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 7.39,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.4x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106855371",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T17:20:19+05:30",
+   "headline": "Q2 FY27 results: revenue ₹19,636 cr, up 26.3% YoY; PAT ₹1,366 cr, up 48.6% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026172001_outcome_final.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 3.8x its 20-day average",
+    "The stock moved that day, before this filing was published after the close: Volume 2.5x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106855404",
+     "ts": "2026-11-11T17:33:14+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173256_Analyst_Presentation_Q2_FY27.pdf"
+    },
+    {
+     "id": "106855421",
+     "ts": "2026-11-11T17:39:57+05:30",
+     "label": "Press Release",
+     "headline": "Press release dated November 11, 2026, titled \"Press Release issued by the Company on the Audited Standalone Financial Results and Unaudited Consolidated Financial Results of the Company for the quarter and half year ended September 30, 2026",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173937_Press_Release.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 19635.94,
+      "margin": null,
+      "qoq": {
+       "pct": 3.1,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 26.3,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 3666.85,
+      "margin": 18.7,
+      "qoq": {
+       "pct": -8.6,
+       "note": "",
+       "margin_bps": -240
+      },
+      "yoy": {
+       "pct": 11.1,
+       "note": "",
+       "margin_bps": -250
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 1442.91,
+      "margin": 7.3,
+      "qoq": {
+       "pct": -16.8,
+       "note": "",
+       "margin_bps": -180
+      },
+      "yoy": {
+       "pct": 8.8,
+       "note": "",
+       "margin_bps": -120
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 1366.11,
+      "margin": 7.0,
+      "qoq": {
+       "pct": 16.2,
+       "note": "",
+       "margin_bps": 80
+      },
+      "yoy": {
+       "pct": 48.6,
+       "note": "",
+       "margin_bps": 110
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income",
+     "Exceptional items of ₹119 cr are in PBT and PAT but excluded from EBITDA"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1756234_11112026070341_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 3.79,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 3.8x its 20-day average"
+    },
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 2.49,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 2.5x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106854290",
+   "symbol": "KALYANKJIL",
+   "company": "Kalyan Jewellers India Limited",
+   "ts": "2026-11-10T17:08:21+05:30",
+   "headline": "Q2 FY27 results: revenue ₹10,323 cr, up 31.4% YoY; PAT ₹427 cr, up 63.9% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026170450_Results_q2_Signed.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 11.0x its 20-day average; Closed up 8.6%, a 3.4 sigma day against its last 60 sessions; Volume 5.7x its 20-day average; Closed up 7.1%, a 2.6 sigma day against its last 60 sessions"
+   ],
+   "related": [
+    {
+     "id": "106854528",
+     "ts": "2026-11-10T22:38:36+05:30",
+     "label": "Investor Presentation",
+     "headline": "Investor Presentation",
+     "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026223818_IP_signed.pdf"
+    }
+   ],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 10322.62,
+      "margin": null,
+      "qoq": {
+       "pct": -2.5,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 31.4,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 644.46,
+      "margin": 6.2,
+      "qoq": {
+       "pct": 1.9,
+       "note": "",
+       "margin_bps": 20
+      },
+      "yoy": {
+       "pct": 29.7,
+       "note": "",
+       "margin_bps": -10
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 560.08,
+      "margin": 5.4,
+      "qoq": {
+       "pct": 20.5,
+       "note": "",
+       "margin_bps": 100
+      },
+      "yoy": {
+       "pct": 59.9,
+       "note": "",
+       "margin_bps": 90
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 427.1,
+      "margin": 4.1,
+      "qoq": {
+       "pct": 22.5,
+       "note": "",
+       "margin_bps": 80
+      },
+      "yoy": {
+       "pct": 63.9,
+       "note": "",
+       "margin_bps": 80
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income",
+     "Exceptional items of ₹73 cr are in PBT and PAT but excluded from EBITDA"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1755875_10112026062754_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 10.97,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 11.0x its 20-day average"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-11",
+     "kind": "move",
+     "value": 8.63,
+     "threshold": 5.0,
+     "sigma": 3.43,
+     "fired_by": "both",
+     "detail": "Closed up 8.6%, a 3.4 sigma day against its last 60 sessions"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 5.75,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 5.7x its 20-day average"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-12",
+     "kind": "move",
+     "value": 7.1,
+     "threshold": 5.0,
+     "sigma": 2.6,
+     "fired_by": "pct",
+     "detail": "Closed up 7.1%, a 2.6 sigma day against its last 60 sessions"
+    }
+   ]
+  },
+  {
+   "id": "106854041",
+   "symbol": "MRF",
+   "company": "MRF Limited",
+   "ts": "2026-11-10T12:24:20+05:30",
+   "headline": "Q2 FY27 results: revenue ₹8,660 cr, up 17.4% YoY; PAT ₹387 cr, down 26.4% YoY",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026122136_BRESULTFINAL.pdf",
+   "category": "results",
+   "subtype": "filing",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 2,
+   "score": 100,
+   "alert": true,
+   "reasons": [
+    "Quarterly results: headline numbers compared QoQ and YoY",
+    "The stock moved after this filing: Volume 4.0x its 20-day average"
+   ],
+   "related": [],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 8660.19,
+      "margin": null,
+      "qoq": {
+       "pct": 2.9,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 17.4,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 957.53,
+      "margin": 11.1,
+      "qoq": {
+       "pct": -3.3,
+       "note": "",
+       "margin_bps": -70
+      },
+      "yoy": {
+       "pct": -15.0,
+       "note": "",
+       "margin_bps": -420
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 521.81,
+      "margin": 6.0,
+      "qoq": {
+       "pct": -19.7,
+       "note": "",
+       "margin_bps": -170
+      },
+      "yoy": {
+       "pct": -25.3,
+       "note": "",
+       "margin_bps": -350
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 386.99,
+      "margin": 4.5,
+      "qoq": {
+       "pct": -21.9,
+       "note": "",
+       "margin_bps": -140
+      },
+      "yoy": {
+       "pct": -26.4,
+       "note": "",
+       "margin_bps": -260
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1755857_10112026051801_WEB.xml"
+   },
+   "moves": [
+    {
+     "symbol": "MRF",
+     "company": "MRF Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 4.03,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 4.0x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106855429",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T17:42:13+05:30",
+   "headline": "Capacity addition",
+   "label": "Capacity addition",
+   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026174200_Reg_30_Capacity_Addition_Shirwata.pdf",
+   "category": "capex",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": true,
+   "tier": 2,
+   "score": 91,
+   "alert": false,
+   "reasons": [
+    "Capacity spend: a capital allocation decision",
+    "The stock moved after this filing: Volume 3.8x its 20-day average",
+    "The stock moved that day, before this filing was published after the close: Volume 2.5x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 3.79,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 3.8x its 20-day average"
+    },
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 2.49,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 2.5x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106855625",
+   "symbol": "TATAPOWER",
+   "company": "Tata Power Company Limited",
+   "ts": "2026-11-11T19:01:38+05:30",
+   "headline": "Appointment of Mr Sanjay Kumar Banga as additional Executive Director of the company w.e.f. November 11, 2026",
+   "label": "Appointment",
+   "url": "https://nsearchives.nseindia.in/corporate/KSTPCL_11112026190124_MD_APPT_-_Reg_30.pdf",
+   "category": "management_change",
+   "subtype": "",
+   "role": "executive_director",
+   "action": "appointment",
+   "detail_in_document": false,
+   "tier": 1,
+   "score": 85,
+   "alert": true,
+   "reasons": [
+    "Whole-time board member: appointment",
+    "The stock moved after this filing: Volume 3.8x its 20-day average",
+    "The stock moved that day, before this filing was published after the close: Volume 2.5x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106855670",
+     "ts": "2026-11-11T19:22:17+05:30",
+     "label": "Updates",
+     "headline": "Reg 30 Change in Management",
+     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026192204_Regulation_30_KMP.pdf"
+    }
+   ],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 3.79,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 3.8x its 20-day average"
+    },
+    {
+     "symbol": "TATAPOWER",
+     "company": "Tata Power Company Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 2.49,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 2.5x its 20-day average"
+    }
+   ]
+  },
   {
    "id": "106859256",
    "symbol": "ABB",
    "company": "ABB India Limited",
    "ts": "2026-11-13T17:50:08+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
+   "headline": "Q2 FY27 results: revenue ₹3,738 cr, up 12.9% YoY; PAT ₹443 cr",
    "label": "Outcome of Board Meeting",
    "url": "https://nsearchives.nseindia.in/corporate/ABB_13112026174803_Reg33QuartelryResultsQ32026signed.pdf",
    "category": "results",
@@ -29,14 +1077,88 @@
    "reasons": [
     "Quarterly results: headline numbers compared QoQ and YoY"
    ],
-   "related": []
+   "related": [],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 3738.13,
+      "margin": null,
+      "qoq": {
+       "pct": 5.0,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 12.9,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 551.98,
+      "margin": 14.8,
+      "qoq": {
+       "pct": 23.5,
+       "note": "",
+       "margin_bps": 220
+      },
+      "yoy": {
+       "pct": 10.3,
+       "note": "",
+       "margin_bps": -30
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 580.64,
+      "margin": 15.5,
+      "qoq": {
+       "pct": 16.4,
+       "note": "",
+       "margin_bps": 150
+      },
+      "yoy": {
+       "pct": 7.1,
+       "note": "",
+       "margin_bps": -90
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 442.52,
+      "margin": 11.8,
+      "qoq": {
+       "pct": 22.1,
+       "note": "",
+       "margin_bps": 160
+      },
+      "yoy": {
+       "pct": null,
+       "note": "no base",
+       "margin_bps": 1180
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1757594_13112026060337_WEB.xml"
+   },
+   "moves": []
   },
   {
    "id": "106859004",
    "symbol": "EICHERMOT",
    "company": "Eicher Motors Limited",
    "ts": "2026-11-13T16:51:01+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
+   "headline": "Q2 FY27 results: revenue ₹7,422 cr, up 20.3% YoY; PAT ₹1,573 cr, up 14.9% YoY",
    "label": "Outcome of Board Meeting",
    "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026165043_EMLOutcomeofBM13112026SignedResults.pdf",
    "category": "results",
@@ -58,43 +1180,88 @@
      "headline": "Investor Presentation",
      "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026172518_EMLInvestorPresentationNovember132026Signed.pdf"
     }
-   ]
-  },
-  {
-   "id": "106858574",
-   "symbol": "NATCOPHARM",
-   "company": "Natco Pharma Limited",
-   "ts": "2026-11-13T14:15:07+05:30",
-   "headline": "financial results for the period ended September 30, 2026 and declaration of 2nd Interim Dividend for FY 2026-27",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026141002_Outcome_13112026.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
    ],
-   "related": [
-    {
-     "id": "106858828",
-     "ts": "2026-11-13T15:55:16+05:30",
-     "label": "Investor Presentation",
-     "headline": "Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026155501_Q2FY27_EarningsPresentation.pdf"
-    }
-   ]
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 7421.72,
+      "margin": null,
+      "qoq": {
+       "pct": 11.9,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 20.3,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 1759.51,
+      "margin": 23.7,
+      "qoq": {
+       "pct": 10.6,
+       "note": "",
+       "margin_bps": -30
+      },
+      "yoy": {
+       "pct": 16.4,
+       "note": "",
+       "margin_bps": -80
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 1806.31,
+      "margin": 24.3,
+      "qoq": {
+       "pct": 2.8,
+       "note": "",
+       "margin_bps": -220
+      },
+      "yoy": {
+       "pct": 9.9,
+       "note": "",
+       "margin_bps": -230
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 1573.37,
+      "margin": 21.2,
+      "qoq": {
+       "pct": 7.6,
+       "note": "",
+       "margin_bps": -90
+      },
+      "yoy": {
+       "pct": 14.9,
+       "note": "",
+       "margin_bps": -100
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1758029_13112026094757_WEB.xml"
+   },
+   "moves": []
   },
   {
    "id": "106857627",
    "symbol": "NMDC",
    "company": "NMDC Limited",
    "ts": "2026-11-12T20:08:41+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
+   "headline": "Q2 FY27 results: revenue ₹6,638 cr, up 4.1% YoY; PAT ₹1,668 cr, down 1.8% YoY",
    "label": "Outcome of Board Meeting",
    "url": "https://nsearchives.nseindia.in/corporate/NMDC_12112026200736_NMDCresultsSE12112026.pdf",
    "category": "results",
@@ -108,239 +1275,81 @@
    "reasons": [
     "Quarterly results: headline numbers compared QoQ and YoY"
    ],
-   "related": []
-  },
-  {
-   "id": "106856859",
-   "symbol": "MANAPPURAM",
-   "company": "Manappuram Finance Limited",
-   "ts": "2026-11-12T16:42:48+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164223_MAFILOUTCOMEFINAL.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": [
-    {
-     "id": "106856872",
-     "ts": "2026-11-12T16:48:09+05:30",
-     "label": "Investor Presentation",
-     "headline": "Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026164750_IPmerged.pdf"
-    },
-    {
-     "id": "106857594",
-     "ts": "2026-11-12T19:52:58+05:30",
-     "label": "Press Release",
-     "headline": "press release dated November 12, 2026, titled \"Press Release  on the unaudited financial results of the Company for the quarter and half yearended September 30, 2026",
-     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026195139_PressReleaseFinal.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106856606",
-   "symbol": "PAGEIND",
-   "company": "Page Industries Limited",
-   "ts": "2026-11-12T14:29:53+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026142702_RESULTS30092026.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": [
-    {
-     "id": "106856612",
-     "ts": "2026-11-12T14:34:44+05:30",
-     "label": "Press Release",
-     "headline": "press release dated November 12, 2026, titled \"Press Release and Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026143403_PRIPQ2FY27.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106855481",
-   "symbol": "TRITURBINE",
-   "company": "Triveni Turbine Limited",
-   "ts": "2026-11-11T18:03:18+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026180152_OutcomeofBM_11112026_signed.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": [
-    {
-     "id": "106855679",
-     "ts": "2026-11-11T19:26:22+05:30",
-     "label": "Investor Presentation",
-     "headline": "Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192603_IntimationregardingInvestorPPT_11112026_sd.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106855371",
-   "symbol": "TATAPOWER",
-   "company": "Tata Power Company Limited",
-   "ts": "2026-11-11T17:20:19+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026172001_outcome_final.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": [
-    {
-     "id": "106855404",
-     "ts": "2026-11-11T17:33:14+05:30",
-     "label": "Investor Presentation",
-     "headline": "Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173256_Analyst_Presentation_Q2_FY27.pdf"
-    },
-    {
-     "id": "106855421",
-     "ts": "2026-11-11T17:39:57+05:30",
-     "label": "Press Release",
-     "headline": "press release dated November 11, 2026, titled \"Press Release issued by the Company on the Audited Standalone Financial Results and Unaudited Consolidated Financial Results of the Company for the quarter and half year ended September 30, 2026",
-     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026173937_Press_Release.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106854290",
-   "symbol": "KALYANKJIL",
-   "company": "Kalyan Jewellers India Limited",
-   "ts": "2026-11-10T17:08:21+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026170450_Results_q2_Signed.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": [
-    {
-     "id": "106854528",
-     "ts": "2026-11-10T22:38:36+05:30",
-     "label": "Investor Presentation",
-     "headline": "Investor Presentation",
-     "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026223818_IP_signed.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106854041",
-   "symbol": "MRF",
-   "company": "MRF Limited",
-   "ts": "2026-11-10T12:24:20+05:30",
-   "headline": "financial results for the period ended September 30, 2026",
-   "label": "Outcome of Board Meeting",
-   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026122136_BRESULTFINAL.pdf",
-   "category": "results",
-   "subtype": "filing",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 2,
-   "score": 85,
-   "alert": true,
-   "reasons": [
-    "Quarterly results: headline numbers compared QoQ and YoY"
-   ],
-   "related": []
-  },
-  {
-   "id": "106855429",
-   "symbol": "TATAPOWER",
-   "company": "Tata Power Company Limited",
-   "ts": "2026-11-11T17:42:13+05:30",
-   "headline": "Capacity addition",
-   "label": "Capacity addition",
-   "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026174200_Reg_30_Capacity_Addition_Shirwata.pdf",
-   "category": "capex",
-   "subtype": "",
-   "role": "",
-   "action": "",
-   "detail_in_document": true,
-   "tier": 2,
-   "score": 76,
-   "alert": false,
-   "reasons": [
-    "Capacity spend: a capital allocation decision"
-   ],
-   "related": []
-  }
- ],
- "worth": [
-  {
-   "id": "106855625",
-   "symbol": "TATAPOWER",
-   "company": "Tata Power Company Limited",
-   "ts": "2026-11-11T19:01:38+05:30",
-   "headline": "Appointment of Mr Sanjay Kumar Banga as additional Executive Director of the company w.e.f. November 11, 2026",
-   "label": "Appointment",
-   "url": "https://nsearchives.nseindia.in/corporate/KSTPCL_11112026190124_MD_APPT_-_Reg_30.pdf",
-   "category": "management_change",
-   "subtype": "",
-   "role": "executive_director",
-   "action": "appointment",
-   "detail_in_document": false,
-   "tier": 1,
-   "score": 70,
-   "alert": true,
-   "reasons": [
-    "Whole-time board member: appointment"
-   ],
-   "related": [
-    {
-     "id": "106855670",
-     "ts": "2026-11-11T19:22:17+05:30",
-     "label": "Updates",
-     "headline": "Reg 30 Change in Management",
-     "url": "https://nsearchives.nseindia.in/corporate/VPTPCL_11112026192204_Regulation_30_KMP.pdf"
-    }
-   ]
+   "related": [],
+   "results": {
+    "quarter": "Q2 FY27",
+    "period_end": "2026-09-30",
+    "basis": "consolidated",
+    "template": "standard",
+    "unit": "₹ crore",
+    "rows": [
+     {
+      "metric": "Revenue",
+      "value": 6638.23,
+      "margin": null,
+      "qoq": {
+       "pct": -2.3,
+       "note": "",
+       "margin_bps": null
+      },
+      "yoy": {
+       "pct": 4.1,
+       "note": "",
+       "margin_bps": null
+      }
+     },
+     {
+      "metric": "EBITDA",
+      "value": 1940.03,
+      "margin": 29.2,
+      "qoq": {
+       "pct": -21.4,
+       "note": "",
+       "margin_bps": -710
+      },
+      "yoy": {
+       "pct": -2.7,
+       "note": "",
+       "margin_bps": -210
+      }
+     },
+     {
+      "metric": "PBT",
+      "value": 2258.29,
+      "margin": 34.0,
+      "qoq": {
+       "pct": -16.1,
+       "note": "",
+       "margin_bps": -560
+      },
+      "yoy": {
+       "pct": -0.0,
+       "note": "",
+       "margin_bps": -140
+      }
+     },
+     {
+      "metric": "PAT",
+      "value": 1668.38,
+      "margin": 25.1,
+      "qoq": {
+       "pct": -15.6,
+       "note": "",
+       "margin_bps": -400
+      },
+      "yoy": {
+       "pct": -1.8,
+       "note": "",
+       "margin_bps": -150
+      }
+     }
+    ],
+    "notes": [
+     "EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"
+    ],
+    "source": "https://nsearchives.nseindia.in/corporate/xbrl/INTEGRATED_FILING_INDAS_1757014_12112026090256_WEB.xml"
+   },
+   "moves": []
   },
   {
    "id": "106857501",
@@ -356,13 +1365,66 @@
    "action": "",
    "detail_in_document": true,
    "tier": 2,
-   "score": 70,
+   "score": 85,
    "alert": false,
    "reasons": [
-    "New capacity has started production: capex turning into revenue"
+    "New capacity has started production: capex turning into revenue",
+    "The stock moved that day, before this filing was published after the close: Volume 2.1x its 20-day average"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "NAVINFLUOR",
+     "company": "Navin Fluorine International Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 2.14,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 2.1x its 20-day average"
+    }
+   ]
   },
+  {
+   "id": "106859921",
+   "symbol": "PAGEIND",
+   "company": "Page Industries Limited",
+   "ts": "2026-11-13T21:16:28+05:30",
+   "headline": "Clarification on Media Reports regarding FEMA Non-Compliance in Q2-FY27 Results",
+   "label": "General Updates",
+   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_13112026211531_CLARIFICATIONQ2FY27RESULTS.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 75,
+   "alert": false,
+   "reasons": [
+    "Exchange query or clarification on the stock's movement",
+    "The stock moved that day, before this filing was published after the close: Volume 8.8x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 8.83,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 8.8x its 20-day average"
+    }
+   ]
+  }
+ ],
+ "worth": [
   {
    "id": "106858944",
    "symbol": "HDFCBANK",
@@ -382,28 +1444,9 @@
    "reasons": [
     "Management change; the summary does not say who, the filing does"
    ],
-   "related": []
-  },
-  {
-   "id": "106859921",
-   "symbol": "PAGEIND",
-   "company": "Page Industries Limited",
-   "ts": "2026-11-13T21:16:28+05:30",
-   "headline": "Clarification on Media Reports regarding FEMA Non-Compliance in Q2-FY27 Results",
-   "label": "General Updates",
-   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_13112026211531_CLARIFICATIONQ2FY27RESULTS.pdf",
-   "category": "press_release",
-   "subtype": "",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 3,
-   "score": 60,
-   "alert": false,
-   "reasons": [
-    "Exchange query or clarification on the stock's movement"
-   ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
   },
   {
    "id": "106859276",
@@ -424,7 +1467,332 @@
    "reasons": [
     "Board change below the top team"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
+  },
+  {
+   "id": "106855666",
+   "symbol": "TRITURBINE",
+   "company": "Triveni Turbine Limited",
+   "ts": "2026-11-11T19:20:52+05:30",
+   "headline": "Press release dated November 11, 2026, titled \"Investors  brief for Q2 & H1 FY27 ended on September 30, 2026",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192035_IntimationInvestorBrief_11112026_sd.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 55,
+   "alert": false,
+   "reasons": [
+    "General company news",
+    "The stock moved after this filing: Volume 7.4x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106855521",
+     "ts": "2026-11-11T18:20:03+05:30",
+     "label": "Giving guarantees/indemnity/ becoming a surety for third party",
+     "headline": "Giving guarantees/indemnity/ becoming a surety for third party",
+     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026181914_OutcomeofBM_11112026_signed.pdf"
+    }
+   ],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "TRITURBINE",
+     "company": "Triveni Turbine Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 7.39,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.4x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106854325",
+   "symbol": "KALYANKJIL",
+   "company": "Kalyan Jewellers India Limited",
+   "ts": "2026-11-10T17:37:48+05:30",
+   "headline": "Press release dated November 10, 2026, titled \"Press Release",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026173732_PR.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 55,
+   "alert": false,
+   "reasons": [
+    "General company news",
+    "The stock moved after this filing: Volume 11.0x its 20-day average; Closed up 8.6%, a 3.4 sigma day against its last 60 sessions; Volume 5.7x its 20-day average; Closed up 7.1%, a 2.6 sigma day against its last 60 sessions"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 10.97,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 11.0x its 20-day average"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-11",
+     "kind": "move",
+     "value": 8.63,
+     "threshold": 5.0,
+     "sigma": 3.43,
+     "fired_by": "both",
+     "detail": "Closed up 8.6%, a 3.4 sigma day against its last 60 sessions"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 5.75,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 5.7x its 20-day average"
+    },
+    {
+     "symbol": "KALYANKJIL",
+     "company": "Kalyan Jewellers India Limited",
+     "day": "2026-11-12",
+     "kind": "move",
+     "value": 7.1,
+     "threshold": 5.0,
+     "sigma": 2.6,
+     "fired_by": "pct",
+     "detail": "Closed up 7.1%, a 2.6 sigma day against its last 60 sessions"
+    }
+   ]
+  },
+  {
+   "id": "106854117",
+   "symbol": "MRF",
+   "company": "MRF Limited",
+   "ts": "2026-11-10T14:26:40+05:30",
+   "headline": "Press release dated November 10, 2026, titled \"Press Release",
+   "label": "Press Release",
+   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026142316_Pressrelease.pdf",
+   "category": "press_release",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 55,
+   "alert": false,
+   "reasons": [
+    "General company news",
+    "The stock moved after this filing: Volume 4.0x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "MRF",
+     "company": "MRF Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 4.03,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 4.0x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106858585",
+   "symbol": "NATCOPHARM",
+   "company": "Natco Pharma Limited",
+   "ts": "2026-11-13T14:18:31+05:30",
+   "headline": "Record date for the purpose of Dividend  is 19-Nov-2026",
+   "label": "Record Date",
+   "url": "https://nsearchives.nseindia.in/corporate/NATCOPHARM_13112026141817_Record_date_intimation.pdf",
+   "category": "dividend",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 50,
+   "alert": false,
+   "reasons": [
+    "Corporate action",
+    "The stock moved after this filing: Volume 6.5x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "NATCOPHARM",
+     "company": "Natco Pharma Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 6.47,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 6.5x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106856894",
+   "symbol": "MANAPPURAM",
+   "company": "Manappuram Finance Limited",
+   "ts": "2026-11-12T16:52:20+05:30",
+   "headline": "Board of Directors at its meeting held on November 12, 2026, declared Interim Dividend of Re. 1 per equity share",
+   "label": "Dividend",
+   "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026165108_MAFILOUTCOMEFINAL.pdf",
+   "category": "dividend",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 50,
+   "alert": false,
+   "reasons": [
+    "Corporate action",
+    "The stock moved after this filing: Volume 7.6x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106856901",
+     "ts": "2026-11-12T16:54:00+05:30",
+     "label": "Record Date",
+     "headline": "Record date for the purpose of Interim Dividend is 18-Nov-2026",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026165322_MAFILOUTCOMEFINAL.pdf"
+    }
+   ],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "MANAPPURAM",
+     "company": "Manappuram Finance Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 7.58,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.6x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106856618",
+   "symbol": "PAGEIND",
+   "company": "Page Industries Limited",
+   "ts": "2026-11-12T14:39:49+05:30",
+   "headline": "Board of Directors at its meeting held on November 12, 2026, declared Interim Dividend of Rs. 150 per equity share",
+   "label": "Dividend",
+   "url": "https://nsearchives.nseindia.in/corporate/PAGEIND_12112026143844_RESULTS30092026.pdf",
+   "category": "dividend",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 50,
+   "alert": false,
+   "reasons": [
+    "Corporate action",
+    "The stock moved after this filing: Volume 16.8x its 20-day average; Closed down 12.9%, a 8.9 sigma day against its last 60 sessions; Volume 8.8x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 16.8,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 16.8x its 20-day average"
+    },
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-12",
+     "kind": "move",
+     "value": -12.91,
+     "threshold": 5.0,
+     "sigma": -8.91,
+     "fired_by": "both",
+     "detail": "Closed down 12.9%, a 8.9 sigma day against its last 60 sessions"
+    },
+    {
+     "symbol": "PAGEIND",
+     "company": "Page Industries Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 8.83,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 8.8x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106854044",
+   "symbol": "MRF",
+   "company": "MRF Limited",
+   "ts": "2026-11-10T12:29:27+05:30",
+   "headline": "Record date for the purpose of Interim Dividend  is 17-Nov-2026",
+   "label": "Record Date",
+   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026122837_BRESULTFINAL.pdf",
+   "category": "dividend",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 50,
+   "alert": false,
+   "reasons": [
+    "Corporate action",
+    "The stock moved after this filing: Volume 4.0x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "MRF",
+     "company": "MRF Limited",
+     "day": "2026-11-11",
+     "kind": "volume",
+     "value": 4.03,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 4.0x its 20-day average"
+    }
+   ]
   },
   {
    "id": "106853097",
@@ -445,7 +1813,9 @@
    "reasons": [
     "Order win"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
   },
   {
    "id": "106861044",
@@ -466,7 +1836,9 @@
    "reasons": [
     "Investor presentation; read alongside the results"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
   },
   {
    "id": "106857049",
@@ -487,14 +1859,110 @@
    "reasons": [
     "Executive director reappointed: continuity, not a change"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
+  },
+  {
+   "id": "106856940",
+   "symbol": "MANAPPURAM",
+   "company": "Manappuram Finance Limited",
+   "ts": "2026-11-12T17:06:59+05:30",
+   "headline": "Outcome of Board Meeting held on November 12, 2026",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026170632_MAFILOUTCOMEFINAL.pdf",
+   "category": "unclassified",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 45,
+   "alert": false,
+   "reasons": [
+    "No rule recognised this filing; queued for a model to read",
+    "The stock moved after this filing: Volume 7.6x its 20-day average"
+   ],
+   "related": [
+    {
+     "id": "106856914",
+     "ts": "2026-11-12T16:57:44+05:30",
+     "label": "Statement of deviation(s) or variation(s) under Reg. 32",
+     "headline": "Statement of deviation(s) or variation(s) under Reg. 32",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026165732_MAFILOUTCOMEFINAL.pdf"
+    },
+    {
+     "id": "106856917",
+     "ts": "2026-11-12T16:59:11+05:30",
+     "label": "Utilisation of Funds",
+     "headline": "Utilisation of Funds",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026165854_MAFILOUTCOMEFINAL.pdf"
+    },
+    {
+     "id": "106857708",
+     "ts": "2026-11-12T20:59:43+05:30",
+     "label": "Monitoring Agency Report",
+     "headline": "Please find attached the Monitoring Agency Report for the quarter ended September 30, 2026",
+     "url": "https://nsearchives.nseindia.in/corporate/MANAPPURAM_12112026205925_MonitoringAgencyReport.pdf"
+    }
+   ],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "MANAPPURAM",
+     "company": "Manappuram Finance Limited",
+     "day": "2026-11-13",
+     "kind": "volume",
+     "value": 7.58,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.6x its 20-day average"
+    }
+   ]
+  },
+  {
+   "id": "106855502",
+   "symbol": "TRITURBINE",
+   "company": "Triveni Turbine Limited",
+   "ts": "2026-11-11T18:12:40+05:30",
+   "headline": "Outcome of Board Meeting held on November 11, 2026 regarding corporate guarantee",
+   "label": "Outcome of Board Meeting",
+   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026181224_OutcomeofBM_11112026_signed.pdf",
+   "category": "unclassified",
+   "subtype": "",
+   "role": "",
+   "action": "",
+   "detail_in_document": false,
+   "tier": 3,
+   "score": 45,
+   "alert": false,
+   "reasons": [
+    "No rule recognised this filing; queued for a model to read",
+    "The stock moved after this filing: Volume 7.4x its 20-day average"
+   ],
+   "related": [],
+   "results": null,
+   "moves": [
+    {
+     "symbol": "TRITURBINE",
+     "company": "Triveni Turbine Limited",
+     "day": "2026-11-12",
+     "kind": "volume",
+     "value": 7.39,
+     "threshold": 2.0,
+     "sigma": null,
+     "fired_by": "",
+     "detail": "Volume 7.4x its 20-day average"
+    }
+   ]
   },
   {
    "id": "106859328",
    "symbol": "ABB",
    "company": "ABB India Limited",
    "ts": "2026-11-13T18:06:07+05:30",
-   "headline": "press release dated November 13, 2026, titled \"Expanding demand across segments; solid execution",
+   "headline": "Press release dated November 13, 2026, titled \"Expanding demand across segments; solid execution",
    "label": "Press Release",
    "url": "https://nsearchives.nseindia.in/corporate/ABB_13112026180525_PressReleaseQ32026signed.pdf",
    "category": "press_release",
@@ -508,14 +1976,16 @@
    "reasons": [
     "General company news"
    ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
   },
   {
    "id": "106859058",
    "symbol": "EICHERMOT",
    "company": "Eicher Motors Limited",
    "ts": "2026-11-13T17:03:27+05:30",
-   "headline": "press release dated November 13, 2026, titled \"EICHER MOTORS DELIVERS BEST-EVER QUARTER WITH HIGHEST-EVER REVENUE AND EBITDA",
+   "headline": "Press release dated November 13, 2026, titled \"EICHER MOTORS DELIVERS BEST-EVER QUARTER WITH HIGHEST-EVER REVENUE AND EBITDA",
    "label": "Press Release",
    "url": "https://nsearchives.nseindia.in/corporate/EICHERMOT_13112026170319_EMLPressReleaseNovember132026Signed.pdf",
    "category": "press_release",
@@ -529,94 +1999,69 @@
    "reasons": [
     "General company news"
    ],
-   "related": []
-  },
-  {
-   "id": "106855666",
-   "symbol": "TRITURBINE",
-   "company": "Triveni Turbine Limited",
-   "ts": "2026-11-11T19:20:52+05:30",
-   "headline": "press release dated November 11, 2026, titled \"Investors  brief for Q2 & H1 FY27 ended on September 30, 2026",
-   "label": "Press Release",
-   "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026192035_IntimationInvestorBrief_11112026_sd.pdf",
-   "category": "press_release",
-   "subtype": "",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 3,
-   "score": 40,
-   "alert": false,
-   "reasons": [
-    "General company news"
-   ],
-   "related": [
-    {
-     "id": "106855521",
-     "ts": "2026-11-11T18:20:03+05:30",
-     "label": "Giving guarantees/indemnity/ becoming a surety for third party",
-     "headline": "Giving guarantees/indemnity/ becoming a surety for third party",
-     "url": "https://nsearchives.nseindia.in/corporate/TRITURBINE_11112026181914_OutcomeofBM_11112026_signed.pdf"
-    }
-   ]
-  },
-  {
-   "id": "106854325",
-   "symbol": "KALYANKJIL",
-   "company": "Kalyan Jewellers India Limited",
-   "ts": "2026-11-10T17:37:48+05:30",
-   "headline": "press release dated November 10, 2026, titled \"Press Release",
-   "label": "Press Release",
-   "url": "https://nsearchives.nseindia.in/corporate/KALYANKJIL_10112026173732_PR.pdf",
-   "category": "press_release",
-   "subtype": "",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 3,
-   "score": 40,
-   "alert": false,
-   "reasons": [
-    "General company news"
-   ],
-   "related": []
-  },
-  {
-   "id": "106854117",
-   "symbol": "MRF",
-   "company": "MRF Limited",
-   "ts": "2026-11-10T14:26:40+05:30",
-   "headline": "press release dated November 10, 2026, titled \"Press Release",
-   "label": "Press Release",
-   "url": "https://nsearchives.nseindia.in/corporate/MRF_10112026142316_Pressrelease.pdf",
-   "category": "press_release",
-   "subtype": "",
-   "role": "",
-   "action": "",
-   "detail_in_document": false,
-   "tier": 3,
-   "score": 40,
-   "alert": false,
-   "reasons": [
-    "General company news"
-   ],
-   "related": []
+   "related": [],
+   "results": null,
+   "moves": []
   }
  ],
  "routine": {
-  "count": 34,
+  "count": 28,
   "by_kind": {
    "earnings_call": 15,
    "newspaper": 6,
-   "unclassified": 5,
-   "dividend": 4,
+   "unclassified": 3,
    "esop": 1,
    "investor_meetings": 1,
    "results_ad": 1,
    "trading_window": 1
   }
  },
- "unexplained_moves": [],
+ "unexplained_moves": [
+  {
+   "symbol": "NAVINFLUOR",
+   "company": "Navin Fluorine International Limited",
+   "day": "2026-11-11",
+   "kind": "move",
+   "value": 5.97,
+   "threshold": 5.0,
+   "sigma": 2.79,
+   "fired_by": "pct",
+   "detail": "Closed up 6.0%, a 2.8 sigma day against its last 60 sessions"
+  },
+  {
+   "symbol": "NAVINFLUOR",
+   "company": "Navin Fluorine International Limited",
+   "day": "2026-11-11",
+   "kind": "volume",
+   "value": 3.16,
+   "threshold": 2.0,
+   "sigma": null,
+   "fired_by": "",
+   "detail": "Volume 3.2x its 20-day average"
+  },
+  {
+   "symbol": "NMDC",
+   "company": "NMDC Limited",
+   "day": "2026-11-11",
+   "kind": "volume",
+   "value": 2.49,
+   "threshold": 2.0,
+   "sigma": null,
+   "fired_by": "",
+   "detail": "Volume 2.5x its 20-day average"
+  },
+  {
+   "symbol": "KALYANKJIL",
+   "company": "Kalyan Jewellers India Limited",
+   "day": "2026-11-09",
+   "kind": "volume",
+   "value": 2.56,
+   "threshold": 2.0,
+   "sigma": null,
+   "fired_by": "",
+   "detail": "Volume 2.6x its 20-day average"
+  }
+ ],
  "snapshot": true,
- "generated_at": "2026-11-15T19:12:50+05:30"
+ "generated_at": "2026-11-15T20:37:27+05:30"
 }
