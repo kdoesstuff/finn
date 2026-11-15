@@ -63,12 +63,12 @@ API is up but cannot reach the database.
   "window": {"hours": 24, "from": "2026-11-14T15:07:00+05:30", "to": "2026-11-15T15:07:00+05:30"},
   "data_as_of": "2026-11-15T15:07:41+05:30",
   "summary": "1 item needs your attention. 8 worth knowing; 18 routine filings set aside.",
-  "portfolio": {"holdings": 18},
+  "portfolio": {"holdings": 18, "pledges": [Pledge]},
   "attention": [Item],
   "worth": [Item],
   "routine": {"count": 18, "by_kind": {"earnings_call": 8, "newspaper": 4, "unclassified": 3, "agm_egm": 2,
                                        "compliance": 1}},
-  "unexplained_moves": []
+  "unexplained_moves": [Move]
 }
 ```
 
@@ -95,7 +95,9 @@ API is up but cannot reach the database.
   "related": [
     {"id": "106851762", "ts": "2026-11-06T22:02:45+05:30", "label": "Change in Director(s)",
      "headline": "Change in Director(s)", "url": "https://nsearchives.nseindia.com/corporate/..."}
-  ]
+  ],
+  "results": null,
+  "moves": []
 }
 ```
 
@@ -105,7 +107,65 @@ API is up but cannot reach the database.
 - `url` is always the source document on NSE (evidence for every item).
 - `reasons` explain the rank ("why am I seeing this"), in ranked order.
 - Items within a section are already ordered: most important first.
-- `unexplained_moves` stays empty until price alerts (task D4).
+- `results` is null except on a quarterly results filing whose quarter is stored (task D1); then it
+  holds the numbers from the filing's XBRL, and `headline` is written from them ("Q2 FY27 results:
+  revenue ₹73,188 cr, up 11.2% YoY; PAT ₹12,075 cr, up 1.4% YoY"). No number is ever estimated: if
+  the quarter is not stored yet, `results` is null and the headline is the company's own words.
+- `moves` are the price and volume moves this filing may explain: sessions after it (the first two)
+  or, for a filing published after the close, that day's session. The same move can sit on two
+  items about one company.
+
+`Results` (all values in ₹ crore; `template` is `standard`, or `bank` for banks and lenders filing
+the banking format, which has no revenue or EBITDA):
+
+```json
+{
+  "quarter": "Q2 FY27",
+  "period_end": "2026-09-30",
+  "basis": "consolidated",
+  "template": "standard",
+  "unit": "₹ crore",
+  "rows": [
+    {"metric": "EBITDA", "value": 19210.0, "margin": 26.2,
+     "qoq": {"pct": 4.1, "note": "", "margin_bps": 30}, "yoy": {"pct": 9.8, "note": "", "margin_bps": -40}}
+  ],
+  "notes": ["EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income"],
+  "source": "https://nsearchives.nseindia.com/corporate/xbrl/..."
+}
+```
+
+- `rows` are Revenue, EBITDA, PBT and PAT (standard) or Net interest income, Operating profit,
+  Provisions and PAT (bank), in that order. `margin` is a % of revenue (null for revenue and in the
+  bank template); `qoq` and `yoy` give `pct`, or null with a `note` when a % would mislead ("turned
+  positive", "loss narrowed", "not available"); `margin_bps` is the margin's change, or null.
+
+`Move` (a session's close-to-close change or volume crossing the investor's thresholds, from
+`finn.prefs`; defaults 5% or 3 sigma, and 2x the 20-day volume):
+
+```json
+{"symbol": "ABB", "company": "ABB India Limited", "day": "2026-11-09", "kind": "move", "value": -7.0,
+ "threshold": 5.0, "sigma": -3.4, "fired_by": "both",
+ "detail": "Closed down 7.0%, a 3.4 sigma day against its last 60 sessions"}
+```
+
+- `kind` is `move` (`value` is the day's % change) or `volume` (`value` is the multiple of the
+  average); `sigma` is the move in units of the stock's recent daily volatility, null for volume or
+  with too little history; `fired_by` says which rule crossed (`pct`, `sigma` or `both`; empty for
+  volume). Days NSE adjusted for a split, bonus or rights issue are not moves.
+- `unexplained_moves` are moves in the window that no filing explains: newest first.
+
+`Pledge` (holdings whose promoters have pledged shares, from NSE's pledge disclosures; holdings with
+nothing pledged are not listed):
+
+```json
+{"symbol": "KALYANKJIL", "company": "Kalyan Jewellers India Limited", "pct_of_promoter": 24.85,
+ "promoter_stake_pct": 62.85, "as_of": "2026-09-30", "published": "2026-11-09T16:31:54+05:30",
+ "change_pct_points": null}
+```
+
+- `pct_of_promoter` is the share of the promoters' own stake that is pledged; `as_of` is the
+  shareholding date the disclosure refers to, `published` when NSE published it.
+  `change_pct_points` is the change since NSE's previous disclosure, null when there is none.
 
 ## Limits
 

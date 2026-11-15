@@ -83,7 +83,7 @@ test('reasons, related filings and routine counts open from the keyboard', async
   await why.focus()
   await page.keyboard.press('Enter')
   await expect(why).toHaveAttribute('aria-expanded', 'true')
-  await expect(card.getByRole('listitem').first()).toHaveText('Quarterly results')
+  await expect(card.getByRole('listitem').filter({ hasText: /^Quarterly results$/ })).toBeVisible()
 
   const related = card.getByRole('button', { name: '+2 related filings' })
   await related.focus()

@@ -694,3 +694,81 @@
     grid-column: 2;
   }
 }
+
+/* Results: the quarter's numbers from the XBRL, figures right-aligned in tabular digits. */
+
+.results {
+  margin-top: var(--space-3);
+}
+
+.results__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+
+.results__caption {
+  text-align: left;
+  color: var(--ink-soft);
+  padding-bottom: var(--space-1);
+}
+
+.results__table th,
+.results__table td {
+  padding-block: var(--space-1);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+.results__table thead th {
+  font-weight: var(--weight-regular);
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.results__table tbody th {
+  text-align: left;
+  font-weight: var(--weight-regular);
+}
+
+.results__table td {
+  text-align: right;
+  white-space: nowrap;
+  padding-left: var(--space-2);
+}
+
+.results__margin,
+.results__source {
+  color: var(--ink-soft);
+}
+
+.results__source {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
+}
+
+/* Moves around a filing, and moves no filing explains. */
+
+.moves {
+  list-style: none;
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.moves-list {
+  list-style: none;
+}
+
+.moves-list__item + .moves-list__item {
+  border-top: var(--hairline) solid var(--rule);
+  padding-top: var(--space-3);
+}
+
+/* Promoter pledges on the holdings, as NSE published them. */
+
+.pledges {
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}

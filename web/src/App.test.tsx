@@ -85,8 +85,27 @@ describe('the brief', () => {
 
     const attention = screen.getByRole('region', { name: /Needs your attention/ })
     const card = within(attention).getByRole('article', { name: /Elgi Equipments/ })
-    expect(card).toHaveTextContent('Financial results for the quarter ended September 30, 2026')
+    expect(card).toHaveTextContent('Q2 FY27 results: revenue ₹980 cr, up 11.4% YoY; PAT ₹104 cr')
     expect(card).toHaveTextContent('Results')
+    // The quarter's numbers from the XBRL: each line with its margin, QoQ and YoY.
+    const table = within(card).getByRole('table', { name: 'Q2 FY27, consolidated, ₹ crore' })
+    const ebitda = within(table).getByRole('row', { name: /EBITDA/ })
+    expect(ebitda).toHaveTextContent('₹150 15.3%')
+    expect(ebitda).toHaveTextContent('+13.6%')
+    expect(within(table).getByRole('row', { name: /PAT/ })).toHaveTextContent('—') // no year-ago figure
+    expect(card).toHaveTextContent('From Elgi Equipments’s XBRL filing.')
+    // The move this filing may explain sits on its card.
+    expect(within(card).getByRole('list', { name: 'Price and volume moves around this filing' })).toHaveTextContent(
+      '15 Nov: Closed up 9.0%, a 4.1 sigma day against its last 60 sessions',
+    )
+
+    // A move no filing explains, and the promoter pledge NSE published.
+    const moves = screen.getByRole('region', { name: /Moves without a filing/ })
+    expect(moves).toHaveTextContent('ABB India ABB')
+    expect(moves).toHaveTextContent('14 Nov: Closed down 7.0%')
+    const pledges = screen.getByRole('region', { name: /Promoter pledges/ })
+    expect(pledges).toHaveTextContent('24.85% of the promoters’ 62.85% stake is pledged.')
+    expect(pledges).toHaveTextContent('As published by NSE on 9 Nov, for shareholding at 30 Sept.')
     expect(card).toHaveTextContent('On your alert list')
     // Relative and absolute Indian time.
     expect(within(card).getByText('2 hours ago')).toHaveAttribute('datetime', '2026-11-15T13:05:00+05:30')

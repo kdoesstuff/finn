@@ -5,7 +5,7 @@
 // follow the same shape, built around events recorded in docs/DECISIONS.md; their URLs and IDs
 // are made up for the tests and are not real NSE documents.
 
-import type { DemoSession, Digest, Health, Item, Snapshot } from '../../api/types'
+import type { DemoSession, Digest, Health, Item, Move, Pledge, Results, Snapshot } from '../../api/types'
 
 export const session: DemoSession = {
   token: 'test-token-1',
@@ -42,6 +42,60 @@ export const asianPaints: Item = {
       url: 'https://nsearchives.nseindia.com/corporate/...',
     },
   ],
+  results: null,
+  moves: [],
+}
+
+/** Elgi's quarter, in the contract's Results shape; the figures are made up for the tests. */
+export const elgiQuarter: Results = {
+  quarter: 'Q2 FY27',
+  period_end: '2026-09-30',
+  basis: 'consolidated',
+  template: 'standard',
+  unit: '₹ crore',
+  rows: [
+    { metric: 'Revenue', value: 980, margin: null, qoq: { pct: 8.9, note: '', margin_bps: null }, yoy: { pct: 11.4, note: '', margin_bps: null } },
+    { metric: 'EBITDA', value: 150, margin: 15.3, qoq: { pct: 13.6, note: '', margin_bps: 60 }, yoy: { pct: 15.4, note: '', margin_bps: 50 } },
+    { metric: 'PBT', value: 140, margin: 14.3, qoq: { pct: 16.7, note: '', margin_bps: 100 }, yoy: { pct: 27.3, note: '', margin_bps: 180 } },
+    { metric: 'PAT', value: 104, margin: 10.6, qoq: { pct: 15.6, note: '', margin_bps: 60 }, yoy: { pct: null, note: 'not available', margin_bps: null } },
+  ],
+  notes: ['EBITDA = PBT before exceptional items + finance costs + depreciation and amortisation - other income'],
+  source: 'https://nsearchives.nseindia.com/corporate/xbrl/TEST_ELGIEQUIP_20260930.xml',
+}
+
+export const elgiMove: Move = {
+  symbol: 'ELGIEQUIP',
+  company: 'Elgi Equipments Limited',
+  day: '2026-11-15',
+  kind: 'move',
+  value: 9,
+  threshold: 5,
+  sigma: 4.1,
+  fired_by: 'both',
+  detail: 'Closed up 9.0%, a 4.1 sigma day against its last 60 sessions',
+}
+
+/** A fall no filing explains. */
+export const abbMove: Move = {
+  symbol: 'ABB',
+  company: 'ABB India Limited',
+  day: '2026-11-14',
+  kind: 'move',
+  value: -7,
+  threshold: 5,
+  sigma: -3.4,
+  fired_by: 'both',
+  detail: 'Closed down 7.0%, a 3.4 sigma day against its last 60 sessions',
+}
+
+export const kalyanPledge: Pledge = {
+  symbol: 'KALYANKJIL',
+  company: 'Kalyan Jewellers India Limited',
+  pct_of_promoter: 24.85,
+  promoter_stake_pct: 62.85,
+  as_of: '2026-09-30',
+  published: '2026-11-09T16:31:54+05:30',
+  change_pct_points: null,
 }
 
 export const elgiResults: Item = {
@@ -49,7 +103,7 @@ export const elgiResults: Item = {
   symbol: 'ELGIEQUIP',
   company: 'Elgi Equipments Limited',
   ts: '2026-11-15T13:05:00+05:30',
-  headline: 'Financial results for the quarter ended September 30, 2026',
+  headline: 'Q2 FY27 results: revenue ₹980 cr, up 11.4% YoY; PAT ₹104 cr',
   label: 'Financial Result Updates',
   url: 'https://nsearchives.nseindia.com/corporate/TEST_ELGIEQUIP_results.pdf',
   category: 'results',
@@ -77,6 +131,8 @@ export const elgiResults: Item = {
       url: 'http://example.com/not-an-nse-document.pdf',
     },
   ],
+  results: elgiQuarter,
+  moves: [elgiMove],
 }
 
 /** detail_in_document: the summary only restates NSE's label. */
@@ -98,6 +154,8 @@ export const hdfcBank: Item = {
   alert: false,
   reasons: ['Management change; the summary does not say who, the filing does'],
   related: [],
+  results: null,
+  moves: [],
 }
 
 /** A source that is not an NSE archive address: shown as text, never as a link. */
@@ -119,19 +177,21 @@ export const manappuram: Item = {
   alert: false,
   reasons: ['Senior management exit below the top team', 'Second resignation filing the same day'],
   related: [],
+  results: null,
+  moves: [],
 }
 
 /** The contract's digest example, with items behind each count. */
 export const liveDigest: Digest = {
   window: { hours: 24, from: '2026-11-14T15:07:00+05:30', to: '2026-11-15T15:07:00+05:30' },
   data_as_of: '2026-11-15T15:07:41+05:30',
-  summary: '1 item needs your attention. 3 worth knowing; 18 routine filings set aside.',
-  portfolio: { holdings: 18 },
+  summary: '1 item needs your attention, 1 unexplained price or volume move. 3 worth knowing; 18 routine filings set aside.',
+  portfolio: { holdings: 18, pledges: [kalyanPledge] },
   attention: [elgiResults],
   worth: [asianPaints, manappuram, hdfcBank],
   // Verbatim from the contract, where the kinds add up to 15 of the 18: the app shows the remainder.
   routine: { count: 18, by_kind: { earnings_call: 8, newspaper: 4, unclassified: 3 } },
-  unexplained_moves: [],
+  unexplained_moves: [abbMove],
 }
 
 export function digestFor(hours: number): Digest {
@@ -145,7 +205,7 @@ export const quietDigest: Digest = {
   window: { hours: 24, from: '2026-11-14T15:07:00+05:30', to: '2026-11-15T15:07:00+05:30' },
   data_as_of: '2026-11-15T15:07:41+05:30',
   summary: 'Nothing material across your portfolio.',
-  portfolio: { holdings: 18 },
+  portfolio: { holdings: 18, pledges: [] },
   attention: [],
   worth: [],
   routine: { count: 0, by_kind: {} },

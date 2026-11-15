@@ -2,9 +2,16 @@
 
 A mobile-first investment agent: it tells an investor what changed across their portfolio and why it matters (Push), researches any NSE company from its own filings and transcripts (Pull), and points to the person in the investor's own network best placed to explain it (Network).
 
-Work in progress. The plan is [docs/PLAN.md](docs/PLAN.md); decisions and the evidence behind them are in
-[docs/DECISIONS.md](docs/DECISIONS.md); every brief requirement is mapped to a task in
-[docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
+**Try it on a phone** (no sign-up; one tap opens a read-only demo investor with a fictional
+portfolio of 18 real NSE companies):
+
+- Full edition, with Network: https://finn-lac.vercel.app
+- Core edition, Push and Pull: https://finn-hkmn.vercel.app
+
+The API is at https://finn-api-53vw.onrender.com/health. How it fits together:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The plan is [docs/PLAN.md](docs/PLAN.md); decisions
+and the evidence behind them are in [docs/DECISIONS.md](docs/DECISIONS.md); every brief requirement
+is mapped to a task in [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
 
 ## Setup
 ```

@@ -14,16 +14,21 @@ rows back the same way).
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, TypedDict
 from uuid import UUID
 
 import psycopg
 
 from . import db
-from .models import Announcement, DigestItem
+from .alerts import Thresholds, signals_for
+from .models import Announcement, Bar, DigestItem, Signal
 from .rank import build_digest
+from .results import BankQuarter, Quarter, bank_headline
+from .results import headline as results_headline
+from .stored import filing_from_row
 from .text import own_words
+from .xbrl import to_quarter
 
 # India keeps no daylight saving, so a fixed offset is exact. The same value as `ingest.IST`
 # (a test keeps them equal); defined here so the API does not import the fetchers.
@@ -34,6 +39,27 @@ DEFAULT_HOURS = 24
 _SESSION_MARGIN = timedelta(days=7)
 # Run-log jobs that count as a filings ingest ("filings 2026-11-14..2026-11-15").
 _FILINGS_JOB = "filings%"
+# Results are filed within 45 days of a quarter's end (60 for the March quarter): a results filing
+# is about the latest stored quarter that ended up to this long before it.
+_RESULTS_LAG = timedelta(days=75)
+# Stored quarters loaded for a window: its results quarters, the one before and the year-ago one.
+_RESULTS_HISTORY = timedelta(days=_RESULTS_LAG.days + 366 + 100)
+# The XBRL facts the results card reads (`xbrl.to_quarter`); only these leave the database.
+_CARD_FACTS = [
+    "RevenueFromOperations", "OtherIncome", "FinanceCosts", "DepreciationDepletionAndAmortisationExpense",
+    "ExceptionalItemsBeforeTax", "ProfitBeforeTax", "ProfitOrLossAttributableToOwnersOfParent",
+    "ProfitLossForPeriod", "InterestEarned", "InterestExpended", "OperatingExpenses",
+    "ProvisionsOtherThanTaxAndContingencies", "ProfitLossFromOrdinaryActivitiesBeforeTax",
+    "ProfitLossAfterTaxesMinorityInterestAndShareOfProfitLossOfAssociates", "ProfitLossForThePeriod",
+]
+# Bars loaded before the window: the volatility rule needs 60 sessions of history (about 90 days).
+_PRICE_HISTORY = timedelta(days=100)
+# NSE's equity session closes at 15:30 IST: a session's move belongs to the window holding its close.
+_CLOSE = time(15, 30)
+# NSE adjusts the previous close on a split, bonus or rights day. When its previous close differs
+# from the stored one by more than this, the day's change is a corporate action, not a move.
+_ADJUSTED_DAY = 0.02
+_RESULT_FILINGS = {"board_meeting_notice", "results_ad", "deck"}  # results subtypes that are not results
 
 
 class Related(TypedDict):
@@ -42,6 +68,53 @@ class Related(TypedDict):
     label: str
     headline: str
     url: str
+
+
+class Change(TypedDict):
+    pct: float | None
+    note: str
+    margin_bps: int | None
+
+
+class ResultsRow(TypedDict):
+    metric: str
+    value: float
+    margin: float | None
+    qoq: Change
+    yoy: Change
+
+
+class Results(TypedDict):
+    quarter: str
+    period_end: str
+    basis: str
+    template: str
+    unit: str
+    rows: list[ResultsRow]
+    notes: list[str]
+    source: str
+
+
+class Move(TypedDict):
+    symbol: str
+    company: str
+    day: str
+    kind: str
+    value: float
+    threshold: float
+    sigma: float | None
+    fired_by: str
+    detail: str
+
+
+class Pledge(TypedDict):
+    symbol: str
+    company: str
+    pct_of_promoter: float
+    promoter_stake_pct: float
+    as_of: str
+    published: str
+    change_pct_points: float | None
 
 
 class Item(TypedDict):
@@ -62,6 +135,8 @@ class Item(TypedDict):
     alert: bool
     reasons: list[str]
     related: list[Related]
+    results: Results | None
+    moves: list[Move]
 
 
 # "from" is a Python keyword, so this one is declared in the functional form.
@@ -75,6 +150,7 @@ class Routine(TypedDict):
 
 class Portfolio(TypedDict):
     holdings: int
+    pledges: list[Pledge]
 
 
 class Digest(TypedDict):
@@ -85,7 +161,7 @@ class Digest(TypedDict):
     attention: list[Item]
     worth: list[Item]
     routine: Routine
-    unexplained_moves: list[Any]
+    unexplained_moves: list[Move]
 
 
 def iso(ts: datetime) -> str:
@@ -111,8 +187,11 @@ def data_as_of(conn: psycopg.Connection) -> datetime | None:
 
 
 def headline(subject: str, label: str) -> str:
-    """The company's own words with NSE's template removed; the label when that is all they say."""
-    return own_words(subject, label) or label or subject
+    """The company's own words with NSE's template removed; the label when that is all they say.
+    NSE's template leaves a sentence fragment ("the financial results for ..."): it starts with a
+    capital, as a headline does."""
+    text = own_words(subject, label) or label or subject
+    return text[:1].upper() + text[1:]
 
 
 def _naive_ist(ts: datetime) -> datetime:
@@ -124,14 +203,110 @@ def _related(a: Announcement) -> Related:
             "headline": headline(a.subject, a.label), "url": a.url}
 
 
-def item_json(item: DigestItem) -> Item:
+def fiscal_quarter(period_end: date) -> str:
+    """India's financial year runs April to March: the quarter to 30 Sep 2026 is "Q2 FY27"."""
+    q = {6: 1, 9: 2, 12: 3, 3: 4}.get(period_end.month)
+    fy = period_end.year + 1 if period_end.month >= 4 else period_end.year
+    return f"Q{q} FY{fy % 100:02d}" if q else f"Quarter to {period_end:%d %b %Y}"
+
+
+def _change(c: dict[str, Any]) -> Change:
+    return {"pct": c.get("pct"), "note": c.get("note", ""), "margin_bps": c.get("margin_bps")}
+
+
+def results_json(card: dict[str, Any]) -> Results:
+    """The parser's results card (`results.headline` / `bank_headline`) in the contract's shape:
+    every key always present, null where a figure does not apply."""
+    period_end = date.fromisoformat(card["period_end"])
+    return {
+        "quarter": fiscal_quarter(period_end),
+        "period_end": card["period_end"],
+        "basis": card["basis"],
+        "template": card["template"],
+        "unit": card["unit"],
+        "rows": [{"metric": r["metric"], "value": r["value"], "margin": r.get("margin"),
+                  "qoq": _change(r["qoq"]), "yoy": _change(r["yoy"])} for r in card["rows"]],
+        "notes": list(card["notes"]),
+        "source": card["source"],
+    }
+
+
+def _money(value: float, metric: str) -> str:
+    name = metric if metric.isupper() else metric.lower()
+    if value < 0:
+        return f"a loss of ₹{abs(value):,.0f} cr" if metric == "PAT" else f"{name} -₹{abs(value):,.0f} cr"
+    return f"{name} ₹{value:,.0f} cr"
+
+
+def _yoy_phrase(c: Change) -> str:
+    if c["pct"] is None:
+        return "" if c["note"] in ("not available", "no base") else f", {c['note']} YoY"
+    if c["pct"] == 0:
+        return ", flat YoY"
+    return f", {'up' if c['pct'] > 0 else 'down'} {abs(c['pct']):.1f}% YoY"
+
+
+def results_headline_text(results: Results) -> str:
+    """"Q2 FY27 results: revenue ₹73,188 cr, up 11.2% YoY; PAT ₹12,075 cr, up 1.4% YoY"."""
+    lead = results["rows"][0]
+    parts = [_money(lead["value"], lead["metric"]) + _yoy_phrase(lead["yoy"])]
+    pat = next((r for r in results["rows"][1:] if r["metric"] == "PAT"), None)
+    if pat is not None:
+        parts.append(_money(pat["value"], pat["metric"]) + _yoy_phrase(pat["yoy"]))
+    return f"{results['quarter']} results: " + "; ".join(parts)
+
+
+def results_card(symbol: str, rows: list[dict[str, Any]], filed: date) -> Results | None:
+    """The card for the quarter a results filing on `filed` reports: the latest stored quarter that
+    ended up to _RESULTS_LAG before it, consolidated where the company files it. Computed by the
+    parser's own code (`stored.filing_from_row`, `xbrl.to_quarter`, `results.headline`), exactly as
+    `stored.card` computes it. None when that quarter is not stored yet: no numbers are guessed."""
+    mine = [r for r in rows if r["symbol"] == symbol]
+    ends = [r["quarter_end"] for r in mine if filed - _RESULTS_LAG <= r["quarter_end"] <= filed]
+    if not ends:
+        return None
+    target = max(ends)
+    consolidated = any(r["consolidated"] for r in mine)
+    quarters = [to_quarter(filing_from_row(symbol, r), source=r["xbrl_url"]) for r in mine
+                if r["consolidated"] == consolidated and r["quarter_end"] <= target]
+    if not quarters or max(q.period_end for q in quarters) != target:
+        return None
+    if isinstance(quarters[0], BankQuarter):
+        card = bank_headline([q for q in quarters if isinstance(q, BankQuarter)])
+    else:
+        card = results_headline([q for q in quarters if isinstance(q, Quarter)])
+    return results_json(card)
+
+
+def move_json(s: Signal, company: str) -> Move:
+    return {"symbol": s.symbol, "company": company, "day": s.day.isoformat(), "kind": s.kind,
+            "value": s.value, "threshold": s.threshold, "sigma": s.sigma, "fired_by": s.fired_by,
+            "detail": s.detail}
+
+
+def window_signals(bars: dict[str, list[Bar]], adjusted: dict[str, set[date]], th: Thresholds,
+                   start: datetime, end: datetime) -> list[Signal]:
+    """Price and volume signals for every session whose close falls in (start, end], each judged
+    against the bars before it (`alerts.signals_for`). Corporate-action days are skipped."""
+    out: list[Signal] = []
+    for symbol, series in bars.items():
+        for i, bar in enumerate(series):
+            closed = datetime.combine(bar.day, _CLOSE, tzinfo=IST)
+            if i == 0 or not start < closed <= end or bar.day in adjusted.get(symbol, set()):
+                continue
+            out.extend(signals_for(symbol, series[: i + 1], th))
+    return out
+
+
+def item_json(item: DigestItem, results: Results | None = None, companies: dict[str, str] | None = None) -> Item:
     a, c = item.announcement, item.classification
+    names = companies or {}
     return {
         "id": a.id,
         "symbol": a.symbol,
         "company": a.company,
         "ts": iso(a.ts.replace(tzinfo=IST)),
-        "headline": headline(a.subject, a.label),
+        "headline": results_headline_text(results) if results else headline(a.subject, a.label),
         "label": a.label,
         "url": a.url,
         "category": c.category,
@@ -144,6 +319,8 @@ def item_json(item: DigestItem) -> Item:
         "alert": item.alert,
         "reasons": list(item.reasons),
         "related": [_related(r) for r in item.related],
+        "results": results,
+        "moves": [move_json(s, names.get(s.symbol, a.company)) for s in item.signals],
     }
 
 
@@ -162,9 +339,61 @@ def _announcements(rows: Iterable[tuple[Any, ...]]) -> list[Announcement]:
             for seq_id, symbol, company, ts, source, label, subject, url, file_size in rows]
 
 
+def _thresholds(prefs: list[Any] | None) -> Thresholds:
+    if not prefs:
+        return Thresholds()
+    volume_multiple, move_pct, move_sigma, move_rule = prefs
+    return Thresholds(volume_multiple=float(volume_multiple), move_pct=float(move_pct),
+                      move_sigma=float(move_sigma), move_rule=str(move_rule))
+
+
+def _bars(rows: list[list[Any]]) -> tuple[dict[str, list[Bar]], dict[str, set[date]]]:
+    """Bars by symbol, oldest first, and the days NSE adjusted the previous close (corporate actions)."""
+    bars: dict[str, list[Bar]] = {}
+    adjusted: dict[str, set[date]] = {}
+    for symbol, day, close, prev_close, volume in rows:
+        series = bars.setdefault(symbol, [])
+        bar = Bar(date.fromisoformat(day), float(close), float(volume))
+        if series and prev_close and abs(float(prev_close) / series[-1].close - 1) > _ADJUSTED_DAY:
+            adjusted.setdefault(symbol, set()).add(bar.day)
+        series.append(bar)
+    return bars, adjusted
+
+
+def _results_rows(rows: list[list[Any]]) -> list[dict[str, Any]]:
+    return [{"symbol": symbol, "quarter_end": date.fromisoformat(quarter_end), "consolidated": consolidated,
+             "template": template, "period_start": date.fromisoformat(period_start),
+             "period_end": date.fromisoformat(period_end), "audited": audited, "xbrl_url": xbrl_url,
+             "figures": {"facts": facts or {}}}
+            for symbol, quarter_end, consolidated, template, period_start, period_end, audited, xbrl_url, facts
+            in rows]
+
+
+def _pledges(rows: list[list[Any]], companies: dict[str, str]) -> list[Pledge]:
+    """Holdings whose promoters have pledged shares (or had, in the previous snapshot), latest first
+    per company, with the change since NSE's previous snapshot when there is one."""
+    by_symbol: dict[str, list[list[Any]]] = {}
+    for row in rows:
+        by_symbol.setdefault(row[0], []).append(row)  # newest publication first (the query's order)
+    out: list[Pledge] = []
+    for symbol in sorted(by_symbol):
+        latest, *older = by_symbol[symbol]
+        _, as_of, published, pct, stake = latest
+        before = float(older[0][3]) if older and older[0][3] is not None else None
+        if not float(pct or 0) and not before:
+            continue
+        out.append({"symbol": symbol, "company": companies.get(symbol, symbol), "pct_of_promoter": float(pct or 0),
+                    "promoter_stake_pct": float(stake or 0), "as_of": as_of,
+                    "published": iso(datetime.fromisoformat(published)),
+                    "change_pct_points": None if before is None else round(float(pct or 0) - before, 2)})
+    return out
+
+
 def digest_payload(conn: psycopg.Connection, investor_id: UUID | str, hours: int,
                    now: datetime | None = None) -> Digest:
-    """The /v1/digest JSON for one investor: filings with ts in (now - hours, now].
+    """The /v1/digest JSON for one investor: filings with ts in (now - hours, now], their results
+    numbers, the price and volume moves in the window (attached to the filing that explains them, or
+    listed as unexplained), and the promoter pledges on the holdings.
 
     `now` defaults to the current time; pass one (with its zone) for a reproducible digest.
     `conn` must be in autocommit with no transaction open (`db.connect` or the API's pool)."""
@@ -176,31 +405,71 @@ def digest_payload(conn: psycopg.Connection, investor_id: UUID | str, hours: int
     start = now - timedelta(hours=hours)
     investor = UUID(str(investor_id))
 
-    # Two statements, not four: the API and the database sit in different regions, so each round
-    # trip counts. Both name the investor and both are filtered again by row-level security.
+    # Two statements, not more: the API and the database sit in different regions, so each round
+    # trip counts. Both name the investor and both are filtered again by row-level security. The
+    # first carries everything about the holdings (results, prices, thresholds, pledges) as JSON.
     with db.as_role(conn, "finn_api", investor):
-        holdings, sessions, as_of = conn.execute(
-            """select array(select symbol from finn.holdings where investor_id = %(investor)s order by symbol),
+        holdings, sessions, as_of, names, results, prices, prefs, pledges = conn.execute(
+            """with mine as (select symbol from finn.holdings where investor_id = %(investor)s)
+               select array(select symbol from mine order by symbol),
                       array(select day from finn.trading_days
                             where is_session and day between %(first)s and %(last)s order by day),
-                      (select max(finished_at) from finn.ingest_runs where ok and job like %(job)s)""",
+                      (select max(finished_at) from finn.ingest_runs where ok and job like %(job)s),
+                      (select coalesce(json_object_agg(c.symbol, c.name), '{}') from finn.companies c
+                       where c.symbol in (select symbol from mine) and c.name is not null),
+                      (select coalesce(json_agg(json_build_array(r.symbol, r.quarter_end, r.consolidated, r.template,
+                                                r.period_start, r.period_end, r.audited, r.xbrl_url,
+                                                (select jsonb_object_agg(k, v) from jsonb_each(r.figures -> 'facts')
+                                                   as f(k, v) where k = any(%(facts)s)))), '[]')
+                       from finn.results r
+                       where r.symbol in (select symbol from mine) and r.quarter_end >= %(results_from)s),
+                      (select coalesce(json_agg(json_build_array(p.symbol, p.day, p.close, p.prev_close, p.volume)
+                                                order by p.symbol, p.day), '[]')
+                       from finn.prices_eod p
+                       where p.symbol in (select symbol from mine) and p.day between %(prices_from)s and %(last)s),
+                      (select json_build_array(volume_multiple, move_pct, move_sigma, move_rule) from finn.prefs
+                       where investor_id = %(investor)s),
+                      (select coalesce(json_agg(json_build_array(x.symbol, x.as_of, x.broadcast,
+                                                x.pledged_of_promoter_pct, x.promoter_holding_pct)
+                                                order by x.symbol, x.broadcast desc), '[]')
+                       from (select p.*, row_number() over (partition by p.symbol
+                                                            order by p.broadcast desc, p.as_of desc) as n
+                             from finn.pledges p where p.symbol in (select symbol from mine)) x
+                       where x.n <= 2)""",
             {"investor": investor, "first": (start - _SESSION_MARGIN).date(), "last": (now + _SESSION_MARGIN).date(),
-             "job": _FILINGS_JOB}).fetchone() or ([], [], None)
+             "job": _FILINGS_JOB, "facts": _CARD_FACTS, "results_from": (start - _RESULTS_HISTORY).date(),
+             "prices_from": (start - _PRICE_HISTORY).date()}).fetchone() or ([], [], None, {}, [], [], None, [])
         rows = conn.execute(
             """select seq_id, symbol, company, ts, source, label, subject, url, file_size from finn.filings
                where symbol in (select symbol from finn.holdings where investor_id = %s)
                  and ts > %s and ts <= %s
                order by ts, seq_id""", [investor, start, now]).fetchall()
 
-    # Price and volume signals arrive with task D4; until then there is nothing to attach or report.
-    digest = build_digest(_announcements(rows), [], trading_days=sessions or None)
+    bars, adjusted = _bars(prices)
+    signals = window_signals(bars, adjusted, _thresholds(prefs), start, now)
+    stored_results = _results_rows(results)
+    digest = build_digest(_announcements(rows), signals, trading_days=sessions or None)
+
+    def entry(item: DigestItem) -> Item:
+        c = item.classification
+        card = None
+        if c.category == "results" and c.subtype not in _RESULT_FILINGS:
+            card = results_card(item.announcement.symbol, stored_results, item.announcement.ts.date())
+        return item_json(item, card, names)
+
     return {
         "window": {"hours": hours, "from": iso(start), "to": iso(now)},
         "data_as_of": iso(as_of) if as_of else None,
         "summary": digest["summary"],
-        "portfolio": {"holdings": len(holdings)},
-        "attention": [item_json(i) for i in digest["attention"]],
-        "worth": [item_json(i) for i in digest["worth"]],
+        "portfolio": {"holdings": len(holdings), "pledges": _pledges(pledges, names)},
+        "attention": [entry(i) for i in digest["attention"]],
+        "worth": [entry(i) for i in digest["worth"]],
         "routine": {"count": len(digest["routine"]), "by_kind": _by_kind(digest["routine_counts"])},
-        "unexplained_moves": [],
+        "unexplained_moves": [move_json(s, names.get(s.symbol, s.symbol))
+                              for s in sorted(digest["unexplained_moves"], key=_move_order)],
     }
+
+
+def _move_order(s: Signal) -> tuple[int, float]:
+    """Newest session first; within a day, the largest move or volume multiple first."""
+    return -s.day.toordinal(), -abs(s.value)

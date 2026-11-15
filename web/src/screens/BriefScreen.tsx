@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Api } from '../api/client'
 import { WINDOWS, type Digest, type WindowHours } from '../api/types'
 import { AttentionCard, WorthLine } from '../brief/ItemEntry'
+import { Pledges, UnexplainedMoves } from '../brief/Numbers'
 import { Routine } from '../brief/Routine'
 import { Loading, RateLimited, SavedCopyBanner, Unavailable, Waiting } from '../brief/States'
 import { Summary, windowPhrase } from '../brief/Summary'
@@ -132,6 +133,7 @@ function DigestView({ digest, now }: { digest: Digest; now: number }) {
           </div>
         </section>
       )}
+      <UnexplainedMoves moves={digest.unexplained_moves} />
       {digest.worth.length > 0 && (
         <section className="section section--worth" aria-labelledby="worth-heading">
           <h2 className="section__title" id="worth-heading">
@@ -144,6 +146,7 @@ function DigestView({ digest, now }: { digest: Digest; now: number }) {
           </div>
         </section>
       )}
+      <Pledges pledges={digest.portfolio.pledges} />
       <Routine routine={digest.routine} />
     </>
   )

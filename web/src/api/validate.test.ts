@@ -42,6 +42,32 @@ describe('contract checks', () => {
     expect(failsAt(() => parseDigest(null))).toBe('digest')
   })
 
+  it('checks results, moves and pledges, and allows null only where the contract does', () => {
+    const elgi = liveDigest.attention[0]!
+    expect(parseDigest(liveDigest).attention[0]!.results).toEqual(elgi.results)
+    expect(failsAt(() => parseDigest({ ...liveDigest, attention: [{ ...elgi, moves: undefined }] }))).toBe(
+      'digest.attention[0].moves',
+    )
+    const row = elgi.results!.rows[0]!
+    const badRow = { ...row, qoq: { ...row.qoq, pct: '8.9' } }
+    const badResults = { ...elgi.results!, rows: [badRow] }
+    expect(failsAt(() => parseDigest({ ...liveDigest, attention: [{ ...elgi, results: badResults }] }))).toBe(
+      'digest.attention[0].results.rows[0].qoq.pct',
+    )
+    expect(failsAt(() => parseDigest({ ...liveDigest, attention: [{ ...elgi, results: { ...elgi.results!, period_end: '30 Sep' } }] }))).toBe(
+      'digest.attention[0].results.period_end',
+    )
+    const move = liveDigest.unexplained_moves[0]!
+    expect(failsAt(() => parseDigest({ ...liveDigest, unexplained_moves: [{ ...move, value: null }] }))).toBe(
+      'digest.unexplained_moves[0].value',
+    )
+    expect(failsAt(() => parseDigest({ ...liveDigest, unexplained_moves: [{ ...move, sigma: null }] }))).toBeNull()
+    const pledge = liveDigest.portfolio.pledges[0]!
+    expect(
+      failsAt(() => parseDigest({ ...liveDigest, portfolio: { holdings: 18, pledges: [{ ...pledge, published: '9 Nov' }] } })),
+    ).toBe('digest.portfolio.pledges[0].published')
+  })
+
   it('accepts a time only with an offset', () => {
     expect(failsAt(() => parseDigest({ ...liveDigest, data_as_of: '2026-11-15T15:07:41' }))).toBe('digest.data_as_of')
     expect(failsAt(() => parseDigest({ ...liveDigest, data_as_of: '2026-11-15T09:37:41Z' }))).toBeNull()

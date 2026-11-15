@@ -47,7 +47,7 @@ def test_the_real_week_ranks_as_the_ranker_ranks_it(client):
 
     assert body["window"] == {"hours": 144, "from": "2026-11-03T23:59:00+05:30", "to": "2026-11-09T23:59:00+05:30"}
     assert body["data_as_of"] == DATA_AS_OF
-    assert body["portfolio"] == {"holdings": 18}
+    assert body["portfolio"] == {"holdings": 18, "pledges": []}
     assert [i["id"] for i in body["attention"]] == [i.announcement.id for i in want["attention"]]
     assert [i["id"] for i in body["worth"]] == [i.announcement.id for i in want["worth"]]
     assert body["routine"] == {"count": len(want["routine"]), "by_kind": want["routine_counts"]}
@@ -106,7 +106,7 @@ def test_one_investor_never_sees_another_investors_holdings(client):
     demo_symbols = {i["symbol"] for i in demo["attention"] + demo["worth"]}
     other_symbols = {i["symbol"] for i in other["attention"] + other["worth"]}
     assert demo_symbols <= DEMO_HOLDINGS and not demo_symbols & OTHER_HOLDINGS
-    assert other["portfolio"] == {"holdings": 2} and other_symbols == OTHER_HOLDINGS
+    assert other["portfolio"] == {"holdings": 2, "pledges": []} and other_symbols == OTHER_HOLDINGS
     # Sadbhav's statutory auditor left mid-term (100): it is the other investor's, and only theirs.
     assert other["attention"][0]["symbol"] == "SADBHAV" and other["attention"][0]["score"] == 100
     assert not {i["id"] for i in other["attention"] + other["worth"]} & {i["id"] for i in demo["attention"]}
@@ -114,7 +114,7 @@ def test_one_investor_never_sees_another_investors_holdings(client):
 
 def test_a_token_for_an_unknown_investor_sees_an_empty_portfolio(client):
     body = get(client, mint(UUID(int=0xDEAD)), hours=144).json()
-    assert body["portfolio"] == {"holdings": 0}
+    assert body["portfolio"] == {"holdings": 0, "pledges": []}
     assert body["summary"] == "Nothing material across your portfolio."
 
 

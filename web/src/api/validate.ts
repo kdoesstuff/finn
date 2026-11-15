@@ -2,7 +2,19 @@
 // still input: a shape the app does not expect is refused here, with the path that failed, rather
 // than rendered half-broken.
 
-import type { DemoSession, Digest, Health, Item, RelatedFiling, Snapshot } from './types'
+import type {
+  Change,
+  DemoSession,
+  Digest,
+  Health,
+  Item,
+  Move,
+  Pledge,
+  RelatedFiling,
+  Results,
+  ResultsRow,
+  Snapshot,
+} from './types'
 
 export class ContractError extends Error {
   override name = 'ContractError'
@@ -52,6 +64,17 @@ function time(value: Json, path: string): string {
   return s
 }
 
+function nullable<T>(value: Json, path: string, each: (v: Json, p: string) => T): T | null {
+  return value === null ? null : each(value, path)
+}
+
+/** A calendar date, 2026-09-30. */
+function day(value: Json, path: string): string {
+  const s = str(value, path)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s) || Number.isNaN(Date.parse(s))) throw new ContractError(path, 'a date')
+  return s
+}
+
 function arr<T>(value: Json, path: string, each: (v: Json, p: string) => T): T[] {
   if (!Array.isArray(value)) throw new ContractError(path, 'a list')
   return value.map((v, i) => each(v, `${path}[${i}]`))
@@ -65,6 +88,68 @@ function related(value: Json, path: string): RelatedFiling {
     label: str(o.label, `${path}.label`),
     headline: str(o.headline, `${path}.headline`),
     url: str(o.url, `${path}.url`),
+  }
+}
+
+function change(value: Json, path: string): Change {
+  const o = obj(value, path)
+  return {
+    pct: nullable(o.pct, `${path}.pct`, num),
+    note: str(o.note, `${path}.note`),
+    margin_bps: nullable(o.margin_bps, `${path}.margin_bps`, num),
+  }
+}
+
+function resultsRow(value: Json, path: string): ResultsRow {
+  const o = obj(value, path)
+  return {
+    metric: str(o.metric, `${path}.metric`),
+    value: num(o.value, `${path}.value`),
+    margin: nullable(o.margin, `${path}.margin`, num),
+    qoq: change(o.qoq, `${path}.qoq`),
+    yoy: change(o.yoy, `${path}.yoy`),
+  }
+}
+
+function results(value: Json, path: string): Results {
+  const o = obj(value, path)
+  return {
+    quarter: str(o.quarter, `${path}.quarter`),
+    period_end: day(o.period_end, `${path}.period_end`),
+    basis: str(o.basis, `${path}.basis`),
+    template: str(o.template, `${path}.template`),
+    unit: str(o.unit, `${path}.unit`),
+    rows: arr(o.rows, `${path}.rows`, resultsRow),
+    notes: arr(o.notes, `${path}.notes`, str),
+    source: str(o.source, `${path}.source`),
+  }
+}
+
+function move(value: Json, path: string): Move {
+  const o = obj(value, path)
+  return {
+    symbol: str(o.symbol, `${path}.symbol`),
+    company: str(o.company, `${path}.company`),
+    day: day(o.day, `${path}.day`),
+    kind: str(o.kind, `${path}.kind`),
+    value: num(o.value, `${path}.value`),
+    threshold: num(o.threshold, `${path}.threshold`),
+    sigma: nullable(o.sigma, `${path}.sigma`, num),
+    fired_by: str(o.fired_by, `${path}.fired_by`),
+    detail: str(o.detail, `${path}.detail`),
+  }
+}
+
+function pledge(value: Json, path: string): Pledge {
+  const o = obj(value, path)
+  return {
+    symbol: str(o.symbol, `${path}.symbol`),
+    company: str(o.company, `${path}.company`),
+    pct_of_promoter: num(o.pct_of_promoter, `${path}.pct_of_promoter`),
+    promoter_stake_pct: num(o.promoter_stake_pct, `${path}.promoter_stake_pct`),
+    as_of: day(o.as_of, `${path}.as_of`),
+    published: time(o.published, `${path}.published`),
+    change_pct_points: nullable(o.change_pct_points, `${path}.change_pct_points`, num),
   }
 }
 
@@ -88,6 +173,8 @@ function item(value: Json, path: string): Item {
     alert: bool(o.alert, `${path}.alert`),
     reasons: arr(o.reasons, `${path}.reasons`, str),
     related: arr(o.related, `${path}.related`, related),
+    results: nullable(o.results, `${path}.results`, results),
+    moves: arr(o.moves, `${path}.moves`, move),
   }
 }
 
@@ -111,14 +198,17 @@ export function parseDigest(value: Json, path = 'digest'): Digest {
     },
     data_as_of: time(o.data_as_of, `${path}.data_as_of`),
     summary: str(o.summary, `${path}.summary`),
-    portfolio: { holdings: int(portfolio.holdings, `${path}.portfolio.holdings`, 0, 10_000) },
+    portfolio: {
+      holdings: int(portfolio.holdings, `${path}.portfolio.holdings`, 0, 10_000),
+      pledges: arr(portfolio.pledges, `${path}.portfolio.pledges`, pledge),
+    },
     attention: arr(o.attention, `${path}.attention`, item),
     worth: arr(o.worth, `${path}.worth`, item),
     routine: {
       count: int(routine.count, `${path}.routine.count`, 0, 1_000_000),
       by_kind: counts(routine.by_kind, `${path}.routine.by_kind`),
     },
-    unexplained_moves: arr(o.unexplained_moves, `${path}.unexplained_moves`, (v) => v),
+    unexplained_moves: arr(o.unexplained_moves, `${path}.unexplained_moves`, move),
   }
 }
 

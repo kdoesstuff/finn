@@ -240,7 +240,8 @@ Evidence (smoke run 43706393122, Sun 15 Nov): the default query, a 90-day date r
 period all returned no rows (the 90-day answer still had both of its keys, `comNameList` and
 `data`); the report of the remaining variants was cut off at 200 characters, which is why the probe
 now prints in full. The recorded response of 9-11 Nov shows what the feed holds: 1,558 companies,
-every row carrying the same publication time (9 Nov 2026, 16:31:32), nearly all for the quarter to
+all published by NSE within two minutes of each other (9 Nov 2026, 16:30:17 to 16:31:58; corrected
+from "one time" after the Push stream checked), nearly all for the quarter to
 30 Sep 2026 (1,454 rows). So it looks like a snapshot NSE regenerates, and the current one is empty.
 
 So, three changes:

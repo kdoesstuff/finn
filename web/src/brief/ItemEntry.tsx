@@ -3,6 +3,7 @@ import type { Item } from '../api/types'
 import { categoryLabel, detailInDocumentNote, shortCompany } from '../lib/labels'
 import { formatFull, formatRelative, formatStamp } from '../lib/time'
 import { DateColumn, SourceLink, Stamp } from './Evidence'
+import { MovesNote, ResultsTable } from './Numbers'
 
 interface Props {
   item: Item
@@ -25,6 +26,8 @@ export function AttentionCard({ item, now }: Props) {
         {shortCompany(item.company)} <span className="company__symbol">{item.symbol}</span>
       </h3>
       <p className="headline">{item.headline}</p>
+      {item.results && <ResultsTable results={item.results} company={item.company} />}
+      <MovesNote moves={item.moves} />
       {item.detail_in_document && <p className="note">{detailInDocumentNote(item.category)}</p>}
       <EntryActions item={item} />
     </article>
@@ -46,6 +49,8 @@ export function WorthLine({ item, now }: Props) {
           {item.alert && <span className="kind__alert">On your alert list</span>}
         </p>
         <p className="line__headline">{item.headline}</p>
+        {item.results && <ResultsTable results={item.results} company={item.company} />}
+        <MovesNote moves={item.moves} />
         {item.detail_in_document && <p className="note">{detailInDocumentNote(item.category)}</p>}
         <EntryActions item={item} />
       </div>

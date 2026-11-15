@@ -97,18 +97,37 @@ def api_examples() -> dict[str, Any]:
     text = (ROOT / "docs" / "API.md").read_text(encoding="utf-8")
     out: dict[str, Any] = {}
     for block in re.findall(r"```json\n(.*?)```", text, re.DOTALL):
-        example = json.loads(block.replace("[Item]", "[]"))
+        example = json.loads(re.sub(r"\[(Item|Move|Pledge)\]", "[]", block))
         kind = next(k for k, key in (("error", "error"), ("session", "token"), ("health", "ok"),
-                                     ("digest", "window"), ("item", "headline")) if key in example)
+                                     ("digest", "window"), ("item", "headline"), ("results", "quarter"),
+                                     ("move", "fired_by"), ("pledge", "pct_of_promoter")) if key in example)
         out[kind] = example
-    assert set(out) == {"error", "session", "health", "digest", "item"}, "docs/API.md examples changed"
+    assert set(out) == {"error", "session", "health", "digest", "item", "results", "move", "pledge"}, \
+        "docs/API.md examples changed"
     return out
+
+
+# Fields the contract allows to be null, and fields whose shape is a named example of its own.
+NULLABLE = {"results", "margin", "pct", "margin_bps", "sigma", "change_pct_points", "data_as_of"}
+NAMED = {"results": "results", "moves": "move", "unexplained_moves": "move", "pledges": "pledge"}
+_examples: dict[str, Any] = {}
+
+
+def _named(kind: str) -> Any:
+    if not _examples:
+        _examples.update(api_examples())
+    return _examples[kind]
 
 
 def same_shape(actual: Any, example: Any, path: str = "$") -> None:
     """`actual` has exactly the example's keys, recursively, with values of the same JSON types.
     Lists are checked element by element against the example's first element; `by_kind` maps
     kinds (data, not schema) to counts."""
+    key = re.sub(r"\[\d+\]$", "", path).rsplit(".", 1)[-1]
+    if actual is None and key in NULLABLE:
+        return
+    if key in NAMED and example in (None, []):
+        example = _named(NAMED[key]) if key == "results" else [_named(NAMED[key])]
     if path.endswith(".by_kind"):
         assert isinstance(actual, dict) and all(isinstance(k, str) and type(v) is int for k, v in actual.items()), path
         return

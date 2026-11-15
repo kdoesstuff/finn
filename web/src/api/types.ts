@@ -42,6 +42,57 @@ export interface RelatedFiling {
   url: string
 }
 
+/** A change against the previous quarter or the year-ago quarter: a %, or a note when a % would mislead. */
+export interface Change {
+  pct: number | null
+  note: string
+  margin_bps: number | null
+}
+
+export interface ResultsRow {
+  metric: string
+  value: number
+  margin: number | null
+  qoq: Change
+  yoy: Change
+}
+
+/** A results filing's numbers, from its XBRL (₹ crore). */
+export interface Results {
+  quarter: string
+  period_end: string
+  basis: string
+  template: string
+  unit: string
+  rows: ResultsRow[]
+  notes: string[]
+  source: string
+}
+
+/** A session's price move or volume crossing the investor's thresholds. */
+export interface Move {
+  symbol: string
+  company: string
+  day: string
+  kind: string
+  value: number
+  threshold: number
+  sigma: number | null
+  fired_by: string
+  detail: string
+}
+
+/** Promoter shares pledged at a holding, as NSE published them. */
+export interface Pledge {
+  symbol: string
+  company: string
+  pct_of_promoter: number
+  promoter_stake_pct: number
+  as_of: string
+  published: string
+  change_pct_points: number | null
+}
+
 /** One event: the filing that best says what happened, plus every other filing about it. */
 export interface Item {
   id: string
@@ -61,6 +112,10 @@ export interface Item {
   alert: boolean
   reasons: string[]
   related: RelatedFiling[]
+  /** Null except on a results filing whose quarter is stored. */
+  results: Results | null
+  /** Price and volume moves this filing may explain. */
+  moves: Move[]
 }
 
 export interface DigestWindow {
@@ -74,12 +129,12 @@ export interface Digest {
   window: DigestWindow
   data_as_of: string
   summary: string
-  portfolio: { holdings: number }
+  portfolio: { holdings: number; pledges: Pledge[] }
   attention: Item[]
   worth: Item[]
   routine: { count: number; by_kind: Record<string, number> }
-  /** Stays empty until price alerts (task D4); its item shape is not in the contract yet. */
-  unexplained_moves: unknown[]
+  /** Moves in the window that no filing explains, newest first. */
+  unexplained_moves: Move[]
 }
 
 /** web/public/snapshot.json: the digest shape plus these two fields. */
