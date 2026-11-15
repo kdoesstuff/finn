@@ -35,8 +35,12 @@ from . import config, llm
 
 log = logging.getLogger("finn.guard")
 
-WINDOW_WORDS = 300   # Prompt Guard 2 reads 512 tokens; ~300 English words stays inside that
-OVERLAP_WORDS = 50   # an instruction split across two windows still lands whole in one of them
+# Prompt Guard 2 reads at most 512 tokens and Groq refuses longer input with HTTP 400. 300 words
+# fit ordinary English but not number-heavy transcripts (seen live, 15 Nov), so windows are 120 words
+# and at most WINDOW_CHARS characters.
+WINDOW_WORDS = 120
+WINDOW_CHARS = 1200
+OVERLAP_WORDS = 20   # an instruction split across two windows still lands whole in one of them
 MAX_WINDOWS = 8      # per call: about 2,000 words screened in full, longer documents sampled
 GUARD_PER_MINUTE = 25  # under Groq's ~30 a minute for the guard model
 LIMIT_WAITS_S = (5.0, 15.0, 30.0)  # after a 429: wait, try the same window again, then fail closed
@@ -55,7 +59,7 @@ def windows(document: str) -> list[str]:
     step = WINDOW_WORDS - OVERLAP_WORDS
     out = []
     for start in range(0, len(words), step):
-        out.append(" ".join(words[start:start + WINDOW_WORDS]))
+        out.append(" ".join(words[start:start + WINDOW_WORDS])[:WINDOW_CHARS])
         if start + WINDOW_WORDS >= len(words):
             break
     return out

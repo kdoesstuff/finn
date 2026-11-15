@@ -36,6 +36,12 @@ JUDGE_VERSION = "ledger-judge-v1"
 SNAPSHOT_VERSION = "snapshot-v1"
 STATUSES = ("kept", "missed", "partly", "too_early", "not_measurable")
 MAX_POINTS = 6  # per list in the snapshot and in each case
+# Promises judged per model call. All of a company's open promises in one call (up to 53 on 15 Nov)
+# overran the answer's length: every model returned truncated, non-JSON replies and nothing was
+# judged. Small batches with room to answer fix that; a failed batch leaves only its own promises
+# unjudged.
+JUDGE_BATCH = 6
+JUDGE_MAX_TOKENS = 8192
 
 EXTRACT_INSTRUCTIONS = """You read one earnings-call transcript of an Indian listed company.
 List every explicit forward-looking statement management made about its own business: a target,
@@ -172,15 +178,31 @@ def judge(conn: psycopg.Connection | None, statements: list[dict[str, Any]], lat
     if not open_:
         return out
     calls = {d.period.isoformat(): d for d in later if d.period}
-    promises = [{"id": i, "said_in": statements[i]["said_in"], "quote": statements[i]["quote"],
-                 "metric": statements[i]["metric"], "target": statements[i]["target"],
-                 "horizon": statements[i]["horizon"]} for i in open_]
     numbers_text = "\n".join(line for _, (line, _src) in sorted(numbers.items()))
     later_text = "\n\n".join(d.numbered(f"call to {d.period.isoformat()}") for d in later if d.period)
-    document = f"PROMISES\n{json.dumps(promises, ensure_ascii=False)}\n\nREPORTED NUMBERS\n{numbers_text}\n\n" \
-               f"LATER CALLS\n{later_text}"
-    result = _llm().complete_json(conn, "reasoner", JUDGE_VERSION, JUDGE_INSTRUCTIONS, document, JUDGE_SCHEMA)
-    by_id = {int(v["id"]): v for v in result.get("verdicts", []) if isinstance(v, dict) and "id" in v}
+    by_id: dict[int, Any] = {}
+    failure: Exception | None = None
+    judged_any = False
+    for start in range(0, len(open_), JUDGE_BATCH):
+        batch = open_[start:start + JUDGE_BATCH]
+        promises = [{"id": i, "said_in": statements[i]["said_in"], "quote": statements[i]["quote"],
+                     "metric": statements[i]["metric"], "target": statements[i]["target"],
+                     "horizon": statements[i]["horizon"]} for i in batch]
+        document = f"PROMISES\n{json.dumps(promises, ensure_ascii=False)}\n\nREPORTED NUMBERS\n{numbers_text}\n\n" \
+                   f"LATER CALLS\n{later_text}"
+        try:
+            result = _llm().complete_json(conn, "reasoner", JUDGE_VERSION, JUDGE_INSTRUCTIONS, document, JUDGE_SCHEMA,
+                                          max_output_tokens=JUDGE_MAX_TOKENS)
+        except Exception as exc:  # noqa: BLE001 - one batch failing leaves only its promises unjudged
+            if not isinstance(exc, _llm().ModelError):
+                raise
+            failure = exc
+            continue
+        judged_any = True
+        by_id.update({int(v["id"]): v for v in result.get("verdicts", [])
+                      if isinstance(v, dict) and "id" in v and int(v["id"]) in batch})
+    if not judged_any and failure is not None:
+        raise failure
     for i in open_:
         v = by_id.get(i)
         if v is None or v.get("status") not in STATUSES:

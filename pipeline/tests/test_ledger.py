@@ -353,3 +353,23 @@ def test_numbers_lines_carry_the_values_a_verdict_may_cite(tcs):
     text, url = lines[latest]
     assert text.startswith(f"quarter to {latest.isoformat()}: revenue ₹") and url.startswith("https://")
     assert re.search(r"EBITDA margin \d+\.\d%", text)
+
+
+def test_promises_are_judged_in_small_batches_and_a_failed_batch_leaves_only_its_own(llm, monkeypatch):
+    promises = [june_promise(f"Promise number {k}.") for k in range(ledger.JUDGE_BATCH * 2 + 1)]
+    calls = {"n": 0}
+
+    def complete_json(conn, role, prompt_version, instructions, document, schema, *, max_output_tokens=4096):
+        calls["n"] += 1
+        assert max_output_tokens == ledger.JUDGE_MAX_TOKENS
+        ids = [p["id"] for p in json.loads(document.split("PROMISES\n")[1].split("\n\nREPORTED NUMBERS")[0])]
+        if calls["n"] == 2:
+            raise llm.ModelError("every model failed for this batch")
+        return {"verdicts": [{"id": i, "status": "too_early", "evidence": None} for i in ids]}
+
+    monkeypatch.setattr(llm, "complete_json", complete_json)
+    judged = ledger.judge(None, promises, [doc()], numbers(), date(2026, 9, 30))
+    assert calls["n"] == 3
+    batch_two = range(ledger.JUDGE_BATCH, ledger.JUDGE_BATCH * 2)
+    assert all(judged[i]["status"] == "not_measurable" for i in batch_two)
+    assert all(judged[i]["status"] == "too_early" for i in range(len(promises)) if i not in batch_two)
