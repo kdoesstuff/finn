@@ -17,7 +17,7 @@ from __future__ import annotations
 import random
 import time
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Protocol
 
 import requests
 
@@ -35,6 +35,14 @@ REWARM_STATUS = {401, 403}
 
 class SourceError(RuntimeError):
     """An outside source did not give a usable answer after retries."""
+
+
+class Source(Protocol):
+    """What the fetchers need from a client: NSEClient live, a recorded stand-in in tests."""
+
+    def api(self, path: str, **params: Any) -> Any: ...
+
+    def content(self, url: str) -> bytes | None: ...
 
 
 class NSEClient:

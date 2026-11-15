@@ -1,0 +1,13 @@
+{
+  "_about": "The demo investor reviewers use (decision 2: one-tap, read-only). Fictional person; the portfolio is decision 7. Theses are added in task D5.",
+  "investor": {
+    "id": "d3e0d3e0-0000-4000-8000-000000000001",
+    "display_name": "Demo investor",
+    "network_enabled": true
+  },
+  "holdings": [
+    "KALYANKJIL", "MRF", "TATAPOWER", "TRITURBINE", "MANAPPURAM", "PAGEIND", "NMDC", "ABB", "EICHERMOT",
+    "NATCOPHARM", "TCS", "HDFCBANK", "ASIANPAINT", "ELGIEQUIP", "ASAHIINDIA", "PERSISTENT", "NAVINFLUOR", "LT"
+  ],
+  "research": ["POLYCAB", "BAJFINANCE", "DIXON"]
+}

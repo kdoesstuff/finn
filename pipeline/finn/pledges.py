@@ -30,6 +30,7 @@ class Pledge:
     promoter_shares: int
     promoter_pledged_shares: int
     issued_shares: int
+    broadcast: datetime | None = None  # when NSE published this disclosure
 
     @property
     def headline(self) -> str:
@@ -58,7 +59,15 @@ def parse(row: dict) -> Pledge:
         promoter_shares=_i(row, "totPromoterHolding"),
         promoter_pledged_shares=_i(row, "totPromoterShares"),
         issued_shares=_i(row, "totIssuedShares"),
+        broadcast=_when(row.get("broadcastDt")),
     )
+
+
+def _when(text: object) -> datetime | None:
+    try:
+        return datetime.strptime(str(text).strip().title(), "%d-%b-%Y %H:%M:%S")
+    except ValueError:
+        return None
 
 
 def change(before: Pledge, after: Pledge) -> float:

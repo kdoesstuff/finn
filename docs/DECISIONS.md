@@ -168,3 +168,56 @@ trades (D3), network people and edges (G2).
 
 CI now runs the database tests on a real Postgres 16 with pgvector (Ubuntu 24.04 packages, the
 pipeline job pinned to that runner); they fail rather than skip in CI.
+
+Live on Supabase (15 Nov 2026): `check_setup.py` 10 of 10, Postgres 17.11 with pgvector 0.8.2;
+CI run 43698214984 green including the database job; `migrate` run 43698551282 applied
+`0001_foundation.sql` and every check passed. The admin was allowed to grant use of `extensions`,
+so both FINN roles use pgvector; the REST API refused all probed FINN tables with both real keys
+(`PGRST106`, schema not exposed). CI tests on Postgres 16 with pgvector 0.6 (Ubuntu 24.04
+packages) while Supabase runs 17.11 with 0.8.2: the migration is proven on both; the gap is noted
+in case a later migration uses something only 17 has.
+
+## B3 Scheduled ingest (15 Nov 2026)
+
+`finn/ingest.py`, run by `scripts/ingest.py` and the `ingest` workflow, every job as `finn_ingest`.
+
+| Job | Schedule (IST) | What it does |
+| --- | --- | --- |
+| filings | every 30 min, 07:37 to 00:07 | Last two days of announcements, market-wide, upserted by NSE's id and classified; then results for covered companies that filed results in the window; then filings classified by older rules (a hash of the rule files) are reclassified, 5,000 per run |
+| eod | 19:22 and 21:22 | Bhavcopy for every recent day not yet recorded; a day without one is recorded as not a session (non-sessions older than 3 days are final; today is re-checked until the file appears) |
+| daily | 06:52 | Equity master list, board meetings (a week back, a month ahead), pledges, corporate actions and a results sweep for covered companies |
+| backfill | by hand | Daily jobs, then filings day by day, then prices from an earlier start |
+
+Minutes are off the hour on purpose: GitHub delays scheduled runs at busy times, and a late run
+loses nothing because every job re-reads an overlapping window and writes idempotently.
+
+**Coverage** (`0002_coverage.sql`). Ingest may not read investor tables, so it cannot learn from
+holdings which companies need results and history. `finn.coverage` is the public half of that fact,
+a symbol and a reason, with no link to any investor; the API adds to it. The demo investor's 18
+holdings and 3 research names are seeded through the API role (`ingest.py seed`). The same
+migration adds `finn.lockdown()`, called last by every migration, which strips any privilege
+Supabase's API roles might gain on new objects; `migrate.py verify` now also checks on the live
+database that those roles hold no privilege on any FINN table.
+
+**Found in the data while building it.**
+
+1. ISINs disagree between sources: Asian Paints' November filings carry `INE021A01018`, the same
+   week's bhavcopy `INE021A01026`. Writing both would flip the record on every run; ISINs now come
+   only from the bhavcopy and the equity master, names and industries from filings.
+2. NSE's pledge feed has company names and no symbol. Names are matched exactly after normalising
+   case, punctuation and "Limited/Ltd", never fuzzily: Kalyani Forge must not become Kalyan
+   Jewellers. Names come from NSE's equity master list (a new fetcher; its live format is checked by
+   the smoke test, since only a constructed sample exists in the fixtures), filings and board
+   meetings.
+3. A results file NSE lists but does not serve is asked for again on the next run, not marked
+   missing for good; a stored file is never downloaded again (tests count the downloads).
+
+**Tested** with a stand-in for NSE that answers from the recorded responses, filtering by date as
+NSE does: 4,795 filings stored once and unchanged on a second run; timestamps stored as Indian
+time; the July revision of Asian Paints' March results stored, not May's original; TCS Sep 2026
+revenue ₹73,188 cr from the stored facts; HDFC Bank on the bank template; 6 Nov a session, 7 and
+10 Nov not; Kalyan's pledge (24.85% of promoter stake) matched to KALYANKJIL; a failed job logged
+with its error and raised; the seed idempotent. 157 tests in all.
+
+Moved to D6: the daily JSON snapshot. It is the app's fallback for what the app shows, which is
+the digest, and the digest does not exist until D6; exporting raw tables now would be thrown away.

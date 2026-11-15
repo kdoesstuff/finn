@@ -130,3 +130,20 @@ def tables_without_rls(conn: psycopg.Connection) -> list[str]:
                            where n.nspname = 'finn' and c.relkind in ('r', 'p') and not c.relrowsecurity
                            order by 1""").fetchall()
     return [r[0] for r in rows]
+
+
+def api_role_privileges(conn: psycopg.Connection, role: str) -> list[str]:
+    """Privileges a Supabase API role holds on tables in schema finn, as "table:privilege".
+    Must be empty: the REST API reaches the database as these roles. Empty too where the role
+    does not exist (a plain Postgres)."""
+    exists = conn.execute("select 1 from pg_roles where rolname = %s", [role]).fetchone()
+    if not exists:
+        return []
+    rows = conn.execute("""select c.relname || ':' || p.priv
+                           from pg_class c join pg_namespace n on n.oid = c.relnamespace
+                           cross join unnest(array['select', 'insert', 'update', 'delete']) as p(priv)
+                           where n.nspname = 'finn' and c.relkind in ('r', 'p', 'v', 'm')
+                             and has_table_privilege(%s, c.oid, p.priv)
+                           order by 1""", [role]).fetchall()
+    usage = conn.execute("select has_schema_privilege(%s, 'finn', 'usage')", [role]).fetchone()
+    return [r[0] for r in rows] + (["schema:usage"] if usage and usage[0] else [])

@@ -17,7 +17,7 @@ from typing import Any
 from ..models import Announcement
 from ..pledges import Pledge
 from ..pledges import parse as parse_pledge
-from .client import NSEClient, SourceError
+from .client import Source, SourceError
 
 ARCHIVES = "https://nsearchives.nseindia.com"
 
@@ -58,11 +58,60 @@ def parse_announcement(row: dict) -> Announcement:
     )
 
 
-def announcements(client: NSEClient, start: date, end: date, symbol: str | None = None) -> list[Announcement]:
+def announcement_rows(client: Source, start: date, end: date, symbol: str | None = None) -> list[dict]:
+    """NSE's raw announcement rows (ingest keeps the company fields that Announcement does not)."""
     params: dict[str, Any] = {"index": "equities", "from_date": _d(start), "to_date": _d(end)}
     if symbol:
         params["symbol"] = symbol
-    return [parse_announcement(r) for r in _rows(client.api("corporate-announcements", **params))]
+    return _rows(client.api("corporate-announcements", **params))
+
+
+def announcements(client: Source, start: date, end: date, symbol: str | None = None) -> list[Announcement]:
+    return [parse_announcement(r) for r in announcement_rows(client, start, end, symbol)]
+
+
+# Companies ----------------------------------------------------------------------------------------
+
+@dataclass
+class Company:
+    symbol: str
+    name: str | None = None
+    isin: str | None = None
+    industry: str | None = None
+
+
+def _clean(value: Any) -> str | None:
+    text = str(value or "").strip()
+    return None if text in ("", "-", "None", "null") else text
+
+
+def company_from_announcement(row: dict) -> Company:
+    """Name and industry only. The ISIN on filings can be stale: Asian Paints' filings in Nov 2026
+    still carried INE021A01018 while that week's bhavcopy traded it as INE021A01026. ISINs come
+    from the bhavcopy and the equity master, which are current."""
+    return Company(row["symbol"], _clean(row.get("sm_name")), None, _clean(row.get("smIndustry")))
+
+
+EQUITY_LIST_URL = f"{ARCHIVES}/content/equities/EQUITY_L.csv"
+
+
+def parse_equity_list(csv_bytes: bytes) -> list[Company]:
+    """NSE's list of listed equities: SYMBOL, NAME OF COMPANY, SERIES, ..., ISIN NUMBER, ...
+    Column names carry stray spaces in NSE's file, so they are matched after stripping."""
+    out = []
+    for raw in csv.DictReader(io.StringIO(csv_bytes.decode("utf-8-sig"))):
+        r = {(k or "").strip().upper(): (v or "").strip() for k, v in raw.items()}
+        symbol = r.get("SYMBOL", "")
+        if symbol:
+            out.append(Company(symbol, _clean(r.get("NAME OF COMPANY")), _clean(r.get("ISIN NUMBER"))))
+    return out
+
+
+def equity_list(client: Source) -> list[Company]:
+    blob = client.content(EQUITY_LIST_URL)
+    if blob is None:
+        raise SourceError(f"{EQUITY_LIST_URL}: not found")
+    return parse_equity_list(blob)
 
 
 # Results ------------------------------------------------------------------------------------------
@@ -126,7 +175,7 @@ def latest_per_quarter(filings: list[ResultFiling]) -> list[ResultFiling]:
     return sorted(best.values(), key=lambda f: (f.quarter_end, f.consolidated), reverse=True)
 
 
-def integrated_index(client: NSEClient, symbol: str, max_pages: int = 10) -> list[dict]:
+def integrated_index(client: Source, symbol: str, max_pages: int = 10) -> list[dict]:
     """Every row of the paginated Integrated Filing index for one company."""
     rows: list[dict] = []
     seen: set[Any] = set()
@@ -143,7 +192,7 @@ def integrated_index(client: NSEClient, symbol: str, max_pages: int = 10) -> lis
     return rows
 
 
-def result_filings(client: NSEClient, symbol: str) -> list[ResultFiling]:
+def result_filings(client: Source, symbol: str) -> list[ResultFiling]:
     """Latest filing per quarter and basis, from both indexes (legacy to Dec 2024, integrated after)."""
     integrated = parse_integrated(integrated_index(client, symbol))
     legacy = parse_legacy(_rows(client.api("corporates-financial-results", index="equities", symbol=symbol,
@@ -158,6 +207,7 @@ class EodRow:
     symbol: str
     series: str
     day: date
+    isin: str
     close: float
     prev_close: float
     volume: int
@@ -177,7 +227,7 @@ def parse_bhavcopy(csv_bytes: bytes, series: tuple[str, ...] = ("EQ", "BE")) -> 
         try:
             out.append(EodRow(
                 symbol=r["TckrSymb"], series=r["SctySrs"], day=date.fromisoformat(r["TradDt"]),
-                close=float(r["ClsPric"]), prev_close=float(r["PrvsClsgPric"]),
+                isin=r.get("ISIN") or "", close=float(r["ClsPric"]), prev_close=float(r["PrvsClsgPric"]),
                 volume=int(float(r["TtlTradgVol"])), turnover=float(r["TtlTrfVal"]),
             ))
         except (KeyError, ValueError):
@@ -195,7 +245,7 @@ def unzip_single(blob: bytes) -> bytes:
         return z.read(names[0])
 
 
-def bhavcopy(client: NSEClient, day: date) -> list[EodRow] | None:
+def bhavcopy(client: Source, day: date) -> list[EodRow] | None:
     """Every equity's close and volume for one day, or None if NSE published no file (not a session)."""
     blob = client.content(bhavcopy_url(day))
     return None if blob is None else parse_bhavcopy(unzip_single(blob))
@@ -203,7 +253,7 @@ def bhavcopy(client: NSEClient, day: date) -> list[EodRow] | None:
 
 # Pledges, board meetings, annual reports, insider trades, corporate actions -------------------------
 
-def pledges(client: NSEClient) -> list[Pledge]:
+def pledges(client: Source) -> list[Pledge]:
     out = []
     for r in _rows(client.api("corporate-pledgedata", index="equities")):
         try:
@@ -220,6 +270,7 @@ class BoardMeeting:
     purpose: str
     description: str
     announced: datetime | None
+    company: Company | None = None
 
 
 def parse_board_meetings(rows: list[dict]) -> list[BoardMeeting]:
@@ -229,11 +280,12 @@ def parse_board_meetings(rows: list[dict]) -> list[BoardMeeting]:
         if day is None or not r.get("bm_symbol"):
             continue
         out.append(BoardMeeting(r["bm_symbol"], day.date(), r.get("bm_purpose") or "", r.get("bm_desc") or "",
-                                _dt(r.get("bm_timestamp", ""), "%d-%b-%Y %H:%M:%S")))
+                                _dt(r.get("bm_timestamp", ""), "%d-%b-%Y %H:%M:%S"),
+                                Company(r["bm_symbol"], _clean(r.get("sm_name")), None, _clean(r.get("sm_indusrty")))))
     return out
 
 
-def board_meetings(client: NSEClient, start: date, end: date) -> list[BoardMeeting]:
+def board_meetings(client: Source, start: date, end: date) -> list[BoardMeeting]:
     return parse_board_meetings(_rows(client.api("corporate-board-meetings", index="equities",
                                                  from_date=_d(start), to_date=_d(end))))
 
@@ -259,11 +311,11 @@ def parse_annual_reports(rows: list[dict]) -> list[AnnualReport]:
     return sorted(out, key=lambda a: a.to_year, reverse=True)
 
 
-def annual_reports(client: NSEClient, symbol: str) -> list[AnnualReport]:
+def annual_reports(client: Source, symbol: str) -> list[AnnualReport]:
     return parse_annual_reports(_rows(client.api("annual-reports", index="equities", symbol=symbol)))
 
 
-def insider_trades(client: NSEClient, symbol: str) -> list[dict]:
+def insider_trades(client: Source, symbol: str) -> list[dict]:
     """SEBI PIT disclosures for one company. NSE returns rows only per symbol, not market-wide."""
     return _rows(client.api("corporates-pit", index="equities", symbol=symbol))
 
@@ -284,6 +336,6 @@ def parse_corporate_actions(rows: list[dict]) -> list[CorporateAction]:
     return out
 
 
-def corporate_actions(client: NSEClient, symbol: str) -> list[CorporateAction]:
+def corporate_actions(client: Source, symbol: str) -> list[CorporateAction]:
     return parse_corporate_actions(_rows(client.api("corporates-corporateActions", index="equities",
                                                     symbol=symbol)))

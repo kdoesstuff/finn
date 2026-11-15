@@ -1,104 +1,25 @@
-"""The database schema and its access rules, tested on a real Postgres shaped like Supabase:
-a non-superuser admin that logs in with a password (as Supabase's `postgres` does), the Supabase
-API roles (anon, authenticated, service_role), and pgvector pre-installed in `extensions`.
-
-Needs FINN_TEST_DB_URL, a superuser URL for a disposable server. CI always sets it (and fails if
-it is missing); on a laptop without Postgres these tests are skipped with that reason.
-"""
+"""The database schema and its access rules, tested on a real Postgres shaped like Supabase
+(fixtures in conftest.py)."""
 
 from __future__ import annotations
 
-import os
 import shutil
-import uuid
-from collections.abc import Iterator
 from datetime import date, datetime, timezone
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit
 
-import psycopg
 import pytest
 from psycopg import errors, sql
 
 from finn import db
 from finn.alerts import Thresholds
 from finn.rank import Prefs
-
-SUPER_URL = os.environ.get("FINN_TEST_DB_URL", "")
-if not SUPER_URL:
-    if os.environ.get("CI"):
-        raise RuntimeError("FINN_TEST_DB_URL must be set in CI: database tests may not be skipped there")
-    pytest.skip("FINN_TEST_DB_URL not set: no Postgres to test against", allow_module_level=True)
-
-ADMIN, ADMIN_PASSWORD = "supa_admin", "test-only-password"
-API_ROLES = ("anon", "authenticated", "service_role")
-INVESTOR_A, INVESTOR_B = uuid.UUID(int=0xA), uuid.UUID(int=0xB)
-
-
-def with_db(url: str, dbname: str, user: str | None = None, password: str | None = None) -> str:
-    parts = urlsplit(url)
-    netloc = parts.netloc
-    if user:
-        host = netloc.rsplit("@", 1)[-1]
-        netloc = f"{user}:{password}@{host}"
-    return urlunsplit((parts.scheme, netloc, f"/{dbname}", parts.query, parts.fragment))
-
-
-@pytest.fixture(scope="module")
-def database() -> Iterator[str]:
-    name = f"finn_test_{uuid.uuid4().hex[:10]}"
-    with psycopg.connect(SUPER_URL, autocommit=True) as su:
-        existing = {r[0] for r in su.execute("select rolname from pg_roles")}
-        if ADMIN not in existing:
-            su.execute(sql.SQL("create role {} login createrole nosuperuser password {}").format(
-                sql.Identifier(ADMIN), sql.Literal(ADMIN_PASSWORD)))
-        for role, extra in (("anon", ""), ("authenticated", ""), ("service_role", " bypassrls")):
-            if role not in existing:
-                su.execute(sql.SQL("create role {} nologin" + extra).format(sql.Identifier(role)))
-        su.execute(sql.SQL("create database {} owner {}").format(sql.Identifier(name), sql.Identifier(ADMIN)))
-    with psycopg.connect(with_db(SUPER_URL, name), autocommit=True) as su:
-        su.execute("create schema extensions")
-        su.execute("create extension vector with schema extensions")  # Supabase ships it enabled
-        su.execute(f"grant usage on schema extensions to {ADMIN} with grant option")
-    yield name
-    with psycopg.connect(SUPER_URL, autocommit=True) as su:
-        su.execute(sql.SQL("drop database {} with (force)").format(sql.Identifier(name)))
-
-
-@pytest.fixture(scope="module")
-def admin(database: str) -> Iterator[psycopg.Connection]:
-    conn = db.connect(with_db(SUPER_URL, database, ADMIN, ADMIN_PASSWORD))
-    assert db.migrate(conn) == ["0001_foundation.sql"]
-    with conn.transaction():
-        conn.execute("insert into finn.investors (id, display_name, is_demo) values (%s, 'A', true), (%s, 'B', false)",
-                     [INVESTOR_A, INVESTOR_B])
-        conn.execute("insert into finn.holdings (investor_id, symbol, thesis) values "
-                     "(%s, 'TCS', 'A thesis'), (%s, 'MRF', 'B thesis')", [INVESTOR_A, INVESTOR_B])
-    yield conn
-    conn.close()
-
-
-@pytest.fixture(scope="module")
-def superuser(database: str, admin: psycopg.Connection) -> Iterator[psycopg.Connection]:
-    conn = psycopg.connect(with_db(SUPER_URL, database))
-    yield conn
-    conn.close()
-
-
-def denied(conn: psycopg.Connection, statement: str | sql.Composed, params: list | None = None) -> bool:
-    try:
-        with conn.transaction():
-            conn.execute(statement, params)
-    except errors.InsufficientPrivilege:
-        return True
-    return False
-
+from tests.dbtools import ADMIN, API_ROLES, INVESTOR_A, INVESTOR_B, denied, finn_tables, select_from
 
 # Migrations -------------------------------------------------------------------------------------
 
 def test_running_migrations_again_changes_nothing(admin):
     assert db.migrate(admin) == []
-    assert list(db.applied(admin)) == ["0001_foundation.sql"]
+    assert sorted(db.applied(admin)) == [m.name for m in db.migrations()]
 
 
 def test_an_edited_migration_is_refused(admin, tmp_path: Path):
@@ -125,14 +46,6 @@ def test_every_table_has_row_level_security(admin):
     assert db.tables_without_rls(admin) == []
 
 
-def select_from(table: str) -> sql.Composed:
-    return sql.SQL("select 1 from finn.{} limit 1").format(sql.Identifier(table))
-
-
-def finn_tables(conn) -> list[str]:
-    return [r[0] for r in conn.execute("select tablename from pg_tables where schemaname = 'finn' order by 1")]
-
-
 @pytest.mark.parametrize("role", API_ROLES)
 def test_supabase_api_roles_reach_nothing(superuser, role):
     # The publishable key acts as anon, a signed-in browser user as authenticated, the secret key as
@@ -144,6 +57,30 @@ def test_supabase_api_roles_reach_nothing(superuser, role):
         finally:
             superuser.execute("reset role")
             superuser.rollback()
+
+
+@pytest.mark.parametrize("role", API_ROLES)
+def test_supabase_api_roles_hold_no_privilege_on_any_table(admin, role):
+    # Stricter than trying a read: the schema-level block would hide a stray table grant, and a
+    # later change to the schema's privileges would then expose it. No grant may exist at all.
+    assert db.api_role_privileges(admin, role) == []
+
+
+def test_a_stray_grant_is_reported(superuser):
+    superuser.execute("grant select on finn.filings to anon")
+    try:
+        assert db.api_role_privileges(superuser, "anon") == ["filings:select"]
+    finally:
+        superuser.execute("revoke select on finn.filings from anon")
+        superuser.commit()
+
+
+def test_coverage_is_public_market_data_the_api_may_extend(admin):
+    with db.as_role(admin, "finn_api"):
+        admin.execute("insert into finn.coverage (symbol, reason) values ('POLYCAB', 'research')")
+    with db.as_role(admin, "finn_ingest"):
+        assert admin.execute("select reason from finn.coverage where symbol = 'POLYCAB'").fetchone() == ("research",)
+        assert denied(admin, "insert into finn.coverage (symbol, reason) values ('DIXON', 'research')")
 
 
 def test_ingest_writes_market_data_and_never_sees_investors(admin):

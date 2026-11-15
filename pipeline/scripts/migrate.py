@@ -61,6 +61,9 @@ def verify(conn) -> int:
     report(not missing, "row-level security on every table", ", ".join(missing))
     pending = [m.name for m in db.migrations() if m.name not in db.applied(conn)]
     report(not pending, "no pending migrations", ", ".join(pending))
+    for api_role in ("anon", "authenticated", "service_role"):
+        held = db.api_role_privileges(conn, api_role)
+        report(not held, f"{api_role} holds no privilege on any finn table", ", ".join(held[:6]))
     for role in db.ROLES:
         try:
             with db.as_role(conn, role):

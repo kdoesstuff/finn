@@ -104,10 +104,11 @@ every table refuses read and write; a schema diff check in CI.
 filings every 30 min 08:00-23:30 IST at off-peak minutes; EOD at 19:30 IST driven by whether a
 bhavcopy exists for the date (10 Nov was a holiday, Sun 8 Nov had a Muhurat session, so weekday logic
 is wrong); pledges and board meetings daily; idempotent upserts keyed by `seq_id`; a run log row per
-run; a daily JSON snapshot committed to `snapshots/`. Deps: B1, B2. Done: three consecutive scheduled
-runs succeed and re-running one changes nothing. Verify: run log table; duplicate-count query is 0.
+run. (The daily JSON snapshot moved to D6, where the digest it captures exists.) Deps: B1, B2. Done:
+three consecutive scheduled runs succeed and re-running one changes nothing. Verify: run log table
+(`ingest.py status`); duplicate-count query is 0.
 
-**B4 Backfill.** Goal: history for Push and Pull. Out: filings from 1 Oct for the portfolio, eight
+**B4 Backfill.** Goal: history for Push and Pull. Out: filings from 1 Oct, market-wide, eight
 quarters of results per name (including Mar-Sep 2025, missing from fixtures, so YoY on the current
 quarter is tested), 90 sessions of prices, 10-11 Nov results. Deps: B3. Done: every portfolio name has
 its Sep 2026 results or a recorded reason. Verify: TCS, HDFC Bank and Asian Paints figures match the
@@ -192,7 +193,8 @@ excluded-sector flag. Deps: C1. Done: 18 theses approved. Verify: tags reviewed 
 **D6 Digest API.** Out: window (24 h default, 3 d, 7 d, since last visit), alert categories and
 thresholds per investor, ranked sections, routine counts, "why am I seeing this", feedback and
 decision-note endpoints; an alerts feed of threshold crossings since the last visit, with an unread
-badge (web push notification is a stretch item, cut first). Deps: D1-D5. Done: contract tests. Verify: a quiet window returns "Nothing
+badge (web push notification is a stretch item, cut first). Also the daily JSON snapshot of the demo investor's digest, committed to `snapshots/` and bundled
+into the web app as its fallback (moved here from B3). Deps: D1-D5. Done: contract tests. Verify: a quiet window returns "Nothing
 material across your portfolio."
 
 **D7 Push screens**. Out: the brief, event cards, evidence drawer, settings, quiet and error

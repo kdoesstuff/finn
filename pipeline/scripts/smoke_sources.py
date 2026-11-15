@@ -96,6 +96,14 @@ def main() -> int:
         rows = nse.corporate_actions(c, symbol)
         return len(rows), (f"{rows[0].ex_date} {rows[0].subject}" if rows else "none")
 
+    def equities() -> tuple[int, str]:
+        rows = nse.equity_list(c)
+        tcs = next((r for r in rows if r.symbol == "TCS"), None)
+        if not tcs or not tcs.name or not tcs.isin:
+            raise RuntimeError("TCS missing, or its name or ISIN is blank: the columns may have changed")
+        return len(rows), f"TCS = {tcs.name}, {tcs.isin}"
+
+    check("equity master list", equities)
     check("announcements, last 2 days, market", anns)
     for s in symbols:
         check(f"announcements, 30 days, {s}", partial(company_anns, s))
