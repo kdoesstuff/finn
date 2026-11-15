@@ -27,8 +27,9 @@ on:
 permissions:
   contents: read
 
+# One run per job at a time; analysis batches with different companies may run side by side.
 concurrency:
-  group: ingest-${{ github.event.schedule || inputs.job }}
+  group: ingest-${{ github.event.schedule || inputs.job }}-${{ inputs.args }}
   cancel-in-progress: false
 
 jobs:

@@ -1,0 +1,6170 @@
+{
+ "synthetic": true,
+ "seed": 20261115,
+ "note": "Synthetic network for FINN's demo investor. Every person is fictional; employers are named only as employers; no fact about any real person is stated.",
+ "persona": {
+  "id": "me",
+  "first_name": "Demo",
+  "last_name": "investor",
+  "degree": 0,
+  "synthetic": true,
+  "headline": "Portfolio Manager, Saltpan Capital",
+  "location": "Mumbai",
+  "roles": [
+   {
+    "org": "Tata Consultancy Services",
+    "symbol": "TCS",
+    "sector": "it_services",
+    "function": "technology",
+    "title": "Software Engineer",
+    "started": "2006-07-01",
+    "ended": "2008-05-01"
+   },
+   {
+    "org": "Anchorage Securities",
+    "symbol": null,
+    "sector": "finance",
+    "function": "research",
+    "title": "Equity Research Analyst",
+    "started": "2010-06-01",
+    "ended": "2017-03-01"
+   },
+   {
+    "org": "Saltpan Capital",
+    "symbol": null,
+    "sector": "finance",
+    "function": "research",
+    "title": "Portfolio Manager",
+    "started": "2017-04-01",
+    "ended": null
+   }
+  ],
+  "schools": [
+   {
+    "school": "IIT Delhi",
+    "degree": "B.Tech",
+    "year": 2006
+   },
+   {
+    "school": "IIM Ahmedabad",
+    "degree": "PGP",
+    "year": 2010
+   }
+  ]
+ },
+ "people": [
+  {
+   "id": "p001",
+   "first_name": "Nikhil",
+   "last_name": "Pochkhanawala",
+   "headline": "Analyst, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "auto",
+     "function": "research",
+     "title": "Analyst",
+     "started": "2019-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SRCC",
+     "degree": "MBA",
+     "year": 2016
+    }
+   ]
+  },
+  {
+   "id": "p002",
+   "first_name": "Reyansh",
+   "last_name": "Chadha",
+   "headline": "Analyst, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "it_services",
+     "function": "research",
+     "title": "Analyst",
+     "started": "2018-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SRCC",
+     "degree": "MBA",
+     "year": 2016
+    }
+   ]
+  },
+  {
+   "id": "p003",
+   "first_name": "Ananya",
+   "last_name": "Thyagarajan",
+   "headline": "Analyst, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "research",
+     "title": "Analyst",
+     "started": "2022-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Lucknow",
+     "degree": "MBA",
+     "year": 2020
+    }
+   ]
+  },
+  {
+   "id": "p004",
+   "first_name": "Devika",
+   "last_name": "Deodhar",
+   "headline": "Head of Operations, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "lending",
+     "function": "finance",
+     "title": "Head of Operations",
+     "started": "2017-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NMIMS",
+     "degree": "MBA",
+     "year": 2014
+    }
+   ]
+  },
+  {
+   "id": "p005",
+   "first_name": "Kabir",
+   "last_name": "Duraiswamy",
+   "headline": "Compliance Officer, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "legal",
+     "title": "Compliance Officer",
+     "started": "2019-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SRCC",
+     "degree": "MBA",
+     "year": 2018
+    }
+   ]
+  },
+  {
+   "id": "p006",
+   "first_name": "Dhruv",
+   "last_name": "Deodhar",
+   "headline": "Analyst, Saltpan Capital",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Saltpan Capital",
+     "symbol": null,
+     "sector": "it_services",
+     "function": "research",
+     "title": "Analyst",
+     "started": "2022-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SRCC",
+     "degree": "MBA",
+     "year": 2021
+    }
+   ]
+  },
+  {
+   "id": "p007",
+   "first_name": "Ved",
+   "last_name": "Karandikar",
+   "headline": "Formerly Head of FP&A, Eicher Motors",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "auto",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2009-05-01",
+     "ended": "2015-03-01"
+    },
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "finance",
+     "title": "Head of FP&A",
+     "started": "2015-11-01",
+     "ended": "2019-12-01"
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p008",
+   "first_name": "Jhanvi",
+   "last_name": "Inamdar",
+   "headline": "Chief of Staff to the MD, MRF",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-09-01",
+     "ended": "2015-08-01"
+    },
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "strategy",
+     "title": "Chief of Staff to the MD",
+     "started": "2015-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SPJIMR",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p009",
+   "first_name": "Farhan",
+   "last_name": "Anantharaman",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "banking",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2010-07-01",
+     "ended": "2017-01-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "banking",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2017-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p010",
+   "first_name": "Tanmay",
+   "last_name": "Anantharaman",
+   "headline": "Strategy Manager, Larsen & Toubro",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "capital_goods",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2013-10-01",
+     "ended": "2016-04-01"
+    },
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2016-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Bangalore",
+     "degree": "MBA",
+     "year": 2012
+    }
+   ]
+  },
+  {
+   "id": "p011",
+   "first_name": "Aarav",
+   "last_name": "Zaveri",
+   "headline": "Head of FP&A, Navin Fluorine International",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "chemicals",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2009-09-01",
+     "ended": "2015-02-01"
+    },
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "finance",
+     "title": "Head of FP&A",
+     "started": "2015-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SPJIMR",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p012",
+   "first_name": "Shaurya",
+   "last_name": "Lele",
+   "headline": "Head of Investor Relations, Asian Paints",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "consumer",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-08-01",
+     "ended": "2015-05-01"
+    },
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2015-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "FMS Delhi",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p013",
+   "first_name": "Kavya",
+   "last_name": "Seshadri",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "electricals",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-08-01",
+     "ended": "2015-04-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "electricals",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2015-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SPJIMR",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p014",
+   "first_name": "Lavanya",
+   "last_name": "Rajadhyaksha",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "electronics",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2012-01-01",
+     "ended": "2017-12-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "electronics",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2017-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "FMS Delhi",
+     "degree": "MBA",
+     "year": 2011
+    }
+   ]
+  },
+  {
+   "id": "p015",
+   "first_name": "Harsh",
+   "last_name": "Dasgupta",
+   "headline": "Formerly Financial Controller, Persistent Systems",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "it_services",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2009-04-01",
+     "ended": "2015-09-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2015-12-01",
+     "ended": "2024-02-01"
+    }
+   ],
+   "schools": [
+    {
+     "school": "FMS Delhi",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p016",
+   "first_name": "Pranav",
+   "last_name": "Kumaraswamy",
+   "headline": "Formerly Head of Investor Relations, Bajaj Finance",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "lending",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-02-01",
+     "ended": "2015-04-01"
+    },
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2015-12-01",
+     "ended": "2022-03-01"
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p017",
+   "first_name": "Devika",
+   "last_name": "Pochkhanawala",
+   "headline": "Strategy Manager, NMDC",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "mining",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-02-01",
+     "ended": "2016-02-01"
+    },
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2016-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p018",
+   "first_name": "Pallavi",
+   "last_name": "Inamdar",
+   "headline": "Fund Manager, Brightwater Equity Partners",
+   "location": "Gurugram",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2010-07-01",
+     "ended": "2018-10-01"
+    },
+    {
+     "org": "Brightwater Equity Partners",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2018-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SPJIMR",
+     "degree": "MBA",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p019",
+   "first_name": "Farhan",
+   "last_name": "Dhavale",
+   "headline": "Head of Strategy, Tata Power",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "power",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2012-08-01",
+     "ended": "2018-06-01"
+    },
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2018-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "SPJIMR",
+     "degree": "MBA",
+     "year": 2011
+    }
+   ]
+  },
+  {
+   "id": "p020",
+   "first_name": "Farhan",
+   "last_name": "Pochkhanawala",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "auto",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2011-03-01",
+     "ended": "2016-06-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "auto",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2016-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "FMS Delhi",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p021",
+   "first_name": "Nandini",
+   "last_name": "Inamdar",
+   "headline": "Head of Strategy, MRF",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Anchorage Securities",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "research",
+     "title": "Research Analyst",
+     "started": "2009-09-01",
+     "ended": "2018-01-01"
+    },
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2018-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p022",
+   "first_name": "Bhavna",
+   "last_name": "Lokhandwala",
+   "headline": "Regional Sales Head, Persistent Systems",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Software Engineer",
+     "started": "2005-08-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2011-04-01",
+     "ended": "2012-10-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "sales",
+     "title": "Regional Sales Head",
+     "started": "2012-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NIT Trichy",
+     "degree": "B.E.",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p023",
+   "first_name": "Sanjana",
+   "last_name": "Karandikar",
+   "headline": "Strategy Manager, Persistent Systems",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2007-02-01",
+     "ended": "2012-04-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2012-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p024",
+   "first_name": "Bhavna",
+   "last_name": "Hiremath",
+   "headline": "Head of Digital, Persistent Systems",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Software Engineer",
+     "started": "2005-08-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2011-04-01",
+     "ended": "2012-12-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2012-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p025",
+   "first_name": "Kavya",
+   "last_name": "Wagle",
+   "headline": "Key Accounts Lead, Persistent Systems",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Software Engineer",
+     "started": "2005-08-01",
+     "ended": "2012-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2012-04-01",
+     "ended": "2015-12-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2015-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NIT Trichy",
+     "degree": "B.E.",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p026",
+   "first_name": "Harsh",
+   "last_name": "Kelkar",
+   "headline": "Engineering Director, Persistent Systems",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Software Engineer",
+     "started": "2006-09-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2011-04-01",
+     "ended": "2012-06-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2012-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NIT Trichy",
+     "degree": "B.E.",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p027",
+   "first_name": "Kabir",
+   "last_name": "Lokhandwala",
+   "headline": "Key Accounts Lead, Persistent Systems",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Software Engineer",
+     "started": "2006-08-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2011-04-01",
+     "ended": "2015-05-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2015-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p028",
+   "first_name": "Akshay",
+   "last_name": "Kumaraswamy",
+   "headline": "Chief Risk Officer's office, Senior Manager, Persistent Systems",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "it_services",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-06-01",
+     "ended": "2015-11-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2015-08-01",
+     "ended": "2023-04-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2023-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p029",
+   "first_name": "Vidya",
+   "last_name": "Ganapathy",
+   "headline": "Head of Operations, Persistent Systems",
+   "location": "Gurugram",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "operations",
+     "title": "Production Engineer",
+     "started": "2010-09-01",
+     "ended": "2016-03-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "operations",
+     "title": "Head of Operations",
+     "started": "2016-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p030",
+   "first_name": "Dhruv",
+   "last_name": "Ekbote",
+   "headline": "Chief of Staff to the MD, HDFC Bank",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "banking",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-11-01",
+     "ended": "2015-06-01"
+    },
+    {
+     "org": "HDFC Bank",
+     "symbol": "HDFCBANK",
+     "sector": "banking",
+     "function": "strategy",
+     "title": "Chief of Staff to the MD",
+     "started": "2015-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p031",
+   "first_name": "Aarav",
+   "last_name": "Chitnis",
+   "headline": "Company Secretary's office, Senior Manager, Bajaj Finance",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "lending",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-08-01",
+     "ended": "2014-04-01"
+    },
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "legal",
+     "title": "Legal Associate",
+     "started": "2014-07-01",
+     "ended": "2019-03-01"
+    },
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2019-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p032",
+   "first_name": "Jhanvi",
+   "last_name": "Wadhwa",
+   "headline": "Head of Credit, Bajaj Finance",
+   "location": "Gurugram",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "lending",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-11-01",
+     "ended": "2014-02-01"
+    },
+    {
+     "org": "Manappuram Finance",
+     "symbol": "MANAPPURAM",
+     "sector": "lending",
+     "function": "risk",
+     "title": "Head of Credit",
+     "started": "2014-03-01",
+     "ended": "2019-08-01"
+    },
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "risk",
+     "title": "Head of Credit",
+     "started": "2019-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p033",
+   "first_name": "Reyansh",
+   "last_name": "Inamdar",
+   "headline": "Partner, Kestrel Lane Advisors",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "hr",
+     "title": "HR Associate",
+     "started": "2010-07-01",
+     "ended": "2015-03-01"
+    },
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2015-04-01",
+     "ended": "2024-09-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "power",
+     "function": "research",
+     "title": "Partner",
+     "started": "2024-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p034",
+   "first_name": "Nandini",
+   "last_name": "Rajadhyaksha",
+   "headline": "Partner, Kestrel Lane Advisors",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "legal",
+     "title": "General Counsel",
+     "started": "2010-09-01",
+     "ended": "2014-06-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "mining",
+     "function": "research",
+     "title": "Partner",
+     "started": "2014-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p035",
+   "first_name": "Parth",
+   "last_name": "Paranjpe",
+   "headline": "Company Secretary's office, Senior Manager, ABB India",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-08-01",
+     "ended": "2015-06-01"
+    },
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2015-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p036",
+   "first_name": "Tara",
+   "last_name": "Kelkar",
+   "headline": "Financial Controller, Elgi Equipments",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-08-01",
+     "ended": "2012-04-01"
+    },
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2012-06-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "finance",
+     "title": "Head of Treasury",
+     "started": "2018-04-01",
+     "ended": "2022-04-01"
+    },
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2022-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p037",
+   "first_name": "Isha",
+   "last_name": "Barve",
+   "headline": "Company Secretary's office, Senior Manager, ABB India",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "legal",
+     "title": "Legal Associate",
+     "started": "2010-09-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "legal",
+     "title": "General Counsel",
+     "started": "2018-04-01",
+     "ended": "2021-05-01"
+    },
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2021-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p038",
+   "first_name": "Dhruv",
+   "last_name": "Dasgupta",
+   "headline": "Head of Sales, Elgi Equipments",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "sales",
+     "title": "Area Sales Manager",
+     "started": "2010-06-01",
+     "ended": "2017-03-01"
+    },
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "sales",
+     "title": "Head of Sales",
+     "started": "2017-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p039",
+   "first_name": "Kavya",
+   "last_name": "Wadhwa",
+   "headline": "Head of Sales, Polycab India",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "sales",
+     "title": "Area Sales Manager",
+     "started": "2010-07-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "sales",
+     "title": "Head of Sales",
+     "started": "2018-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p040",
+   "first_name": "Dhruv",
+   "last_name": "Kelkar",
+   "headline": "Partner, Kestrel Lane Advisors",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "electronics",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-10-01",
+     "ended": "2012-10-01"
+    },
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2012-08-01",
+     "ended": "2016-12-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "electronics",
+     "function": "research",
+     "title": "Partner",
+     "started": "2016-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p041",
+   "first_name": "Devika",
+   "last_name": "Zaveri",
+   "headline": "Key Accounts Lead, Kalyan Jewellers",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "consumer",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-11-01",
+     "ended": "2014-12-01"
+    },
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "sales",
+     "title": "Head of Sales",
+     "started": "2014-11-01",
+     "ended": "2017-06-01"
+    },
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2017-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p042",
+   "first_name": "Shaurya",
+   "last_name": "Zaveri",
+   "headline": "Finance Manager, Asian Paints",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2010-06-01",
+     "ended": "2015-03-01"
+    },
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2015-04-01",
+     "ended": "2016-08-01"
+    },
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2016-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p043",
+   "first_name": "Ananya",
+   "last_name": "Rajadhyaksha",
+   "headline": "Head of FP&A, Kalyan Jewellers",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2010-06-01",
+     "ended": "2015-03-01"
+    },
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Head of FP&A",
+     "started": "2015-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p044",
+   "first_name": "Tara",
+   "last_name": "Sathaye",
+   "headline": "Partner, Kestrel Lane Advisors",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2010-07-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2018-04-01",
+     "ended": "2022-04-01"
+    },
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "auto",
+     "function": "research",
+     "title": "Partner",
+     "started": "2022-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p045",
+   "first_name": "Vidya",
+   "last_name": "Sengupta",
+   "headline": "Finance Manager, Asahi India Glass",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-03-01",
+     "ended": "2015-06-01"
+    },
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "finance",
+     "title": "Deputy CFO",
+     "started": "2015-11-01",
+     "ended": "2023-08-01"
+    },
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2023-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p046",
+   "first_name": "Farhan",
+   "last_name": "Talwar",
+   "headline": "Head of Treasury, MRF",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-02-01",
+     "ended": "2012-12-01"
+    },
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2012-07-01",
+     "ended": "2019-03-01"
+    },
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2019-04-01",
+     "ended": "2021-06-01"
+    },
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "finance",
+     "title": "Head of Treasury",
+     "started": "2021-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p047",
+   "first_name": "Harsh",
+   "last_name": "Ekbote",
+   "headline": "Head of FP&A, Natco Pharma",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "strategy",
+     "title": "Consultant",
+     "started": "2010-07-01",
+     "ended": "2015-04-01"
+    },
+    {
+     "org": "Natco Pharma",
+     "symbol": "NATCOPHARM",
+     "sector": "pharma",
+     "function": "finance",
+     "title": "Head of FP&A",
+     "started": "2015-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p048",
+   "first_name": "Ananya",
+   "last_name": "Sohoni",
+   "headline": "Regional Sales Head, Navin Fluorine International",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "sales",
+     "title": "Area Sales Manager",
+     "started": "2010-09-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "sales",
+     "title": "Regional Sales Head",
+     "started": "2018-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p049",
+   "first_name": "Kavya",
+   "last_name": "Rajadhyaksha",
+   "headline": "General Counsel, Persistent Systems",
+   "location": "Gurugram",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "legal",
+     "title": "Legal Associate",
+     "started": "2010-07-01",
+     "ended": "2018-03-01"
+    },
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2018-04-01",
+     "ended": "2025-07-01"
+    },
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "legal",
+     "title": "General Counsel",
+     "started": "2025-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Ahmedabad",
+     "degree": "PGP",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p050",
+   "first_name": "Rohan",
+   "last_name": "Anantharaman",
+   "headline": "Operations Manager, ABB India",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "operations",
+     "title": "Production Engineer",
+     "started": "2006-06-01",
+     "ended": "2014-03-01"
+    },
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "operations",
+     "title": "Operations Manager",
+     "started": "2014-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p051",
+   "first_name": "Isha",
+   "last_name": "Chitnis",
+   "headline": "Head of Procurement, Elgi Equipments",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-07-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2011-04-01",
+     "ended": "2014-08-01"
+    },
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2014-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p052",
+   "first_name": "Vihaan",
+   "last_name": "Kelkar",
+   "headline": "Supply Chain Manager, ABB India",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-06-01",
+     "ended": "2014-03-01"
+    },
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2014-04-01",
+     "ended": "2017-05-01"
+    },
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2017-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p053",
+   "first_name": "Varun",
+   "last_name": "Ekbote",
+   "headline": "Chief Engineer, Elgi Equipments",
+   "location": "Kolkata",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "engineering",
+     "title": "Graduate Engineer",
+     "started": "2006-08-01",
+     "ended": "2013-03-01"
+    },
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "engineering",
+     "title": "Chief Engineer",
+     "started": "2013-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p054",
+   "first_name": "Dhruv",
+   "last_name": "Chitnis",
+   "headline": "Head of Procurement, Tata Power",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-09-01",
+     "ended": "2013-03-01"
+    },
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2013-04-01",
+     "ended": "2024-06-01"
+    },
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2024-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p055",
+   "first_name": "Bhavna",
+   "last_name": "Sathaye",
+   "headline": "Chief Engineer, Tata Power",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "engineering",
+     "title": "Graduate Engineer",
+     "started": "2006-07-01",
+     "ended": "2013-03-01"
+    },
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "engineering",
+     "title": "Chief Engineer",
+     "started": "2013-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p056",
+   "first_name": "Mrinal",
+   "last_name": "Sengupta",
+   "headline": "Supply Chain Manager, Triveni Turbine",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-08-01",
+     "ended": "2013-03-01"
+    },
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2013-04-01",
+     "ended": "2016-12-01"
+    },
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2016-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p057",
+   "first_name": "Gauri",
+   "last_name": "Wadhwa",
+   "headline": "Supply Chain Manager, Polycab India",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-09-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2011-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p058",
+   "first_name": "Parth",
+   "last_name": "Seshadri",
+   "headline": "Engineering Manager, Eicher Motors",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "engineering",
+     "title": "Graduate Engineer",
+     "started": "2006-07-01",
+     "ended": "2013-03-01"
+    },
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "engineering",
+     "title": "Engineering Manager",
+     "started": "2013-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p059",
+   "first_name": "Advait",
+   "last_name": "Ekbote",
+   "headline": "Head of Procurement, Asahi India Glass",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "supply_chain",
+     "title": "Purchase Engineer",
+     "started": "2006-06-01",
+     "ended": "2012-03-01"
+    },
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2012-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p060",
+   "first_name": "Trisha",
+   "last_name": "Talwar",
+   "headline": "Head of R&D, Navin Fluorine International",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "engineering",
+     "title": "Graduate Engineer",
+     "started": "2006-07-01",
+     "ended": "2011-03-01"
+    },
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "engineering",
+     "title": "Head of R&D",
+     "started": "2011-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p061",
+   "first_name": "Saanvi",
+   "last_name": "Bhonsale",
+   "headline": "Head of Projects, MRF",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "operations",
+     "title": "Production Engineer",
+     "started": "2006-06-01",
+     "ended": "2014-03-01"
+    },
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "operations",
+     "title": "Head of Projects",
+     "started": "2014-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Delhi",
+     "degree": "B.Tech",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p062",
+   "first_name": "Riya",
+   "last_name": "Nadkarni",
+   "headline": "Head of Compliance, Tata Consultancy Services",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2014-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p063",
+   "first_name": "Raghav",
+   "last_name": "Sengupta",
+   "headline": "Head of Strategy, Tata Power",
+   "location": "Kolkata",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2017-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Bombay",
+     "degree": "",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p064",
+   "first_name": "Naina",
+   "last_name": "Ganapathy",
+   "headline": "Investor Relations Manager, Elgi Equipments",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "investor_relations",
+     "title": "Investor Relations Manager",
+     "started": "2016-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p065",
+   "first_name": "Jhanvi",
+   "last_name": "Dasgupta",
+   "headline": "General Counsel, Kalyan Jewellers",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "legal",
+     "title": "General Counsel",
+     "started": "2020-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2012
+    }
+   ]
+  },
+  {
+   "id": "p066",
+   "first_name": "Imran",
+   "last_name": "Lokhandwala",
+   "headline": "Deputy CFO, Navin Fluorine International",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "finance",
+     "title": "Deputy CFO",
+     "started": "2016-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p067",
+   "first_name": "Advait",
+   "last_name": "Kelkar",
+   "headline": "Company Secretary's office, Senior Manager, Manappuram Finance",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Manappuram Finance",
+     "symbol": "MANAPPURAM",
+     "sector": "lending",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2016-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Bombay",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p068",
+   "first_name": "Sanjana",
+   "last_name": "Lele",
+   "headline": "Finance Manager, Triveni Turbine",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "finance",
+     "title": "Finance Manager",
+     "started": "2018-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p069",
+   "first_name": "Bhavna",
+   "last_name": "Kumaraswamy",
+   "headline": "Head of FP&A, Page Industries",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "finance",
+     "title": "Head of FP&A",
+     "started": "2016-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p070",
+   "first_name": "Zoya",
+   "last_name": "Lele",
+   "headline": "Investor Relations Manager, Natco Pharma",
+   "location": "Kolkata",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Natco Pharma",
+     "symbol": "NATCOPHARM",
+     "sector": "pharma",
+     "function": "investor_relations",
+     "title": "Investor Relations Manager",
+     "started": "2014-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Bombay",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p071",
+   "first_name": "Vidya",
+   "last_name": "Barve",
+   "headline": "Deputy CFO, Bajaj Finance",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "finance",
+     "title": "Deputy CFO",
+     "started": "2019-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p072",
+   "first_name": "Tara",
+   "last_name": "Joglekar",
+   "headline": "Head of Strategy, Larsen & Toubro",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2021-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "ICAI (CA)",
+     "degree": "",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p073",
+   "first_name": "Vidya",
+   "last_name": "Kumaraswamy",
+   "headline": "Head of Compliance, Asian Paints",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2021-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  },
+  {
+   "id": "p074",
+   "first_name": "Arnav",
+   "last_name": "Ekbote",
+   "headline": "Partner, power practice, Tamarind Strategy Group",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "power",
+     "function": "strategy",
+     "title": "Partner, power practice",
+     "started": "2016-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p075",
+   "first_name": "Shaurya",
+   "last_name": "Kelkar",
+   "headline": "Partner, automobiles practice, Quarry Point Consulting",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "auto",
+     "function": "strategy",
+     "title": "Partner, automobiles practice",
+     "started": "2015-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2001
+    }
+   ]
+  },
+  {
+   "id": "p076",
+   "first_name": "Diya",
+   "last_name": "Bhonsale",
+   "headline": "Partner, auto components practice, Tamarind Strategy Group",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tamarind Strategy Group",
+     "symbol": null,
+     "sector": "auto_components",
+     "function": "strategy",
+     "title": "Partner, auto components practice",
+     "started": "2013-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p077",
+   "first_name": "Reyansh",
+   "last_name": "Joglekar",
+   "headline": "Partner, banking practice, Quarry Point Consulting",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "banking",
+     "function": "strategy",
+     "title": "Partner, banking practice",
+     "started": "2017-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Delhi School of Economics",
+     "degree": "",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p078",
+   "first_name": "Meera",
+   "last_name": "Chitnis",
+   "headline": "Partner, capital goods practice, Quarry Point Consulting",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Quarry Point Consulting",
+     "symbol": null,
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Partner, capital goods practice",
+     "started": "2013-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p079",
+   "first_name": "Devika",
+   "last_name": "Thyagarajan",
+   "headline": "Audit Partner, power, Northgate Audit Partners",
+   "location": "Hyderabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Northgate Audit Partners",
+     "symbol": null,
+     "sector": "power",
+     "function": "audit",
+     "title": "Audit Partner, power",
+     "started": "2015-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Indore",
+     "degree": "",
+     "year": 2004
+    }
+   ]
+  },
+  {
+   "id": "p080",
+   "first_name": "Pallavi",
+   "last_name": "Vartak",
+   "headline": "Audit Partner, banking, Ledgerline Assurance LLP",
+   "location": "Mumbai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Ledgerline Assurance LLP",
+     "symbol": null,
+     "sector": "banking",
+     "function": "audit",
+     "title": "Audit Partner, banking",
+     "started": "2016-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Bombay",
+     "degree": "",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p081",
+   "first_name": "Isha",
+   "last_name": "Sengupta",
+   "headline": "Audit Partner, consumer brands, Ledgerline Assurance LLP",
+   "location": "Kolkata",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Ledgerline Assurance LLP",
+     "symbol": null,
+     "sector": "consumer",
+     "function": "audit",
+     "title": "Audit Partner, consumer brands",
+     "started": "2014-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Bombay",
+     "degree": "",
+     "year": 2012
+    }
+   ]
+  },
+  {
+   "id": "p082",
+   "first_name": "Gauri",
+   "last_name": "Rajadhyaksha",
+   "headline": "Fund Manager, Coromandel Research",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Coromandel Research",
+     "symbol": null,
+     "sector": "mining",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2008-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "JBIMS",
+     "degree": "MBA",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p083",
+   "first_name": "Meera",
+   "last_name": "Ekbote",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "power",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2014-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2004
+    }
+   ]
+  },
+  {
+   "id": "p084",
+   "first_name": "Tara",
+   "last_name": "Pochkhanawala",
+   "headline": "Fund Manager, Coromandel Research",
+   "location": "Coimbatore",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Coromandel Research",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2014-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "ISB",
+     "degree": "MBA",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p085",
+   "first_name": "Pranav",
+   "last_name": "Contractor",
+   "headline": "Fund Manager, Coromandel Research",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Coromandel Research",
+     "symbol": null,
+     "sector": "chemicals",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2012-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "ISB",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p086",
+   "first_name": "Neel",
+   "last_name": "Hiremath",
+   "headline": "Fund Manager, Coromandel Research",
+   "location": "Bengaluru",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Coromandel Research",
+     "symbol": null,
+     "sector": "electricals",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2013-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "JBIMS",
+     "degree": "MBA",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p087",
+   "first_name": "Meera",
+   "last_name": "Inamdar",
+   "headline": "Fund Manager, Coromandel Research",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Coromandel Research",
+     "symbol": null,
+     "sector": "mining",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2008-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p088",
+   "first_name": "Advait",
+   "last_name": "Sohoni",
+   "headline": "Fund Manager, Brightwater Equity Partners",
+   "location": "Chennai",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Brightwater Equity Partners",
+     "symbol": null,
+     "sector": "pharma",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2013-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p089",
+   "first_name": "Parth",
+   "last_name": "Rajadhyaksha",
+   "headline": "Fund Manager, Sahyadri Growth Fund",
+   "location": "Pune",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Sahyadri Growth Fund",
+     "symbol": null,
+     "sector": "chemicals",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2010-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p090",
+   "first_name": "Mrinal",
+   "last_name": "Anantharaman",
+   "headline": "Fund Manager, Sahyadri Growth Fund",
+   "location": "Gurugram",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Sahyadri Growth Fund",
+     "symbol": null,
+     "sector": "it_services",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2008-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "ISB",
+     "degree": "MBA",
+     "year": 2004
+    }
+   ]
+  },
+  {
+   "id": "p091",
+   "first_name": "Gauri",
+   "last_name": "Sohoni",
+   "headline": "Fund Manager, Kestrel Lane Advisors",
+   "location": "Ahmedabad",
+   "degree": 1,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kestrel Lane Advisors",
+     "symbol": null,
+     "sector": "banking",
+     "function": "research",
+     "title": "Fund Manager",
+     "started": "2009-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Calcutta",
+     "degree": "MBA",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p092",
+   "first_name": "Farhan",
+   "last_name": "Ekbote",
+   "headline": "Head of Treasury, Tata Consultancy Services",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "finance",
+     "title": "Head of Treasury",
+     "started": "2011-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 1998
+    }
+   ]
+  },
+  {
+   "id": "p093",
+   "first_name": "Bhavna",
+   "last_name": "Lele",
+   "headline": "Head of Sales, Persistent Systems",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "sales",
+     "title": "Head of Sales",
+     "started": "2015-01-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p094",
+   "first_name": "Rohan",
+   "last_name": "Upasani",
+   "headline": "Supply Chain Manager, HDFC Bank",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "HDFC Bank",
+     "symbol": "HDFCBANK",
+     "sector": "banking",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2010-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 1997
+    }
+   ]
+  },
+  {
+   "id": "p095",
+   "first_name": "Pallavi",
+   "last_name": "Kelkar",
+   "headline": "Head of Strategy, Bajaj Finance",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2017-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p096",
+   "first_name": "Kavya",
+   "last_name": "Ganapathy",
+   "headline": "Head of HR, Manappuram Finance",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Manappuram Finance",
+     "symbol": "MANAPPURAM",
+     "sector": "lending",
+     "function": "hr",
+     "title": "Head of HR",
+     "started": "2015-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2001
+    }
+   ]
+  },
+  {
+   "id": "p097",
+   "first_name": "Charu",
+   "last_name": "Godbole",
+   "headline": "Engineering Director, Tata Power",
+   "location": "Gurugram",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2009-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p098",
+   "first_name": "Shaurya",
+   "last_name": "Rajadhyaksha",
+   "headline": "Head of Strategy, NMDC",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2008-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p099",
+   "first_name": "Trisha",
+   "last_name": "Grewal",
+   "headline": "Supply Chain Manager, ABB India",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2016-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p100",
+   "first_name": "Radhika",
+   "last_name": "Duraiswamy",
+   "headline": "Head of Investor Relations, Larsen & Toubro",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2012-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p101",
+   "first_name": "Raghav",
+   "last_name": "Chadha",
+   "headline": "Head of Digital, Triveni Turbine",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2016-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p102",
+   "first_name": "Kabir",
+   "last_name": "Hiremath",
+   "headline": "Head of Procurement, Elgi Equipments",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2018-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2006
+    }
+   ]
+  },
+  {
+   "id": "p103",
+   "first_name": "Vihaan",
+   "last_name": "Merchant",
+   "headline": "HR Business Partner, Polycab India",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2010-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p104",
+   "first_name": "Ritvik",
+   "last_name": "Rangnekar",
+   "headline": "Head of Strategy, Dixon Technologies",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "strategy",
+     "title": "Head of Strategy",
+     "started": "2015-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  },
+  {
+   "id": "p105",
+   "first_name": "Aditi",
+   "last_name": "Duraiswamy",
+   "headline": "Supply Chain Manager, Asian Paints",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "supply_chain",
+     "title": "Supply Chain Manager",
+     "started": "2011-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2003
+    }
+   ]
+  },
+  {
+   "id": "p106",
+   "first_name": "Akshay",
+   "last_name": "Seshadri",
+   "headline": "Head of Compliance, Page Industries",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2009-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2001
+    }
+   ]
+  },
+  {
+   "id": "p107",
+   "first_name": "Omkar",
+   "last_name": "Achrekar",
+   "headline": "Head of Digital, Kalyan Jewellers",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "technology",
+     "title": "Head of Digital",
+     "started": "2008-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 1998
+    }
+   ]
+  },
+  {
+   "id": "p108",
+   "first_name": "Riya",
+   "last_name": "Kamath",
+   "headline": "Head of Procurement, Eicher Motors",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "supply_chain",
+     "title": "Head of Procurement",
+     "started": "2013-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p109",
+   "first_name": "Naina",
+   "last_name": "Anantharaman",
+   "headline": "Plant Head, MRF",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "operations",
+     "title": "Plant Head",
+     "started": "2019-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2009
+    }
+   ]
+  },
+  {
+   "id": "p110",
+   "first_name": "Varun",
+   "last_name": "Phadke",
+   "headline": "Key Accounts Lead, Asahi India Glass",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2013-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p111",
+   "first_name": "Akshay",
+   "last_name": "Chadha",
+   "headline": "HR Business Partner, Natco Pharma",
+   "location": "Gurugram",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Natco Pharma",
+     "symbol": "NATCOPHARM",
+     "sector": "pharma",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2020-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p112",
+   "first_name": "Ved",
+   "last_name": "Kumaraswamy",
+   "headline": "Chief Risk Officer's office, Senior Manager, Navin Fluorine International",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2017-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p113",
+   "first_name": "Sanjana",
+   "last_name": "Anantharaman",
+   "headline": "Key Accounts Lead, Tata Consultancy Services",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2018-03-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p114",
+   "first_name": "Ananya",
+   "last_name": "Chadha",
+   "headline": "Strategy Manager, Persistent Systems",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2019-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p115",
+   "first_name": "Lavanya",
+   "last_name": "Joglekar",
+   "headline": "Plant Head, HDFC Bank",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "HDFC Bank",
+     "symbol": "HDFCBANK",
+     "sector": "banking",
+     "function": "operations",
+     "title": "Plant Head",
+     "started": "2013-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p116",
+   "first_name": "Tara",
+   "last_name": "Shenoy",
+   "headline": "Head of Compliance, Bajaj Finance",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2013-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2003
+    }
+   ]
+  },
+  {
+   "id": "p117",
+   "first_name": "Akshay",
+   "last_name": "Duraiswamy",
+   "headline": "HR Business Partner, Manappuram Finance",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Manappuram Finance",
+     "symbol": "MANAPPURAM",
+     "sector": "lending",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2010-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p118",
+   "first_name": "Isha",
+   "last_name": "Merchant",
+   "headline": "Chief Engineer, Tata Power",
+   "location": "Gurugram",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "engineering",
+     "title": "Chief Engineer",
+     "started": "2016-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p119",
+   "first_name": "Pranav",
+   "last_name": "Ganapathy",
+   "headline": "Chief of Staff to the MD, NMDC",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "strategy",
+     "title": "Chief of Staff to the MD",
+     "started": "2016-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p120",
+   "first_name": "Reyansh",
+   "last_name": "Contractor",
+   "headline": "Head of Projects, ABB India",
+   "location": "Gurugram",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "operations",
+     "title": "Head of Projects",
+     "started": "2010-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  },
+  {
+   "id": "p121",
+   "first_name": "Reyansh",
+   "last_name": "Sathaye",
+   "headline": "Strategy Manager, Larsen & Toubro",
+   "location": "Gurugram",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2013-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p122",
+   "first_name": "Akshay",
+   "last_name": "Kamath",
+   "headline": "Head of Credit, Triveni Turbine",
+   "location": "Coimbatore",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "risk",
+     "title": "Head of Credit",
+     "started": "2010-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  },
+  {
+   "id": "p123",
+   "first_name": "Ved",
+   "last_name": "Phadke",
+   "headline": "General Counsel, Elgi Equipments",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "legal",
+     "title": "General Counsel",
+     "started": "2012-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 1998
+    }
+   ]
+  },
+  {
+   "id": "p124",
+   "first_name": "Jhanvi",
+   "last_name": "Bhonsale",
+   "headline": "HR Business Partner, Polycab India",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2012-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2003
+    }
+   ]
+  },
+  {
+   "id": "p125",
+   "first_name": "Advait",
+   "last_name": "Dhavale",
+   "headline": "Head of Projects, Dixon Technologies",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "operations",
+     "title": "Head of Projects",
+     "started": "2019-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2005
+    }
+   ]
+  },
+  {
+   "id": "p126",
+   "first_name": "Harsh",
+   "last_name": "Thyagarajan",
+   "headline": "Head of Compliance, Asian Paints",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2017-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2003
+    }
+   ]
+  },
+  {
+   "id": "p127",
+   "first_name": "Dhruv",
+   "last_name": "Sohoni",
+   "headline": "Chief Risk Officer's office, Senior Manager, Page Industries",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2014-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p128",
+   "first_name": "Siddhant",
+   "last_name": "Rangnekar",
+   "headline": "Investor Relations Manager, Kalyan Jewellers",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "investor_relations",
+     "title": "Investor Relations Manager",
+     "started": "2008-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p129",
+   "first_name": "Riya",
+   "last_name": "Barve",
+   "headline": "Head of Investor Relations, Eicher Motors",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2019-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p130",
+   "first_name": "Shaurya",
+   "last_name": "Duraiswamy",
+   "headline": "Engineering Director, MRF",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "MRF",
+     "symbol": "MRF",
+     "sector": "auto_components",
+     "function": "technology",
+     "title": "Engineering Director",
+     "started": "2020-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p131",
+   "first_name": "Vidya",
+   "last_name": "Kapadia",
+   "headline": "Investor Relations Manager, Asahi India Glass",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asahi India Glass",
+     "symbol": "ASAHIINDIA",
+     "sector": "auto_components",
+     "function": "investor_relations",
+     "title": "Investor Relations Manager",
+     "started": "2017-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p132",
+   "first_name": "Isha",
+   "last_name": "Kapadia",
+   "headline": "Financial Controller, Natco Pharma",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Natco Pharma",
+     "symbol": "NATCOPHARM",
+     "sector": "pharma",
+     "function": "finance",
+     "title": "Financial Controller",
+     "started": "2012-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p133",
+   "first_name": "Diya",
+   "last_name": "Ekbote",
+   "headline": "Head of Investor Relations, Navin Fluorine International",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Navin Fluorine International",
+     "symbol": "NAVINFLUOR",
+     "sector": "chemicals",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2013-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p134",
+   "first_name": "Reyansh",
+   "last_name": "Shenoy",
+   "headline": "Head of Investor Relations, Tata Consultancy Services",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Consultancy Services",
+     "symbol": "TCS",
+     "sector": "it_services",
+     "function": "investor_relations",
+     "title": "Head of Investor Relations",
+     "started": "2010-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p135",
+   "first_name": "Devika",
+   "last_name": "Wadhwa",
+   "headline": "Chief Risk Officer's office, Senior Manager, Persistent Systems",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Persistent Systems",
+     "symbol": "PERSISTENT",
+     "sector": "it_services",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2009-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 1996
+    }
+   ]
+  },
+  {
+   "id": "p136",
+   "first_name": "Ira",
+   "last_name": "Kelkar",
+   "headline": "Chief Risk Officer's office, Senior Manager, HDFC Bank",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "HDFC Bank",
+     "symbol": "HDFCBANK",
+     "sector": "banking",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2017-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2004
+    }
+   ]
+  },
+  {
+   "id": "p137",
+   "first_name": "Harsh",
+   "last_name": "Bhonsale",
+   "headline": "HR Business Partner, Bajaj Finance",
+   "location": "Ahmedabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Bajaj Finance",
+     "symbol": "BAJFINANCE",
+     "sector": "lending",
+     "function": "hr",
+     "title": "HR Business Partner",
+     "started": "2014-07-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p138",
+   "first_name": "Raghav",
+   "last_name": "Mahajani",
+   "headline": "Head of Operations, Manappuram Finance",
+   "location": "Hyderabad",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Manappuram Finance",
+     "symbol": "MANAPPURAM",
+     "sector": "lending",
+     "function": "operations",
+     "title": "Head of Operations",
+     "started": "2015-08-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p139",
+   "first_name": "Devika",
+   "last_name": "Kelkar",
+   "headline": "Deputy CFO, Tata Power",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Tata Power",
+     "symbol": "TATAPOWER",
+     "sector": "power",
+     "function": "finance",
+     "title": "Deputy CFO",
+     "started": "2010-09-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2001
+    }
+   ]
+  },
+  {
+   "id": "p140",
+   "first_name": "Trisha",
+   "last_name": "Vartak",
+   "headline": "Head of Credit, NMDC",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "NMDC",
+     "symbol": "NMDC",
+     "sector": "mining",
+     "function": "risk",
+     "title": "Head of Credit",
+     "started": "2020-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p141",
+   "first_name": "Ananya",
+   "last_name": "Kelkar",
+   "headline": "Strategy Manager, ABB India",
+   "location": "Pune",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "ABB India",
+     "symbol": "ABB",
+     "sector": "capital_goods",
+     "function": "strategy",
+     "title": "Strategy Manager",
+     "started": "2014-04-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2001
+    }
+   ]
+  },
+  {
+   "id": "p142",
+   "first_name": "Jhanvi",
+   "last_name": "Talwar",
+   "headline": "Regional Sales Head, Larsen & Toubro",
+   "location": "Coimbatore",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Larsen & Toubro",
+     "symbol": "LT",
+     "sector": "capital_goods",
+     "function": "sales",
+     "title": "Regional Sales Head",
+     "started": "2014-05-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  },
+  {
+   "id": "p143",
+   "first_name": "Siddhant",
+   "last_name": "Barve",
+   "headline": "Operations Manager, Triveni Turbine",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Triveni Turbine",
+     "symbol": "TRITURBINE",
+     "sector": "capital_goods",
+     "function": "operations",
+     "title": "Operations Manager",
+     "started": "2015-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2003
+    }
+   ]
+  },
+  {
+   "id": "p144",
+   "first_name": "Neel",
+   "last_name": "Rajadhyaksha",
+   "headline": "Chief Engineer, Elgi Equipments",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Elgi Equipments",
+     "symbol": "ELGIEQUIP",
+     "sector": "capital_goods",
+     "function": "engineering",
+     "title": "Chief Engineer",
+     "started": "2014-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIT Madras",
+     "degree": "",
+     "year": 2000
+    }
+   ]
+  },
+  {
+   "id": "p145",
+   "first_name": "Devika",
+   "last_name": "Lele",
+   "headline": "Head of Compliance, Polycab India",
+   "location": "Mumbai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Polycab India",
+     "symbol": "POLYCAB",
+     "sector": "electricals",
+     "function": "legal",
+     "title": "Head of Compliance",
+     "started": "2016-06-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2007
+    }
+   ]
+  },
+  {
+   "id": "p146",
+   "first_name": "Tara",
+   "last_name": "Inamdar",
+   "headline": "Head of R&D, Dixon Technologies",
+   "location": "Coimbatore",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Dixon Technologies",
+     "symbol": "DIXON",
+     "sector": "electronics",
+     "function": "engineering",
+     "title": "Head of R&D",
+     "started": "2016-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "NLSIU",
+     "degree": "",
+     "year": 2008
+    }
+   ]
+  },
+  {
+   "id": "p147",
+   "first_name": "Nandini",
+   "last_name": "Dhavale",
+   "headline": "Company Secretary's office, Senior Manager, Asian Paints",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Asian Paints",
+     "symbol": "ASIANPAINT",
+     "sector": "consumer",
+     "function": "legal",
+     "title": "Company Secretary's office, Senior Manager",
+     "started": "2018-11-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "Symbiosis",
+     "degree": "",
+     "year": 2010
+    }
+   ]
+  },
+  {
+   "id": "p148",
+   "first_name": "Neel",
+   "last_name": "Kelkar",
+   "headline": "Key Accounts Lead, Page Industries",
+   "location": "Kolkata",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Page Industries",
+     "symbol": "PAGEIND",
+     "sector": "consumer",
+     "function": "sales",
+     "title": "Key Accounts Lead",
+     "started": "2011-12-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "BITS Pilani",
+     "degree": "",
+     "year": 1997
+    }
+   ]
+  },
+  {
+   "id": "p149",
+   "first_name": "Naina",
+   "last_name": "Dhavale",
+   "headline": "Head of HR, Kalyan Jewellers",
+   "location": "Chennai",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Kalyan Jewellers",
+     "symbol": "KALYANKJIL",
+     "sector": "consumer",
+     "function": "hr",
+     "title": "Head of HR",
+     "started": "2010-10-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 1999
+    }
+   ]
+  },
+  {
+   "id": "p150",
+   "first_name": "Raghav",
+   "last_name": "Lokhandwala",
+   "headline": "Chief Risk Officer's office, Senior Manager, Eicher Motors",
+   "location": "Bengaluru",
+   "degree": 2,
+   "synthetic": true,
+   "roles": [
+    {
+     "org": "Eicher Motors",
+     "symbol": "EICHERMOT",
+     "sector": "auto",
+     "function": "risk",
+     "title": "Chief Risk Officer's office, Senior Manager",
+     "started": "2011-02-01",
+     "ended": null
+    }
+   ],
+   "schools": [
+    {
+     "school": "IIM Kozhikode",
+     "degree": "",
+     "year": 2002
+    }
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from": "me",
+   "to": "p001",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2019-06-01",
+   "last_contact": "2026-10-02",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p002",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2018-06-01",
+   "last_contact": "2024-01-27",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p003",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2022-06-01",
+   "last_contact": "2026-09-18",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p004",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2017-06-01",
+   "last_contact": "2026-08-13",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p005",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2019-06-01",
+   "last_contact": "2026-06-12",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p006",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2022-06-01",
+   "last_contact": "2026-08-21",
+   "context": "Colleague at Saltpan Capital"
+  },
+  {
+   "from": "me",
+   "to": "p007",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2010-07-01",
+   "last_contact": "2025-03-17",
+   "context": "Colleague at Anchorage Securities (automobiles desk)"
+  },
+  {
+   "from": "me",
+   "to": "p008",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2011-07-01",
+   "last_contact": "2026-09-07",
+   "context": "Colleague at Anchorage Securities (auto components desk)"
+  },
+  {
+   "from": "me",
+   "to": "p009",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2010-07-01",
+   "last_contact": "2024-01-03",
+   "context": "Colleague at Anchorage Securities (banking desk)"
+  },
+  {
+   "from": "me",
+   "to": "p010",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2013-07-01",
+   "last_contact": "2025-03-08",
+   "context": "Colleague at Anchorage Securities (capital goods desk)"
+  },
+  {
+   "from": "me",
+   "to": "p011",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2010-07-01",
+   "last_contact": "2026-02-16",
+   "context": "Colleague at Anchorage Securities (speciality chemicals desk)"
+  },
+  {
+   "from": "me",
+   "to": "p012",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2011-07-01",
+   "last_contact": "2025-03-06",
+   "context": "Colleague at Anchorage Securities (consumer brands desk)"
+  },
+  {
+   "from": "me",
+   "to": "p013",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2011-07-01",
+   "last_contact": "2024-01-11",
+   "context": "Colleague at Anchorage Securities (electricals desk)"
+  },
+  {
+   "from": "me",
+   "to": "p014",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2012-07-01",
+   "last_contact": "2026-08-10",
+   "context": "Colleague at Anchorage Securities (electronics manufacturing desk)"
+  },
+  {
+   "from": "me",
+   "to": "p015",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2010-07-01",
+   "last_contact": "2024-09-24",
+   "context": "Colleague at Anchorage Securities (IT services desk)"
+  },
+  {
+   "from": "me",
+   "to": "p016",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2011-07-01",
+   "last_contact": "2025-09-20",
+   "context": "Colleague at Anchorage Securities (lending (NBFCs) desk)"
+  },
+  {
+   "from": "me",
+   "to": "p017",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2011-07-01",
+   "last_contact": "2025-09-26",
+   "context": "Colleague at Anchorage Securities (mining desk)"
+  },
+  {
+   "from": "me",
+   "to": "p018",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2010-07-01",
+   "last_contact": "2025-03-04",
+   "context": "Colleague at Anchorage Securities (pharmaceuticals desk)"
+  },
+  {
+   "from": "me",
+   "to": "p019",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2012-07-01",
+   "last_contact": "2025-03-17",
+   "context": "Colleague at Anchorage Securities (power desk)"
+  },
+  {
+   "from": "me",
+   "to": "p020",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2011-07-01",
+   "last_contact": "2024-01-05",
+   "context": "Colleague at Anchorage Securities (automobiles desk)"
+  },
+  {
+   "from": "me",
+   "to": "p021",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2010-07-01",
+   "last_contact": "2026-02-28",
+   "context": "Colleague at Anchorage Securities (auto components desk)"
+  },
+  {
+   "from": "me",
+   "to": "p022",
+   "kind": "worked_together",
+   "strength": 1,
+   "since": "2006-09-01",
+   "last_contact": "2024-01-24",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p023",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2006-09-01",
+   "last_contact": "2024-09-05",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p024",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2006-09-01",
+   "last_contact": "2026-02-18",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p025",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2006-09-01",
+   "last_contact": "2026-02-24",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p026",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2006-09-01",
+   "last_contact": "2025-09-20",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p027",
+   "kind": "worked_together",
+   "strength": 1,
+   "since": "2006-09-01",
+   "last_contact": "2025-09-28",
+   "context": "Colleague at TCS, 2006-08"
+  },
+  {
+   "from": "me",
+   "to": "p028",
+   "kind": "classmate",
+   "strength": 5,
+   "since": "2008-06-15",
+   "last_contact": "2026-03-09",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p029",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2008-06-15",
+   "last_contact": "2024-09-26",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p030",
+   "kind": "classmate",
+   "strength": 5,
+   "since": "2008-06-15",
+   "last_contact": "2026-06-27",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p031",
+   "kind": "classmate",
+   "strength": 5,
+   "since": "2008-06-15",
+   "last_contact": "2025-09-21",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p032",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2025-03-14",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p033",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2025-09-05",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p034",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2026-09-02",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p035",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2008-06-15",
+   "last_contact": "2024-09-11",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p036",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2025-09-28",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p037",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2008-06-15",
+   "last_contact": "2024-09-19",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p038",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2026-02-09",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p039",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2025-03-03",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p040",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2025-03-10",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p041",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2026-02-02",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p042",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2026-08-14",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p043",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2025-09-26",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p044",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2026-02-19",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p045",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2008-06-15",
+   "last_contact": "2025-03-08",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p046",
+   "kind": "classmate",
+   "strength": 5,
+   "since": "2008-06-15",
+   "last_contact": "2026-02-11",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p047",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2008-06-15",
+   "last_contact": "2024-01-20",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p048",
+   "kind": "classmate",
+   "strength": 5,
+   "since": "2008-06-15",
+   "last_contact": "2026-09-25",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p049",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2008-06-15",
+   "last_contact": "2026-10-11",
+   "context": "Classmate, IIM Ahmedabad (PGP 2010)"
+  },
+  {
+   "from": "me",
+   "to": "p050",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2002-08-01",
+   "last_contact": "2026-02-05",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p051",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2002-08-01",
+   "last_contact": "2025-09-16",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p052",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2002-08-01",
+   "last_contact": "2025-03-22",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p053",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2002-08-01",
+   "last_contact": "2026-09-11",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p054",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2002-08-01",
+   "last_contact": "2026-02-23",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p055",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2002-08-01",
+   "last_contact": "2025-09-16",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p056",
+   "kind": "classmate",
+   "strength": 4,
+   "since": "2002-08-01",
+   "last_contact": "2025-03-09",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p057",
+   "kind": "classmate",
+   "strength": 1,
+   "since": "2002-08-01",
+   "last_contact": "2024-01-07",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p058",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2002-08-01",
+   "last_contact": "2024-09-18",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p059",
+   "kind": "classmate",
+   "strength": 2,
+   "since": "2002-08-01",
+   "last_contact": "2024-01-24",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p060",
+   "kind": "classmate",
+   "strength": 1,
+   "since": "2002-08-01",
+   "last_contact": "2024-09-28",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p061",
+   "kind": "classmate",
+   "strength": 3,
+   "since": "2002-08-01",
+   "last_contact": "2025-09-20",
+   "context": "Batchmate, IIT Delhi (B.Tech 2006)"
+  },
+  {
+   "from": "me",
+   "to": "p062",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2023-06-01",
+   "last_contact": "2025-09-02",
+   "context": "Met at Tata Consultancy Services' analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p063",
+   "kind": "conference",
+   "strength": 1,
+   "since": "2025-03-01",
+   "last_contact": "2025-09-10",
+   "context": "Met at Tata Power's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p064",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2025-05-01",
+   "last_contact": "2025-09-28",
+   "context": "Met at Elgi Equipments' analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p065",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2017-08-01",
+   "last_contact": "2024-01-03",
+   "context": "Met at Kalyan Jewellers' analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p066",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2021-09-01",
+   "last_contact": "2025-03-01",
+   "context": "Met at Navin Fluorine International's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p067",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2018-09-01",
+   "last_contact": "2025-03-19",
+   "context": "Met at Manappuram Finance's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p068",
+   "kind": "conference",
+   "strength": 3,
+   "since": "2016-09-01",
+   "last_contact": "2024-09-12",
+   "context": "Met at Triveni Turbine's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p069",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2016-11-01",
+   "last_contact": "2024-01-05",
+   "context": "Met at Page Industries' analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p070",
+   "kind": "conference",
+   "strength": 1,
+   "since": "2025-01-01",
+   "last_contact": "2024-01-06",
+   "context": "Met at Natco Pharma's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p071",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2018-10-01",
+   "last_contact": "2024-09-23",
+   "context": "Met at Bajaj Finance's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p072",
+   "kind": "conference",
+   "strength": 3,
+   "since": "2024-06-01",
+   "last_contact": "2026-02-08",
+   "context": "Met at Larsen & Toubro's analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p073",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2018-04-01",
+   "last_contact": "2026-02-26",
+   "context": "Met at Asian Paints' analyst meets"
+  },
+  {
+   "from": "me",
+   "to": "p074",
+   "kind": "conference",
+   "strength": 1,
+   "since": "2020-05-01",
+   "last_contact": "2024-09-01",
+   "context": "Met at an industry conference on power"
+  },
+  {
+   "from": "me",
+   "to": "p075",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2025-05-01",
+   "last_contact": "2024-01-02",
+   "context": "Met at an industry conference on automobiles"
+  },
+  {
+   "from": "me",
+   "to": "p076",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2019-05-01",
+   "last_contact": "2024-09-14",
+   "context": "Met at an industry conference on auto components"
+  },
+  {
+   "from": "me",
+   "to": "p077",
+   "kind": "conference",
+   "strength": 3,
+   "since": "2020-07-01",
+   "last_contact": "2025-09-09",
+   "context": "Met at an industry conference on banking"
+  },
+  {
+   "from": "me",
+   "to": "p078",
+   "kind": "conference",
+   "strength": 2,
+   "since": "2025-11-01",
+   "last_contact": "2025-09-07",
+   "context": "Met at an industry conference on capital goods"
+  },
+  {
+   "from": "me",
+   "to": "p079",
+   "kind": "conference",
+   "strength": 1,
+   "since": "2025-09-01",
+   "last_contact": "2025-03-10",
+   "context": "Met at an accounting-standards workshop"
+  },
+  {
+   "from": "me",
+   "to": "p080",
+   "kind": "conference",
+   "strength": 1,
+   "since": "2025-01-01",
+   "last_contact": "2026-02-06",
+   "context": "Met at an accounting-standards workshop"
+  },
+  {
+   "from": "me",
+   "to": "p081",
+   "kind": "conference",
+   "strength": 3,
+   "since": "2018-05-01",
+   "last_contact": "2024-01-17",
+   "context": "Met at an accounting-standards workshop"
+  },
+  {
+   "from": "me",
+   "to": "p082",
+   "kind": "former_client",
+   "strength": 2,
+   "since": "2013-03-01",
+   "last_contact": "2025-09-10",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p083",
+   "kind": "former_client",
+   "strength": 2,
+   "since": "2014-03-01",
+   "last_contact": "2025-03-21",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p084",
+   "kind": "former_client",
+   "strength": 4,
+   "since": "2011-03-01",
+   "last_contact": "2026-09-17",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p085",
+   "kind": "former_client",
+   "strength": 4,
+   "since": "2011-03-01",
+   "last_contact": "2026-06-23",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p086",
+   "kind": "former_client",
+   "strength": 3,
+   "since": "2015-03-01",
+   "last_contact": "2025-03-28",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p087",
+   "kind": "former_client",
+   "strength": 2,
+   "since": "2013-03-01",
+   "last_contact": "2026-02-25",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p088",
+   "kind": "former_client",
+   "strength": 4,
+   "since": "2011-03-01",
+   "last_contact": "2026-06-27",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p089",
+   "kind": "former_client",
+   "strength": 3,
+   "since": "2012-03-01",
+   "last_contact": "2025-03-26",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p090",
+   "kind": "former_client",
+   "strength": 2,
+   "since": "2011-03-01",
+   "last_contact": "2025-03-22",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "me",
+   "to": "p091",
+   "kind": "former_client",
+   "strength": 2,
+   "since": "2015-03-01",
+   "last_contact": "2026-02-12",
+   "context": "Client of Anchorage Securities' research"
+  },
+  {
+   "from": "p025",
+   "to": "p092",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2014-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Consultancy Services"
+  },
+  {
+   "from": "p015",
+   "to": "p093",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Persistent Systems"
+  },
+  {
+   "from": "p030",
+   "to": "p094",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2012-05-01",
+   "last_contact": null,
+   "context": "Worked together at HDFC Bank"
+  },
+  {
+   "from": "p016",
+   "to": "p095",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2023-05-01",
+   "last_contact": null,
+   "context": "Worked together at Bajaj Finance"
+  },
+  {
+   "from": "p032",
+   "to": "p096",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Manappuram Finance"
+  },
+  {
+   "from": "p063",
+   "to": "p097",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2018-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Power"
+  },
+  {
+   "from": "p056",
+   "to": "p098",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2021-05-01",
+   "last_contact": null,
+   "context": "Worked together at NMDC"
+  },
+  {
+   "from": "p035",
+   "to": "p099",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2016-05-01",
+   "last_contact": null,
+   "context": "Worked together at ABB India"
+  },
+  {
+   "from": "p036",
+   "to": "p100",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at Larsen & Toubro"
+  },
+  {
+   "from": "p037",
+   "to": "p101",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2024-05-01",
+   "last_contact": null,
+   "context": "Worked together at Triveni Turbine"
+  },
+  {
+   "from": "p038",
+   "to": "p102",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Elgi Equipments"
+  },
+  {
+   "from": "p057",
+   "to": "p103",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2024-05-01",
+   "last_contact": null,
+   "context": "Worked together at Polycab India"
+  },
+  {
+   "from": "p040",
+   "to": "p104",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Dixon Technologies"
+  },
+  {
+   "from": "p073",
+   "to": "p105",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Asian Paints"
+  },
+  {
+   "from": "p069",
+   "to": "p106",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2022-05-01",
+   "last_contact": null,
+   "context": "Worked together at Page Industries"
+  },
+  {
+   "from": "p043",
+   "to": "p107",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2018-05-01",
+   "last_contact": null,
+   "context": "Worked together at Kalyan Jewellers"
+  },
+  {
+   "from": "p058",
+   "to": "p108",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2024-05-01",
+   "last_contact": null,
+   "context": "Worked together at Eicher Motors"
+  },
+  {
+   "from": "p021",
+   "to": "p109",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2014-05-01",
+   "last_contact": null,
+   "context": "Worked together at MRF"
+  },
+  {
+   "from": "p045",
+   "to": "p110",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Asahi India Glass"
+  },
+  {
+   "from": "p070",
+   "to": "p111",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2024-05-01",
+   "last_contact": null,
+   "context": "Worked together at Natco Pharma"
+  },
+  {
+   "from": "p060",
+   "to": "p112",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Navin Fluorine International"
+  },
+  {
+   "from": "p027",
+   "to": "p113",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Consultancy Services"
+  },
+  {
+   "from": "p023",
+   "to": "p114",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2022-05-01",
+   "last_contact": null,
+   "context": "Worked together at Persistent Systems"
+  },
+  {
+   "from": "p030",
+   "to": "p115",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2021-05-01",
+   "last_contact": null,
+   "context": "Worked together at HDFC Bank"
+  },
+  {
+   "from": "p031",
+   "to": "p116",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2016-05-01",
+   "last_contact": null,
+   "context": "Worked together at Bajaj Finance"
+  },
+  {
+   "from": "p067",
+   "to": "p117",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2024-05-01",
+   "last_contact": null,
+   "context": "Worked together at Manappuram Finance"
+  },
+  {
+   "from": "p019",
+   "to": "p118",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Power"
+  },
+  {
+   "from": "p056",
+   "to": "p119",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at NMDC"
+  },
+  {
+   "from": "p050",
+   "to": "p120",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2022-05-01",
+   "last_contact": null,
+   "context": "Worked together at ABB India"
+  },
+  {
+   "from": "p036",
+   "to": "p121",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2014-05-01",
+   "last_contact": null,
+   "context": "Worked together at Larsen & Toubro"
+  },
+  {
+   "from": "p056",
+   "to": "p122",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2023-05-01",
+   "last_contact": null,
+   "context": "Worked together at Triveni Turbine"
+  },
+  {
+   "from": "p036",
+   "to": "p123",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2012-05-01",
+   "last_contact": null,
+   "context": "Worked together at Elgi Equipments"
+  },
+  {
+   "from": "p057",
+   "to": "p124",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Polycab India"
+  },
+  {
+   "from": "p054",
+   "to": "p125",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Dixon Technologies"
+  },
+  {
+   "from": "p042",
+   "to": "p126",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Asian Paints"
+  },
+  {
+   "from": "p069",
+   "to": "p127",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2023-05-01",
+   "last_contact": null,
+   "context": "Worked together at Page Industries"
+  },
+  {
+   "from": "p043",
+   "to": "p128",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Kalyan Jewellers"
+  },
+  {
+   "from": "p058",
+   "to": "p129",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2023-05-01",
+   "last_contact": null,
+   "context": "Worked together at Eicher Motors"
+  },
+  {
+   "from": "p021",
+   "to": "p130",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at MRF"
+  },
+  {
+   "from": "p046",
+   "to": "p131",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2012-05-01",
+   "last_contact": null,
+   "context": "Worked together at Asahi India Glass"
+  },
+  {
+   "from": "p047",
+   "to": "p132",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2018-05-01",
+   "last_contact": null,
+   "context": "Worked together at Natco Pharma"
+  },
+  {
+   "from": "p048",
+   "to": "p133",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2019-05-01",
+   "last_contact": null,
+   "context": "Worked together at Navin Fluorine International"
+  },
+  {
+   "from": "p025",
+   "to": "p134",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2016-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Consultancy Services"
+  },
+  {
+   "from": "p024",
+   "to": "p135",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Persistent Systems"
+  },
+  {
+   "from": "p030",
+   "to": "p136",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at HDFC Bank"
+  },
+  {
+   "from": "p032",
+   "to": "p137",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2012-05-01",
+   "last_contact": null,
+   "context": "Worked together at Bajaj Finance"
+  },
+  {
+   "from": "p032",
+   "to": "p138",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2022-05-01",
+   "last_contact": null,
+   "context": "Worked together at Manappuram Finance"
+  },
+  {
+   "from": "p055",
+   "to": "p139",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at Tata Power"
+  },
+  {
+   "from": "p034",
+   "to": "p140",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at NMDC"
+  },
+  {
+   "from": "p050",
+   "to": "p141",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2018-05-01",
+   "last_contact": null,
+   "context": "Worked together at ABB India"
+  },
+  {
+   "from": "p051",
+   "to": "p142",
+   "kind": "worked_together",
+   "strength": 5,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at Larsen & Toubro"
+  },
+  {
+   "from": "p068",
+   "to": "p143",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Triveni Turbine"
+  },
+  {
+   "from": "p053",
+   "to": "p144",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2019-05-01",
+   "last_contact": null,
+   "context": "Worked together at Elgi Equipments"
+  },
+  {
+   "from": "p039",
+   "to": "p145",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2017-05-01",
+   "last_contact": null,
+   "context": "Worked together at Polycab India"
+  },
+  {
+   "from": "p054",
+   "to": "p146",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2016-05-01",
+   "last_contact": null,
+   "context": "Worked together at Dixon Technologies"
+  },
+  {
+   "from": "p041",
+   "to": "p147",
+   "kind": "worked_together",
+   "strength": 4,
+   "since": "2013-05-01",
+   "last_contact": null,
+   "context": "Worked together at Asian Paints"
+  },
+  {
+   "from": "p042",
+   "to": "p148",
+   "kind": "worked_together",
+   "strength": 2,
+   "since": "2018-05-01",
+   "last_contact": null,
+   "context": "Worked together at Page Industries"
+  },
+  {
+   "from": "p043",
+   "to": "p149",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2015-05-01",
+   "last_contact": null,
+   "context": "Worked together at Kalyan Jewellers"
+  },
+  {
+   "from": "p044",
+   "to": "p150",
+   "kind": "worked_together",
+   "strength": 3,
+   "since": "2020-05-01",
+   "last_contact": null,
+   "context": "Worked together at Eicher Motors"
+  }
+ ]
+}

@@ -6,11 +6,14 @@
     python scripts/ingest.py results SYMBOL [SYMBOL ...] results for named companies
     python scripts/ingest.py backfill --from 2026-10-01 --to 2026-11-15 [--prices-from 2026-06-25]
     python scripts/ingest.py seed                        create the demo investor, holdings and coverage
+    python scripts/ingest.py seed-network                load the demo investor's synthetic network (Founding)
     python scripts/ingest.py status                      last run of each job, rows per table, database size
     python scripts/ingest.py verify [--live] [--quarter 2026-09-30] [--since 2026-10-01]
                                                          is every covered company's data complete and right?
     python scripts/ingest.py import-pledges FILE         a saved response of NSE's pledge feed, for when
                                                          the live feed is down (keeps NSE's publication time)
+    python scripts/ingest.py analyse [SYMBOL ...]        read covered companies' transcripts and annual
+                                                         report; build ledger, snapshot, bull and bear
 
 Exits 1 if the job failed or reported errors, so the workflow goes red.
 """
@@ -24,12 +27,13 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 from psycopg import sql
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from finn import db, ingest, seed, verify  # noqa: E402
+from finn import db, ingest, ledger, network, seed, verify  # noqa: E402
 from finn.sources.client import NSEClient  # noqa: E402
 
 TABLES = ("filings", "results", "prices_eod", "trading_days", "pledges", "board_meetings", "corporate_actions",
@@ -103,7 +107,10 @@ def main() -> int:
     b.add_argument("--to", dest="end", type=day, required=True)
     b.add_argument("--prices-from", dest="prices_start", type=day)
     sub.add_parser("seed")
+    sub.add_parser("seed-network")  # --- Network stream ---
     sub.add_parser("status")
+    an = sub.add_parser("analyse")
+    an.add_argument("symbols", nargs="*", type=symbol, help="default: every covered company")
     ip = sub.add_parser("import-pledges")
     ip.add_argument("file", type=Path)
     v = sub.add_parser("verify")
@@ -118,6 +125,8 @@ def main() -> int:
             return status(conn)
         if args.job == "seed":
             return report("seed", seed.seed_demo(conn))
+        if args.job == "seed-network":  # --- Network stream ---
+            return report("seed-network", network.load_network(conn, UUID(seed.load()["investor"]["id"])))
         if args.job == "import-pledges":
             return report("import-pledges", ingest.import_pledges(conn, args.file))
         if args.job == "verify":
@@ -137,6 +146,8 @@ def main() -> int:
             return report("eod", ingest.ingest_eod(conn, source, days, refetch=args.refetch))
         if args.job == "daily":
             return report("daily", ingest.ingest_daily(conn, source, today))
+        if args.job == "analyse":
+            return report("analyse", ledger.analyse_all(conn, source, args.symbols or ingest.covered(conn), today))
         if args.job == "results":
             out = {s: ingest.ingest_results(conn, source, s) for s in args.symbols}
             return report("results", {"results": out, "errors": [s for s, v in out.items() if v.get("error")]})

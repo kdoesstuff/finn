@@ -4,6 +4,8 @@ import { categoryLabel, detailInDocumentNote, shortCompany } from '../lib/labels
 import { formatFull, formatRelative, formatStamp } from '../lib/time'
 import { DateColumn, SourceLink, Stamp } from './Evidence'
 import { MovesNote, ResultsTable } from './Numbers'
+import { NETWORK_BUILD } from '../network/flag'
+import { WhoToCall } from '../network/WhoToCall'
 
 interface Props {
   item: Item
@@ -110,6 +112,9 @@ function EntryActions({ item }: { item: Item }) {
           NSE’s label for this filing: <span className="panel__label">{item.label}</span>
         </p>
       </div>
+
+      {/* --- Network stream: full edition only --- */}
+      {NETWORK_BUILD && item.who_to_call && <WhoToCall people={item.who_to_call} company={company} />}
 
       {item.related.length > 0 && (
         <div className="panel" id={relatedId} hidden={!relatedOpen}>

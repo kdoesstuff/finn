@@ -11,7 +11,8 @@ import { WindowSelector } from '../brief/WindowSelector'
 import type { AppConfig } from '../config'
 import { formatDay, formatStamp } from '../lib/time'
 import { useNow } from '../lib/useNow'
-import { Colophon, Wordmark } from './Chrome'
+import { Colophon, SectionNav, Wordmark } from './Chrome'
+import { NETWORK_BUILD } from '../network/flag'
 
 export function hoursFromSearch(search: string): WindowHours {
   const param = new URLSearchParams(search).get('window')
@@ -78,7 +79,21 @@ export function BriefScreen({ api, config, navigate, focusHeading }: Props) {
         <div className="masthead__brand">
           <Wordmark onHome={() => navigate('/')} />
           <span className="tag">Demo portfolio</span>
+          {/* --- Network stream: full edition only --- */}
+          {NETWORK_BUILD && config.networkEnabled && (
+            <a
+              className="action masthead__nav"
+              href="/network"
+              onClick={(event) => {
+                event.preventDefault()
+                navigate('/network')
+              }}
+            >
+              Your network
+            </a>
+          )}
         </div>
+        <SectionNav current="brief" navigate={navigate} />
         <h1 className="masthead__date" tabIndex={-1} ref={heading}>
           <span className="visually-hidden">Brief for </span>
           {formatDay(now)}

@@ -15,6 +15,8 @@ import type {
   ResultsRow,
   Snapshot,
 } from './types'
+import { NETWORK_BUILD } from '../network/flag'
+import { parseWhoToCall } from '../network/api'
 
 export class ContractError extends Error {
   override name = 'ContractError'
@@ -25,19 +27,19 @@ export class ContractError extends Error {
 
 type Json = unknown
 
-function obj(value: Json, path: string): Record<string, Json> {
+export function obj(value: Json, path: string): Record<string, Json> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new ContractError(path, 'an object')
   }
   return value as Record<string, Json>
 }
 
-function str(value: Json, path: string): string {
+export function str(value: Json, path: string): string {
   if (typeof value !== 'string') throw new ContractError(path, 'a string')
   return value
 }
 
-function bool(value: Json, path: string): boolean {
+export function bool(value: Json, path: string): boolean {
   if (typeof value !== 'boolean') throw new ContractError(path, 'true or false')
   return value
 }
@@ -47,7 +49,7 @@ function num(value: Json, path: string): number {
   return value
 }
 
-function int(value: Json, path: string, min: number, max: number): number {
+export function int(value: Json, path: string, min: number, max: number): number {
   const n = num(value, path)
   if (!Number.isInteger(n) || n < min || n > max) {
     throw new ContractError(path, `a whole number from ${min} to ${max}`)
@@ -75,7 +77,7 @@ function day(value: Json, path: string): string {
   return s
 }
 
-function arr<T>(value: Json, path: string, each: (v: Json, p: string) => T): T[] {
+export function arr<T>(value: Json, path: string, each: (v: Json, p: string) => T): T[] {
   if (!Array.isArray(value)) throw new ContractError(path, 'a list')
   return value.map((v, i) => each(v, `${path}[${i}]`))
 }
@@ -175,6 +177,11 @@ function item(value: Json, path: string): Item {
     related: arr(o.related, `${path}.related`, related),
     results: nullable(o.results, `${path}.results`, results),
     moves: arr(o.moves, `${path}.moves`, move),
+    // --- Network stream: present only on the full edition ---
+    // (only the full build reads it: in the core build this branch, and the parser, are dropped)
+    ...(NETWORK_BUILD && o.who_to_call !== undefined
+      ? { who_to_call: arr(o.who_to_call, `${path}.who_to_call`, parseWhoToCall) }
+      : {}),
   }
 }
 
@@ -253,3 +260,6 @@ export function parseErrorBody(value: Json): { code: string; message: string } |
   if (typeof code !== 'string' || typeof message !== 'string') return null
   return { code, message }
 }
+
+// Shared with the other response parsers (api/pull.ts).
+export { counts, item, num, time }

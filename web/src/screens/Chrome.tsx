@@ -41,3 +41,29 @@ export function Colophon({ networkEnabled, onHome }: { networkEnabled: boolean; 
     </footer>
   )
 }
+
+/** The two sections of the app: the brief (Push) and research (Pull). */
+export function SectionNav({ current, navigate }: { current: 'brief' | 'research'; navigate: (to: string) => void }) {
+  const links = [
+    { key: 'brief', to: '/brief', label: 'Brief' },
+    { key: 'research', to: '/research', label: 'Research' },
+  ] as const
+  return (
+    <nav className="sections" aria-label="Sections">
+      <ul className="sections__list">
+        {links.map((l) => (
+          <li key={l.key}>
+            <a
+              className="sections__link"
+              href={l.to}
+              aria-current={current === l.key ? 'page' : undefined}
+              onClick={(event) => inPlace(event, () => navigate(l.to))}
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

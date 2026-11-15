@@ -1,0 +1,95 @@
+Notes:
+"Synthetic data for FINN's demo. Every person is fictional."
+
+First Name,Last Name,URL,Email Address,Company,Position,Connected On
+Nikhil,Pochkhanawala,,,Saltpan Capital,Analyst,01 Jun 2019
+Reyansh,Chadha,,,Saltpan Capital,Analyst,01 Jun 2018
+Ananya,Thyagarajan,,,Saltpan Capital,Analyst,01 Jun 2022
+Devika,Deodhar,,,Saltpan Capital,Head of Operations,01 Jun 2017
+Kabir,Duraiswamy,,,Saltpan Capital,Compliance Officer,01 Jun 2019
+Dhruv,Deodhar,,,Saltpan Capital,Analyst,01 Jun 2022
+Ved,Karandikar,,,Eicher Motors,Head of FP&A,01 Jul 2010
+Jhanvi,Inamdar,,,MRF,Chief of Staff to the MD,01 Jul 2011
+Farhan,Anantharaman,,,Kestrel Lane Advisors,Fund Manager,01 Jul 2010
+Tanmay,Anantharaman,,,Larsen & Toubro,Strategy Manager,01 Jul 2013
+Aarav,Zaveri,,,Navin Fluorine International,Head of FP&A,01 Jul 2010
+Shaurya,Lele,,,Asian Paints,Head of Investor Relations,01 Jul 2011
+Kavya,Seshadri,,,Kestrel Lane Advisors,Fund Manager,01 Jul 2011
+Lavanya,Rajadhyaksha,,,Kestrel Lane Advisors,Fund Manager,01 Jul 2012
+Harsh,Dasgupta,,,Persistent Systems,Financial Controller,01 Jul 2010
+Pranav,Kumaraswamy,,,Bajaj Finance,Head of Investor Relations,01 Jul 2011
+Devika,Pochkhanawala,,,NMDC,Strategy Manager,01 Jul 2011
+Pallavi,Inamdar,,,Brightwater Equity Partners,Fund Manager,01 Jul 2010
+Farhan,Dhavale,,,Tata Power,Head of Strategy,01 Jul 2012
+Farhan,Pochkhanawala,,,Kestrel Lane Advisors,Fund Manager,01 Jul 2011
+Nandini,Inamdar,,,MRF,Head of Strategy,01 Jul 2010
+Bhavna,Lokhandwala,,,Persistent Systems,Regional Sales Head,01 Sep 2006
+Sanjana,Karandikar,,,Persistent Systems,Strategy Manager,01 Sep 2006
+Bhavna,Hiremath,,,Persistent Systems,Head of Digital,01 Sep 2006
+Kavya,Wagle,,,Persistent Systems,Key Accounts Lead,01 Sep 2006
+Harsh,Kelkar,,,Persistent Systems,Engineering Director,01 Sep 2006
+Kabir,Lokhandwala,,,Persistent Systems,Key Accounts Lead,01 Sep 2006
+Akshay,Kumaraswamy,,,Persistent Systems,"Chief Risk Officer's office, Senior Manager",15 Jun 2008
+Vidya,Ganapathy,,,Persistent Systems,Head of Operations,15 Jun 2008
+Dhruv,Ekbote,,,HDFC Bank,Chief of Staff to the MD,15 Jun 2008
+Aarav,Chitnis,,,Bajaj Finance,"Company Secretary's office, Senior Manager",15 Jun 2008
+Jhanvi,Wadhwa,,,Bajaj Finance,Head of Credit,15 Jun 2008
+Reyansh,Inamdar,,,Kestrel Lane Advisors,Partner,15 Jun 2008
+Nandini,Rajadhyaksha,,,Kestrel Lane Advisors,Partner,15 Jun 2008
+Parth,Paranjpe,,,ABB India,"Company Secretary's office, Senior Manager",15 Jun 2008
+Tara,Kelkar,,,Elgi Equipments,Financial Controller,15 Jun 2008
+Isha,Barve,,,ABB India,"Company Secretary's office, Senior Manager",15 Jun 2008
+Dhruv,Dasgupta,,,Elgi Equipments,Head of Sales,15 Jun 2008
+Kavya,Wadhwa,,,Polycab India,Head of Sales,15 Jun 2008
+Dhruv,Kelkar,,,Kestrel Lane Advisors,Partner,15 Jun 2008
+Devika,Zaveri,,,Kalyan Jewellers,Key Accounts Lead,15 Jun 2008
+Shaurya,Zaveri,,,Asian Paints,Finance Manager,15 Jun 2008
+Ananya,Rajadhyaksha,,,Kalyan Jewellers,Head of FP&A,15 Jun 2008
+Tara,Sathaye,,,Kestrel Lane Advisors,Partner,15 Jun 2008
+Vidya,Sengupta,,,Asahi India Glass,Finance Manager,15 Jun 2008
+Farhan,Talwar,,,MRF,Head of Treasury,15 Jun 2008
+Harsh,Ekbote,,,Natco Pharma,Head of FP&A,15 Jun 2008
+Ananya,Sohoni,,,Navin Fluorine International,Regional Sales Head,15 Jun 2008
+Kavya,Rajadhyaksha,,,Persistent Systems,General Counsel,15 Jun 2008
+Rohan,Anantharaman,,,ABB India,Operations Manager,01 Aug 2002
+Isha,Chitnis,,,Elgi Equipments,Head of Procurement,01 Aug 2002
+Vihaan,Kelkar,,,ABB India,Supply Chain Manager,01 Aug 2002
+Varun,Ekbote,,,Elgi Equipments,Chief Engineer,01 Aug 2002
+Dhruv,Chitnis,,,Tata Power,Head of Procurement,01 Aug 2002
+Bhavna,Sathaye,,,Tata Power,Chief Engineer,01 Aug 2002
+Mrinal,Sengupta,,,Triveni Turbine,Supply Chain Manager,01 Aug 2002
+Gauri,Wadhwa,,,Polycab India,Supply Chain Manager,01 Aug 2002
+Parth,Seshadri,,,Eicher Motors,Engineering Manager,01 Aug 2002
+Advait,Ekbote,,,Asahi India Glass,Head of Procurement,01 Aug 2002
+Trisha,Talwar,,,Navin Fluorine International,Head of R&D,01 Aug 2002
+Saanvi,Bhonsale,,,MRF,Head of Projects,01 Aug 2002
+Riya,Nadkarni,,,Tata Consultancy Services,Head of Compliance,01 Jun 2023
+Raghav,Sengupta,,,Tata Power,Head of Strategy,01 Mar 2025
+Naina,Ganapathy,,,Elgi Equipments,Investor Relations Manager,01 May 2025
+Jhanvi,Dasgupta,,,Kalyan Jewellers,General Counsel,01 Aug 2017
+Imran,Lokhandwala,,,Navin Fluorine International,Deputy CFO,01 Sep 2021
+Advait,Kelkar,,,Manappuram Finance,"Company Secretary's office, Senior Manager",01 Sep 2018
+Sanjana,Lele,,,Triveni Turbine,Finance Manager,01 Sep 2016
+Bhavna,Kumaraswamy,,,Page Industries,Head of FP&A,01 Nov 2016
+Zoya,Lele,,,Natco Pharma,Investor Relations Manager,01 Jan 2025
+Vidya,Barve,,,Bajaj Finance,Deputy CFO,01 Oct 2018
+Tara,Joglekar,,,Larsen & Toubro,Head of Strategy,01 Jun 2024
+Vidya,Kumaraswamy,,,Asian Paints,Head of Compliance,01 Apr 2018
+Arnav,Ekbote,,,Tamarind Strategy Group,"Partner, power practice",01 May 2020
+Shaurya,Kelkar,,,Quarry Point Consulting,"Partner, automobiles practice",01 May 2025
+Diya,Bhonsale,,,Tamarind Strategy Group,"Partner, auto components practice",01 May 2019
+Reyansh,Joglekar,,,Quarry Point Consulting,"Partner, banking practice",01 Jul 2020
+Meera,Chitnis,,,Quarry Point Consulting,"Partner, capital goods practice",01 Nov 2025
+Devika,Thyagarajan,,,Northgate Audit Partners,"Audit Partner, power",01 Sep 2025
+Pallavi,Vartak,,,Ledgerline Assurance LLP,"Audit Partner, banking",01 Jan 2025
+Isha,Sengupta,,,Ledgerline Assurance LLP,"Audit Partner, consumer brands",01 May 2018
+Gauri,Rajadhyaksha,,,Coromandel Research,Fund Manager,01 Mar 2013
+Meera,Ekbote,,,Kestrel Lane Advisors,Fund Manager,01 Mar 2014
+Tara,Pochkhanawala,,,Coromandel Research,Fund Manager,01 Mar 2011
+Pranav,Contractor,,,Coromandel Research,Fund Manager,01 Mar 2011
+Neel,Hiremath,,,Coromandel Research,Fund Manager,01 Mar 2015
+Meera,Inamdar,,,Coromandel Research,Fund Manager,01 Mar 2013
+Advait,Sohoni,,,Brightwater Equity Partners,Fund Manager,01 Mar 2011
+Parth,Rajadhyaksha,,,Sahyadri Growth Fund,Fund Manager,01 Mar 2012
+Mrinal,Anantharaman,,,Sahyadri Growth Fund,Fund Manager,01 Mar 2011
+Gauri,Sohoni,,,Kestrel Lane Advisors,Fund Manager,01 Mar 2015

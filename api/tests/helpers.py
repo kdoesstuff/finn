@@ -99,10 +99,12 @@ def api_examples() -> dict[str, Any]:
     for block in re.findall(r"```json\n(.*?)```", text, re.DOTALL):
         example = json.loads(re.sub(r"\[(Item|Move|Pledge)\]", "[]", block))
         kind = next(k for k, key in (("error", "error"), ("session", "token"), ("health", "ok"),
-                                     ("digest", "window"), ("item", "headline"), ("results", "quarter"),
+                                     ("digest", "window"), ("companies", "companies"), ("company", "coverage"),
+                                     ("item", "headline"), ("results", "quarter"),
                                      ("move", "fired_by"), ("pledge", "pct_of_promoter")) if key in example)
         out[kind] = example
-    assert set(out) == {"error", "session", "health", "digest", "item", "results", "move", "pledge"}, \
+    assert set(out) == {"error", "session", "health", "digest", "item", "results", "move", "pledge",
+                        "companies", "company"}, \
         "docs/API.md examples changed"
     return out
 

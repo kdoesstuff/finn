@@ -4,6 +4,7 @@
 // about 90 seconds while the caller is told the server is waking.
 
 import type { DemoSession, Digest, Investor, Snapshot } from './types'
+import { type Companies, type Company, parseCompanies, parseCompany } from './pull'
 import { ContractError, parseDigest, parseErrorBody, parseHealth, parseSession, parseSnapshot } from './validate'
 
 export interface Timing {
@@ -79,6 +80,13 @@ export interface Api {
   /** The saved copy at /snapshot.json, or null when there is none (or it cannot be read). */
   snapshot(signal?: AbortSignal): Promise<Snapshot | null>
   investor(): Investor | null
+  /** --- Network stream --- An authenticated GET of any /v1 path, checked by `parse`; one new
+   *  session and one more try if the token is refused. */
+  get<T>(path: string, parse: (json: unknown) => T, options?: CallOptions): Promise<T>
+  /** Pull: companies matching a symbol or name. */
+  companies(query: string, options?: CallOptions): Promise<Companies>
+  /** Pull: one company's research page. */
+  company(symbol: string, options?: CallOptions): Promise<Company>
 }
 
 export function isAbort(error: unknown): boolean {
@@ -267,6 +275,19 @@ export function createApi(deps: ApiDeps): Api {
     })
   }
 
+  /** An authenticated GET: one new session and one more try if the token has expired. */
+  async function authedGet<T>(path: string, parse: (json: unknown) => T, options: CallOptions): Promise<T> {
+    const token = await ensureSession(options)
+    try {
+      return await call(path, request('GET', token), parse, options)
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 401) throw error
+      session = null
+      const renewed = await ensureSession(options)
+      return await call(path, request('GET', renewed), parse, options)
+    }
+  }
+
   return {
     prewarm() {
       void attempt(`${base}/health`, request('GET'), timing.wakeBudgetMs)
@@ -309,6 +330,19 @@ export function createApi(deps: ApiDeps): Api {
 
     investor() {
       return session?.investor ?? null
+    },
+
+    companies(query, options = {}) {
+      return authedGet(`/v1/companies?q=${encodeURIComponent(query)}`, parseCompanies, options)
+    },
+
+    company(symbol, options = {}) {
+      return authedGet(`/v1/company/${encodeURIComponent(symbol)}`, parseCompany, options)
+    },
+
+    // --- Network stream ---
+    get(path, parse, options = {}) {
+      return authedGet(path, parse, options)
     },
   }
 }

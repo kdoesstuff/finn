@@ -167,6 +167,71 @@ nothing pledged are not listed):
   shareholding date the disclosure refers to, `published` when NSE published it.
   `change_pct_points` is the change since NSE's previous disclosure, null when there is none.
 
+## Company research (Pull)
+
+`GET /v1/companies?q=` finds up to 10 companies by symbol or name (exact symbol first, then symbol
+prefix, then name); `q` is 1-60 characters. `covered` says whether FINN keeps deep data on it.
+
+```json
+{"query": "tata", "companies": [{"symbol": "TATAPOWER", "name": "Tata Power Company Limited", "covered": true}]}
+```
+
+`GET /v1/company/{symbol}` is the company page, for any NSE company FINN has seen (404 otherwise; a
+malformed symbol is 422). Every listed company has prices (every bhavcopy row is stored) and its
+filings since 1 October; covered companies also have up to nine quarters of results from their XBRL
+filings (`results`, newest first, consolidated where filed; banks use the bank template), their
+documents, and analyses built from those documents. `coverage.missing` says in plain words what the
+page does not have. `price` and `results` are `null` when there is nothing to show; each entry of
+`analyses` is `null` until it has been built. Every claim inside an analysis carries the quote it
+rests on, its page and the source document's link (see "Analyses" below).
+
+```json
+{
+  "symbol": "TCS",
+  "name": "Tata Consultancy Services Limited",
+  "isin": "INE467B01029",
+  "industry": "Computers - Software & Consulting",
+  "data_as_of": "2026-11-09T23:31:05+05:30",
+  "coverage": {"level": "deep", "reason": "holding", "missing": ["Not built yet: business snapshot."]},
+  "price": {"day": "2026-11-06", "close": 2498.5, "change_1d_pct": -0.4, "change_1m_pct": 3.1,
+            "change_since_pct": 6.2, "since": "2026-06-25", "volume": 2104567, "avg_volume_20d": 2400311},
+  "results": {
+    "template": "standard", "basis": "consolidated", "unit": "₹ crore",
+    "latest": {"template": "standard", "period_end": "2026-09-30", "basis": "consolidated", "unit": "₹ crore",
+               "rows": [{"metric": "Revenue", "value": 73188.0,
+                         "qoq": {"pct": 2.1, "note": ""}, "yoy": {"pct": 11.2, "note": ""}}],
+               "notes": ["EBITDA = ..."], "source": "https://nsearchives.nseindia.com/corporate/xbrl/x.xml"},
+    "quarters": [{"period_end": "2026-09-30", "revenue": 73188.0, "ebitda": 19554.0, "ebitda_margin": 26.7,
+                  "pbt": 18120.0, "pat": 13410.0, "pat_margin": 18.3,
+                  "source": "https://nsearchives.nseindia.com/corporate/xbrl/x.xml"}],
+    "notes": ["EBITDA = ..."]
+  },
+  "filings": {"days": 90, "items": [Item], "more": 0, "routine": {"count": 12, "by_kind": {"earnings_call": 5}}},
+  "documents": [{"kind": "transcript", "title": "Q2 FY27 earnings call", "period": "2026-09-30",
+                 "published": "2026-10-14", "url": "https://nsearchives.nseindia.com/corporate/t.pdf", "pages": 18}],
+  "analyses": {"ledger": {"summary": "kept 5 of 8 measurable promises"}, "snapshot": null, "bull_bear": null}
+}
+```
+
+The quarters of a bank carry `nii`, `operating_profit`, `provisions` and `pat` instead of revenue,
+EBITDA and PBT. The `latest` card is the digest's results card, computed by the same code.
+
+### Analyses
+
+Built offline from the company's own documents (`python scripts/ingest.py analyse`), never from
+outside knowledge. Each has `sources` (the documents read: kind, title, url), `model`, and
+`generated_at`, besides its own fields:
+
+- `ledger`: `summary` ("kept 5 of 8 measurable promises"), `counts` (kept, missed, partly,
+  too_early, not_measurable), `statements` (each: `said_in` (the call's quarter end), `quote`,
+  `page`, `url`, `metric`, `target`, `horizon`, `status`, `evidence`: what decided the status, either
+  a later quote (`kind` "quote", with `quote`, `page`, `url`) or delivered numbers (`kind`
+  "numbers", with `metric`, `value`, `period_end`, `url`), or `null` when not measurable), and
+  `gaps` (documents that could not be read, in plain words).
+- `snapshot`: `points`, each a sentence with its `quote`, `page` and `url`, grouped by `topic`
+  (business, segments, revenue mix).
+- `bull_bear`: `bull` and `bear`, each a list of points in the same form.
+
 ## Limits
 
 - Rate limit: 60 requests a minute per client for `/v1`, 10 a minute for `/v1/session/demo`.
@@ -178,3 +243,61 @@ nothing pledged are not listed):
 `scripts/export_snapshot.py` writes the demo investor's digest for a 7-day window, in exactly the
 `/v1/digest` shape plus `"snapshot": true` and `"generated_at"`, to `web/public/snapshot.json`. The web
 app shows it, clearly labelled with its time, when the API cannot answer.
+
+## Network (full edition only)
+
+The Founding brief's Network layer. Every route below, and `who_to_call` in the digest, exists only
+for a session started from the `full` site (`dep: "full"`) whose investor has the network switched on.
+A `core` session gets `404 not_found` with the same message as a route that does not exist. Reads run
+as `finn_api` in the investor's scope (row-level security); nothing is written; network data is
+never sent to a model. The demo investor's network is synthetic: about 150 fictional people
+(`db/seed/network.json`, labelled `"synthetic": true`).
+
+**`who_to_call` on digest items** (full only): up to two people per item, best placed to explain it.
+
+```jsonc
+"who_to_call": [
+  {"person_id": "p061", "name": "Pranav Seshadri",
+   "why": "Plant Head at Tata Power since 2019: knows how projects and capacity are run there; worked in operations.",
+   "degree": 1, "via": null,
+   "caution": "Works there now: ask about what is already public, never about unpublished price-sensitive information."}
+]
+```
+
+`degree` is 1 for a direct contact, 2 for someone a contact knows (`via` names the contact).
+`caution` is set for current employees of the listed company (SEBI's insider-trading rules).
+
+**`GET /v1/network/company/{symbol}?category=`** (`category`: a digest category such as `capex`,
+`results`, `management_change`; optional). Who worked there and who is best placed to explain an event
+of that kind, each with the path that justifies it:
+
+```jsonc
+{"symbol": "TATAPOWER", "company": "Tata Power", "sector": "power", "synthetic": true,
+ "you_worked_there": [],
+ "worked_there": [Answer], "best_placed": [Answer]}
+// Answer:
+{"person_id": "p061", "name": "Pranav Seshadri", "headline": "Plant Head, Tata Power", "degree": 1,
+ "why": "...", "how": "Classmate, IIM Ahmedabad (PGP 2010) (tie strength 5 of 5)", "via": null,
+ "caution": "...", "path": [{"from": "you", "to": "Pranav Seshadri", "to_id": "p061",
+                             "kind": "classmate", "strength": 5, "context": "Classmate, IIM Ahmedabad (PGP 2010)"}]}
+```
+
+**`GET /v1/network/person/{id}`** (`p001`...): diligence on one person.
+
+```jsonc
+{"id": "p030", "name": "...", "headline": "...", "location": "Mumbai", "degree": 1, "synthetic": true,
+ "career": ["Credit Analyst, HDFC Bank (2010-2016)", "Head of Credit, HDFC Bank (since 2016)"],
+ "schools": ["IIM Ahmedabad, PGP (2010)"], "how": "...", "path": [Step],
+ "overlaps": ["IIM Ahmedabad, same year (2010)"],
+ "what_to_ask": ["How HDFC Bank's risk and credit side works (now), and what changed after they joined."]}
+```
+
+**`GET /v1/network/ask?q=`** (1 to 200 characters): a short question, answered with the matching
+type: `company` (adds `company`, as above), `person` (adds `person`), `expertise` (a sector, a function
+or both), `reconnect` (strong ties gone quiet, with a recent filing where they worked as the reason to
+call), or `help` (adds `examples`).
+
+```jsonc
+{"question": "Who knows auto components?", "kind": "expertise", "title": "Who knows auto components",
+ "answers": [Answer]}
+```

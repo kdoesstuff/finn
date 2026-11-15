@@ -1,6 +1,6 @@
 // Checks on the production build itself: what the service worker may cache, and that the HTML
 // carries nothing the Content-Security-Policy would block.
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 import { API } from './api'
 
@@ -29,6 +29,19 @@ test.describe('production build', () => {
     for (const tag of html.match(/<script\b[^>]*>/g) ?? []) expect(tag).toMatch(/\bsrc="/)
     expect(html).not.toMatch(/<style\b/)
     expect(html).not.toMatch(/\sstyle="/)
+  })
+
+  test('the core build carries no Network code; the full build does', () => {
+    // CI builds the core edition (VITE_NETWORK_ENABLED=false); the bundler drops every branch
+    // guarded by NETWORK_BUILD, and the lazy network chunk with it.
+    const full = process.env.VITE_NETWORK_ENABLED === 'true'
+    const js = readdirSync(new URL('../dist/assets/', import.meta.url))
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => dist(`assets/${file}`))
+      .join('\n')
+    for (const marker of ['Ask your network', 'who_to_call', '/v1/network', 'Who in your network']) {
+      expect(js.includes(marker), marker).toBe(full)
+    }
   })
 
   test('the manifest names the app and its icons', () => {

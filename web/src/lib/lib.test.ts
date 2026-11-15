@@ -9,6 +9,8 @@ describe('source links', () => {
       'https://nsearchives.nseindia.com/corporate/X_1.pdf',
     )
     expect(nseDocumentUrl('https://archives.nseindia.com/corporate/X_1.pdf')).not.toBeNull()
+    expect(nseDocumentUrl('https://nsearchives.nseindia.in/corporate/ABB_13112026174803_Q2.pdf')).not.toBeNull()
+    expect(nseDocumentUrl('https://nsearchives.nseindia.in.evil.example/X.pdf')).toBeNull()
     for (const bad of [
       'http://nsearchives.nseindia.com/corporate/X.pdf',
       'https://nsearchives.nseindia.com.evil.example/X.pdf',

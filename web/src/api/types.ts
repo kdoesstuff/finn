@@ -116,6 +116,8 @@ export interface Item {
   results: Results | null
   /** Price and volume moves this filing may explain. */
   moves: Move[]
+  /** --- Network stream --- Full edition only: who in the investor's network can explain this. */
+  who_to_call?: WhoToCall[]
 }
 
 export interface DigestWindow {
@@ -151,3 +153,73 @@ export const WINDOWS = [
 ] as const
 
 export type WindowHours = (typeof WINDOWS)[number]['hours']
+
+// --- Network stream: the full edition's Network layer (docs/API.md, "Network") ---
+
+export interface WhoToCall {
+  person_id: string
+  name: string
+  why: string
+  degree: number
+  via: string | null
+  caution: string | null
+}
+
+export interface NetworkStep {
+  from: string
+  to: string
+  to_id: string
+  kind: string
+  strength: number
+  context: string
+}
+
+export interface NetworkAnswer {
+  person_id: string
+  name: string
+  headline: string
+  degree: number
+  why: string
+  how: string
+  via: string | null
+  caution: string | null
+  path: NetworkStep[]
+}
+
+export interface NetworkPerson {
+  id: string
+  name: string
+  headline: string
+  location: string
+  degree: number
+  synthetic: boolean
+  career: string[]
+  schools: string[]
+  how: string
+  path: NetworkStep[]
+  overlaps: string[]
+  what_to_ask: string[]
+}
+
+export interface NetworkCompany {
+  symbol: string
+  company: string
+  sector: string
+  synthetic: boolean
+  you_worked_there: string[]
+  worked_there: NetworkAnswer[]
+  best_placed: NetworkAnswer[]
+}
+
+export type NetworkKind = 'company' | 'person' | 'expertise' | 'reconnect' | 'help'
+
+/** GET /v1/network/ask?q= */
+export interface NetworkReply {
+  question: string
+  kind: NetworkKind
+  title: string
+  answers: NetworkAnswer[]
+  company?: NetworkCompany
+  person?: NetworkPerson
+  examples?: string[]
+}

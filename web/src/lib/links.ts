@@ -1,7 +1,9 @@
 // Source documents are links only when they are what the contract promises: an https document on
 // NSE's archive. Anything else is shown as text, never as something a tap could open.
 
-const NSE_ARCHIVE_HOSTS = new Set(['nsearchives.nseindia.com', 'archives.nseindia.com'])
+// NSE's own announcements API serves attachments from both archive hosts (597 of 11,697 links in the
+// recorded week were on nseindia.in), so both are NSE's; nothing else is.
+const NSE_ARCHIVE_HOSTS = new Set(['nsearchives.nseindia.com', 'nsearchives.nseindia.in', 'archives.nseindia.com'])
 
 export function nseDocumentUrl(raw: string): string | null {
   let url: URL

@@ -27,7 +27,7 @@ from starlette.responses import JSONResponse
 from finn import db as fdb
 from finn.digest import DEFAULT_HOURS, IST, MAX_HOURS, MIN_HOURS, data_as_of, digest_payload, iso
 
-from . import errors, sessions
+from . import errors, routes_network, routes_pull, sessions
 from .database import Database, Unavailable
 from .errors import ApiError
 from .middleware import BodyLimit, CatchAll, Cors, RateLimit, SecurityHeaders
@@ -198,12 +198,19 @@ def create_app(settings: Settings, *, database: Database | None = None,
                 "investor": {"name": name, "demo": bool(is_demo),
                              "network": deployment == "full" and bool(network_enabled)}}
 
+    routes_pull.register(app, database, current_session, now)  # Pull: /v1/companies, /v1/company/{symbol}
+
     @app.get("/v1/digest")
     def digest(session: Annotated[sessions.Session, Depends(current_session)],
                hours: Hours = DEFAULT_HOURS) -> JSONResponse:
         with database.connection() as conn:
             payload = digest_payload(conn, session.investor_id, hours, now=now())
+            # --- Network stream: who to call, full edition only ---
+            routes_network.enrich_digest(conn, session, payload, now())
         return JSONResponse(payload)
+
+    # --- Network stream: /v1/network/*, full edition only ---
+    routes_network.register(app, database, current_session, now)
 
     # Outermost last: SecurityHeaders wraps everything, so every answer carries its headers.
     limiter = Limiter(monotonic)
