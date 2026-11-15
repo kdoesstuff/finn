@@ -1,0 +1,231 @@
+/* Foundations: reset, page, type, focus, controls. Values come only from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--paper);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading);
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+}
+
+h1,
+h2,
+h3,
+p,
+ol,
+ul,
+figure {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--accent-wash);
+  color: var(--ink);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: 0.2em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
+}
+
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--space-2);
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  min-height: var(--target);
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-control);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline-color: var(--ink);
+}
+
+/* Page */
+
+.page {
+  width: 100%;
+  max-width: calc(var(--measure) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* The bookkeeper's double rule: drawn under a total to say it is final. FINN's one mark. */
+
+.total-rule {
+  width: 3.5rem;
+  height: calc(2 * 2px + var(--rule-gap));
+  margin-block: var(--space-4) var(--space-3);
+  border-top: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform-origin: left center;
+  animation: draw-rule var(--duration-draw) var(--ease-out) both;
+}
+
+@keyframes draw-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Controls */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target);
+  min-width: var(--target);
+  padding: var(--space-2) var(--space-5);
+  border: var(--hairline) solid var(--accent);
+  border-radius: var(--radius-control);
+  color: var(--accent);
+  font-weight: var(--weight-strong);
+  font-size: var(--step-0);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.button--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.button:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.button--primary:hover {
+  text-decoration-color: var(--on-accent);
+}
+
+/* A control that opens and closes something below it; the chevron turns when it is open. */
+.toggle::after {
+  content: '';
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  margin-left: 0.45em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-0.2em) rotate(45deg);
+  transition: transform var(--duration-quick) linear;
+}
+
+.toggle[aria-expanded='true']::after {
+  transform: translateY(0.05em) rotate(-135deg);
+}
+
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 4px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--rule);
+  color: var(--accent);
+}
+
+progress::-webkit-progress-bar {
+  background: var(--rule);
+  border-radius: 2px;
+}
+
+progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

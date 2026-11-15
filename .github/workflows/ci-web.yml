@@ -1,0 +1,89 @@
+name: CI web
+
+# The web app (web/) on every push and pull request that touches it: type check, lint, unit and
+# component tests, the production build, end-to-end tests in Chromium against that build (a 360 px
+# phone and a 1280 px desktop, under the production security headers, with axe accessibility
+# checks), and a dependency audit. Nothing is deployed on red.
+on:
+  push:
+    paths:
+      - 'web/**'
+      - '.github/workflows/ci-web.yml'
+  pull_request:
+    paths:
+      - 'web/**'
+      - '.github/workflows/ci-web.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    env:
+      # The build makes no request to this origin, and the end-to-end tests answer every request to
+      # it themselves (web/e2e/api.ts). It is the production origin because the build refuses any
+      # origin that web/vercel.json's Content-Security-Policy does not list.
+      VITE_API_URL: https://finn-api.onrender.com
+      VITE_NETWORK_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # Node 26 "Lithium", the current LTS line (nodejs.org/en/about/previous-releases, Nov 2026);
+          # also Vercel's default build runtime.
+          node-version: 26.13.1
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit and component tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle size
+        run: |
+          {
+            echo '### web bundle'
+            echo '| file | bytes | gzip |'
+            echo '| --- | ---: | ---: |'
+            for f in dist/assets/*.js dist/assets/*.css; do
+              echo "| $(basename "$f") | $(wc -c < "$f") | $(gzip -9c "$f" | wc -c) |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npx playwright test
+
+      - name: Keep the Playwright report when something fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: web/playwright-report
+          retention-days: 7
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
