@@ -5,6 +5,9 @@ name: Ingest
 #   eod      19:22 and 21:22                     end-of-day prices once NSE publishes the bhavcopy
 #   daily    06:52                               equity list, pledges, board meetings, actions, results
 # By hand:   gh workflow run ingest.yml -f job=backfill -f args="--from 2026-10-01 --to 2026-11-15"
+#            gh workflow run ingest.yml -f job=analyse      (Pull: documents and promise ledgers, models)
+#            gh workflow run ingest.yml -f job=llm-check    (one live call per model role, and the guard)
+# Model keys reach only the two model jobs, in their own step; scheduled data jobs never see them.
 on:
   schedule:
     - cron: "7,37 2-18 * * *"
@@ -15,7 +18,7 @@ on:
       job:
         description: "Which job"
         type: choice
-        options: [filings, eod, daily, results, backfill, seed, status, verify]
+        options: [filings, eod, daily, results, backfill, seed, status, verify, seed-network, analyse, llm-check]
         default: status
       args:
         description: "Extra arguments, e.g. --from 2026-10-01 --to 2026-11-15, or symbols for results"
@@ -44,6 +47,7 @@ jobs:
           cache-dependency-path: pipeline/requirements.txt
       - run: pip install -r requirements.txt
       - name: Run
+        if: inputs.job != 'analyse' && inputs.job != 'llm-check'
         env:
           SCHEDULE: ${{ github.event.schedule }}
           JOB: ${{ inputs.job }}
@@ -59,3 +63,27 @@ jobs:
             "22 1 * * *")      JOB=daily ;;
           esac
           python scripts/ingest.py "$JOB" $ARGS
+      - name: Run with models
+        if: inputs.job == 'analyse' || inputs.job == 'llm-check'
+        env:
+          JOB: ${{ inputs.job }}
+          ARGS: ${{ inputs.args }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          GEMINI_OVERFLOW_MODEL: ${{ secrets.GEMINI_OVERFLOW_MODEL }}
+          GEMINI_QUALITY_MODEL: ${{ secrets.GEMINI_QUALITY_MODEL }}
+          GEMINI_QUALITY_FALLBACK_MODEL: ${{ secrets.GEMINI_QUALITY_FALLBACK_MODEL }}
+          GEMINI_VOLUME_MODEL: ${{ secrets.GEMINI_VOLUME_MODEL }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
+          GROQ_FALLBACK_MODEL: ${{ secrets.GROQ_FALLBACK_MODEL }}
+          GUARD_MODEL: ${{ secrets.GUARD_MODEL }}
+          GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+          GLM_BASE_URL: ${{ secrets.GLM_BASE_URL }}
+          GLM_MODEL: ${{ secrets.GLM_MODEL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+        run: |
+          set -f
+          if [ "$JOB" = "llm-check" ]; then python scripts/llm_check.py --db; else python scripts/ingest.py "$JOB" $ARGS; fi
