@@ -8,7 +8,7 @@ from typing import Any
 import psycopg
 
 from . import db
-from .results import BankQuarter, Quarter, bank_headline, headline
+from .results import BankQuarter, Quarter, bank_complete, bank_headline, headline
 from .xbrl import Filing, to_quarter
 
 
@@ -39,5 +39,8 @@ def card(conn: psycopg.Connection, symbol: str) -> dict[str, Any] | None:
     if not qs:
         return None
     if isinstance(qs[0], BankQuarter):
-        return bank_headline([q for q in qs if isinstance(q, BankQuarter)])
+        banks = [q for q in qs if isinstance(q, BankQuarter)]
+        if not bank_complete(max(banks, key=lambda q: q.period_end)):
+            return None  # read as a bank, an NBFC's filing gives wrong numbers; show none
+        return bank_headline(banks)
     return headline([q for q in qs if isinstance(q, Quarter)])

@@ -63,6 +63,13 @@ class BankQuarter:
         return self.nii + self.other_income - self.operating_expenses
 
 
+def bank_complete(q: BankQuarter) -> bool:
+    """Whether the bank template really read this filing. An NBFC files other elements (finance costs,
+    not interest expended), and read as a bank it comes out as NII = all interest earned and PAT = 0:
+    wrong numbers, so a card is shown only when both are present (seen live on 15 Nov: Manappuram)."""
+    return q.interest_expended > 0 and q.pat != 0
+
+
 def _same_quarter_last_year(d: date) -> tuple[int, int]:
     return d.year - 1, d.month
 

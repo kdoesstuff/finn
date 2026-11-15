@@ -178,3 +178,16 @@ def test_results_headline():
 def test_pct_change_never_misleads_on_sign_flips():
     assert pct_change(50, -20)["note"] == "turned positive"
     assert pct_change(-30, -50)["note"] == "loss narrowed"
+
+
+def test_a_lender_the_bank_template_cannot_read_shows_no_numbers():
+    from datetime import date as _date
+
+    from finn.results import BankQuarter, bank_complete
+
+    bank = BankQuarter(period_end=_date(2026, 9, 30), interest_earned=80000, interest_expended=36000,
+                       other_income=11000, operating_expenses=17000, provisions=2500, pbt=24000, pat=18000)
+    # Manappuram on 15 Nov: read as a bank, no interest expended and no profit line came out.
+    nbfc = BankQuarter(period_end=_date(2026, 9, 30), interest_earned=3339, interest_expended=0,
+                       other_income=11, operating_expenses=0, provisions=0, pbt=0, pat=0)
+    assert bank_complete(bank) and not bank_complete(nbfc)

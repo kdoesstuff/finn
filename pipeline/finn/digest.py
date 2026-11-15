@@ -24,7 +24,7 @@ from . import db
 from .alerts import Thresholds, signals_for
 from .models import Announcement, Bar, DigestItem, Signal
 from .rank import build_digest
-from .results import BankQuarter, Quarter, bank_headline
+from .results import BankQuarter, Quarter, bank_complete, bank_headline
 from .results import headline as results_headline
 from .stored import filing_from_row
 from .text import own_words
@@ -272,7 +272,10 @@ def results_card(symbol: str, rows: list[dict[str, Any]], filed: date) -> Result
     if not quarters or max(q.period_end for q in quarters) != target:
         return None
     if isinstance(quarters[0], BankQuarter):
-        card = bank_headline([q for q in quarters if isinstance(q, BankQuarter)])
+        banks = [q for q in quarters if isinstance(q, BankQuarter)]
+        if not bank_complete(max(banks, key=lambda q: q.period_end)):
+            return None  # a lender the bank template cannot read: the company's own words stay
+        card = bank_headline(banks)
     else:
         card = results_headline([q for q in quarters if isinstance(q, Quarter)])
     return results_json(card)

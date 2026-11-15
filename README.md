@@ -8,6 +8,16 @@ portfolio of 18 real NSE companies):
 - Full edition, with Network: https://finn-lac.vercel.app
 - Core edition, Push and Pull: https://finn-hkmn.vercel.app
 
+What to try: open the brief (results with their numbers, price moves, pledges, each item with why
+it was chosen and a link to the filing), then **Research** and pick a covered company such as TCS
+(the promise ledger first: what management guided on its last four calls against what was
+delivered, every claim with its quote), and on the full edition **Your network** ("Who worked at
+Tata Power?"). The network is synthetic and labelled so.
+
+Data refresh: GitHub's scheduler has not started this repository's scheduled runs, so filings and
+prices are refreshed by hand for now (`gh workflow run ingest.yml -f job=filings`; see
+`docs/DECISIONS.md`, "The final sprint").
+
 The API is at https://finn-api-53vw.onrender.com/health. How it fits together:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The plan is [docs/PLAN.md](docs/PLAN.md); decisions
 and the evidence behind them are in [docs/DECISIONS.md](docs/DECISIONS.md); every brief requirement

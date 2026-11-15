@@ -22,7 +22,7 @@ import psycopg
 from . import db
 from .digest import IST, Item, _announcements, _by_kind, iso, item_json
 from .rank import build_digest
-from .results import EBITDA_DEFINITION, BankQuarter, Quarter, bank_headline, headline
+from .results import EBITDA_DEFINITION, BankQuarter, Quarter, bank_complete, bank_headline, headline
 from .stored import filing_from_row
 from .xbrl import to_quarter
 
@@ -142,6 +142,8 @@ def results_section(symbol: str, rows: list[dict[str, Any]]) -> dict[str, Any] |
           if r["consolidated"] == consolidated]
     qs.sort(key=lambda q: q.period_end, reverse=True)
     banks = [q for q in qs if isinstance(q, BankQuarter)]
+    if banks and not bank_complete(banks[0]):
+        return None  # an NBFC read as a bank gives wrong numbers; the page says results are not read
     if banks:
         card = bank_headline(banks)
         series: list[Quarter | BankQuarter] = list(banks)

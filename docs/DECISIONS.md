@@ -523,3 +523,62 @@ copy committed (`94b2e67`: 11 needing attention, 13 worth knowing, 34 routine, d
 Gate G1 waits only on its own definition: a filing brought in by a *scheduled* run, seen as a card
 on a phone. GitHub had not started any scheduled run by 19:13 (see "Deploying B5 and B6"); the
 workflow was disabled and re-enabled at about 19:00 to re-register the schedule.
+
+## The final sprint: phases C, D, E and G in one evening (15 Nov 2026)
+
+The deadline turned out to be tonight, not open-ended. Decision: build all four remaining layers at
+once, as four agents in separate copies of the repository with fixed ownership and interfaces
+(`docs/notes/sprint-15nov.md`), merged and checked by the lead, shipped in waves so that what is
+live is always coherent. Each stream's notes say what it built and what it did not:
+`docs/notes/llm.md`, `push.md`, `pull.md`, `network.md`.
+
+**What shipped.**
+- **C, models** (`finn/llm.py`, `finn/guard.py`): roles, not models, with fallback chains across
+  four free providers; documents screened for prompt injection (Llama Prompt Guard 2), fenced
+  between random markers, never given tools; answers schema-checked with one repair; cached and
+  logged. Verified live (`llm-check`): every role answered; the guard flagged an obvious injection
+  (score 1.00) and passed an ordinary sentence.
+- **D, Push**: results items carry the quarter's numbers from the company's own XBRL (revenue,
+  EBITDA, PBT, PAT, QoQ and YoY); price and volume moves tied to the filing that may explain them,
+  or listed as moves without a filing; promoter pledges dated as NSE published them.
+- **E, Pull**: a research page for any NSE company (price, filings, and for covered companies nine
+  quarters of results); for covered companies, the promise ledger, business snapshot and bull and
+  bear case, read from the last four earnings calls and the annual report. A claim survives only if
+  its quote is found in the cited document, and a "delivered" number only if it is one FINN read
+  from XBRL. First live company (TCS): 11 promises; kept 1 of 2 measurable, 1 missed, 5 too early,
+  4 not measurable; 3 snapshot points, 5 bull and 3 bear, every one quote-checked.
+- **G, Network** (full edition only): 150 fictional people overlapping the covered companies, owned
+  by the investor under RLS, questions answered in code (no model ever sees network data), "who to
+  call" on brief items and from the research page; a core session gets 404 for every network route
+  and the core build contains no network code.
+
+**What went wrong live, and the fixes.**
+1. **The API stopped deploying after Wave 1.** The digest began importing the pipeline's XBRL
+   parser, which needs `defusedxml`; it was not in `api/requirements.txt`, so the service crashed
+   at start on Render and Render kept serving the old version. CI installs every tool at once and
+   could not see it. Fixed, and CI now starts the API from `api/requirements.txt` alone.
+2. **The new app refused old-format briefs** (the old API, and the saved copy made before results
+   were added). The app now reads fields added after the first deploy as absent when missing, and
+   still refuses anything present in the wrong form, so the order in which Vercel and Render deploy
+   cannot break it.
+3. **The injection screen was rate-limited.** The first live analysis asked Groq up to 48 times per
+   document at once and was refused on every document; the screen failed closed as designed, so
+   nothing was read. Now at most 8 windows per document, calls paced under the per-minute limit, a
+   refused window retried, and parallel batches given their share of the minute.
+4. **NSE serves attachments from a second host** (`nsearchives.nseindia.in`, 5% of a recorded week's
+   links); links there were shown as text. Both hosts are now allowed; nothing else is.
+5. **Manappuram's results read as a bank's** came out as "PAT ₹0 cr". A lender's card is now shown
+   only when the bank template finds interest expended and a profit line; otherwise the company's
+   own words stay and no number is shown. A lender template for NBFCs is the fix (not built).
+6. **GitHub's scheduler never started a scheduled run** for this repository, even after the
+   workflow was disabled and re-enabled. Data is refreshed by hand (`gh workflow run ingest.yml -f
+   job=filings`) until an outside trigger calls `workflow_dispatch` on a schedule; that needs a
+   token stored with a free cron service, Karthik's decision, not taken tonight. Gate G1's
+   "scheduled filing on a phone" is therefore not met as worded.
+
+**Not built tonight** (each said in the app where it matters): an NBFC results template; alert
+settings, feedback and decision notes in the app; document search and the ask box (embeddings);
+deep analysis on demand for a company outside coverage; five-year annual figures, balance sheet and
+cash quality; narrative versus numbers as its own section; model evaluation (C4); importing a real
+Connections.csv; matching people named in filings to the network (G3); failure drills.
+
