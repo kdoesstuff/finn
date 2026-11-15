@@ -1,0 +1,27 @@
+# The API's runtime dependencies, every one pinned (direct and transitive), so Render, CI and a
+# laptop install the same thing. Versions checked with `pip index versions` on 15 Nov 2026 and
+# resolved together in a clean Python 3.12 environment. Test and lint tools: requirements-dev.txt.
+#
+# Direct
+fastapi==0.163.0
+uvicorn==0.54.0
+psycopg[binary]==3.3.9
+psycopg-pool==3.3.3
+sentry-sdk==2.75.0
+pydantic==2.14.3
+starlette==1.10.0
+#
+# Transitive (fastapi, uvicorn, psycopg, sentry-sdk)
+annotated-doc==0.0.6
+annotated-types==0.8.0
+anyio==4.16.0
+certifi==2026.10.23
+click==8.5.1
+h11==0.16.0
+idna==3.20
+opentelemetry-api==1.45.2
+psycopg-binary==3.3.9
+pydantic-core==2.50.4
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+urllib3==2.8.0

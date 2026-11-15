@@ -66,7 +66,8 @@ API is up but cannot reach the database.
   "portfolio": {"holdings": 18},
   "attention": [Item],
   "worth": [Item],
-  "routine": {"count": 18, "by_kind": {"earnings_call": 8, "newspaper": 4, "unclassified": 3}},
+  "routine": {"count": 18, "by_kind": {"earnings_call": 8, "newspaper": 4, "unclassified": 3, "agm_egm": 2,
+                                       "compliance": 1}},
   "unexplained_moves": []
 }
 ```

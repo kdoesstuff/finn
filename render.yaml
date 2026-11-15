@@ -1,0 +1,48 @@
+# Render Blueprint: FINN's API, one free web service (spec: https://render.com/docs/blueprint-spec).
+# Created once by hand from the dashboard (New > Blueprint, this repository); setup steps and the
+# reasons for each choice are in docs/notes/B5-B7.md. Secrets are never written here.
+services:
+  - type: web
+    name: finn-api
+    runtime: python
+    plan: free
+    # Nearest Render region to Supabase's Mumbai database. Cannot be changed after creation.
+    region: singapore
+    branch: main
+    # Deploy a commit only once every GitHub check on it has passed: nothing ships on red.
+    autoDeployTrigger: checksPass
+    # Only changes that can alter the running API trigger a deploy.
+    buildFilter:
+      paths:
+        - api/**
+        - pipeline/finn/**
+        - db/seed/**
+        - render.yaml
+      ignoredPaths:
+        - api/tests/**
+    buildCommand: pip install -r api/requirements.txt
+    # Proxy headers are off on purpose: the client's address comes from True-Client-IP (set by
+    # Cloudflare in front of Render), never from X-Forwarded-For, which clients can write.
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT --no-proxy-headers --no-server-header
+    healthCheckPath: /health
+    envVars:
+      # Render needs the full version here; this is the Python CI tests on (3.12, latest patch).
+      - key: PYTHON_VERSION
+        value: 3.12.16
+      # The API imports the pipeline's `finn` package in place.
+      - key: PYTHONPATH
+        value: pipeline
+      # Supabase > Connect > Session pooler (the same value as the GitHub secret). Entered by hand.
+      - key: SUPABASE_DB_URL
+        sync: false
+      # Sentry project finn-api > Settings > Client Keys (DSN). Entered by hand; blank turns Sentry off.
+      - key: SENTRY_DSN_API
+        sync: false
+      # Signs session tokens. Render generates a random 256-bit value once; rotating it signs everyone out.
+      - key: SESSION_SECRET
+        generateValue: true
+      # The two Vercel sites, e.g. https://<project>.vercel.app (comma-separated, exact origins).
+      - key: ALLOWED_ORIGINS_CORE
+        sync: false
+      - key: ALLOWED_ORIGINS_FULL
+        sync: false

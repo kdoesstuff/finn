@@ -1,0 +1,56 @@
+name: CI (API)
+
+# Every push and pull request: lint and type-check the API, run its tests (in-process, and a real
+# uvicorn started with render.yaml's own start command) against Postgres 16 with pgvector, and
+# audit its pinned dependencies. Render deploys a commit only after every check on it passes
+# (autoDeployTrigger: checksPass in render.yaml), so a red run here stops the deploy.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    # Pinned for the same reason as the pipeline job: Ubuntu 24.04's Postgres 16 and pgvector packages.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Postgres 16 with pgvector, for the database tests
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16 postgresql-16-pgvector
+          pg_lsclusters -h | awk '$1 == 16 && $2 == "main"' | grep -q . || sudo pg_createcluster 16 main
+          sudo pg_ctlcluster 16 main start || true  # exits non-zero if already running; pg_isready decides
+          PORT=$(pg_lsclusters -h | awk '$1 == 16 && $2 == "main" {print $3}')
+          pg_isready -h localhost -p "$PORT" -t 30
+          sudo -u postgres psql -p "$PORT" -q -c "alter user postgres password 'postgres'"
+          echo "FINN_TEST_DB_URL=postgresql://postgres:postgres@localhost:${PORT}/postgres" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: api/requirements-dev.txt
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements-dev.txt
+      - name: Lint
+        working-directory: api
+        run: ruff check .
+      - name: Type check
+        working-directory: api
+        run: mypy
+      - name: Type check the snapshot exporter (outside the pipeline's mypy file list)
+        working-directory: pipeline
+        run: mypy scripts/export_snapshot.py
+      - name: Tests
+        run: python -m pytest api -q
+      - name: Dependency audit
+        run: pip-audit -r api/requirements.txt

@@ -1,0 +1,12 @@
+# Tests, lint, types and the audit, pinned like the pipeline's own (pipeline/requirements-dev.txt).
+# The API's tests store the real NSE fixtures through finn.ingest, which needs requests and
+# defusedxml; the API itself never imports them.
+-r requirements.txt
+pytest==9.2.0
+httpx2==2.16.0
+requests==2.34.2
+defusedxml==0.7.1
+ruff==0.17.4
+mypy==2.4.1
+types-requests==2.33.0.20261030
+pip-audit==2.10.1
