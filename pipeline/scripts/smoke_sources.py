@@ -81,25 +81,37 @@ def main() -> int:
         if rows:
             kalyan = next((p for p in rows if p.company.startswith("Kalyan Jewellers")), rows[0])
             return len(rows), f"{kalyan.company}: {kalyan.headline}"
-        # The feed held 1,558 companies on 11 Nov 2026 and none on Sun 15 Nov. Ask NSE other ways
-        # and report which (if any) return rows, so the fetcher can be fixed from evidence.
-        tried = []
+        # The feed held 1,558 companies on 9-11 Nov 2026 (all published 9 Nov 16:31) and none from
+        # 15 Nov. Ask NSE other ways and print, in full, the shape of each answer (every list's length,
+        # the company list included), so the fetcher is fixed from evidence.
         variants: list[dict[str, str]] = [
+            {"index": "equities"},
+            {"index": "equities", "from_date": f"{today - timedelta(days=7):%d-%m-%Y}", "to_date": f"{today:%d-%m-%Y}"},
             {"index": "equities", "from_date": f"{today - timedelta(days=90):%d-%m-%Y}",
              "to_date": f"{today:%d-%m-%Y}"},
             {"index": "equities", "period": "1Y"},
+            {"index": "equities", "symbol": "KALYANKJIL"},
+            {"index": "equities", "issuer": "Kalyan Jewellers India Limited"},
             {"index": "sme"},
             {},
         ]
+        print("  pledge feed probe:")
+        working = []
         for params in variants:
             try:
                 data = c.api("corporate-pledgedata", **params)
-                n = len(data.get("data", []) if isinstance(data, dict) else data)
-                keys = list(data)[:6] if isinstance(data, dict) else "list"
-                tried.append(f"{params or 'no params'} -> {n} rows {keys}")
+                if isinstance(data, dict):
+                    shape = ", ".join(f"{k}: {len(v)} items" if isinstance(v, list) else f"{k}: {str(v)[:60]!r}"
+                                      for k, v in data.items())
+                else:
+                    shape = f"list of {len(data)}" if isinstance(data, list) else repr(data)[:120]
+                rows = nse.parse_pledges(data)
+                if rows:
+                    working.append(params)
+                print(f"    {params or 'no parameters'} -> {len(rows)} parsed rows; {shape}")
             except Exception as exc:  # noqa: BLE001 - a probe reports and carries on
-                tried.append(f"{params or 'no params'} -> {type(exc).__name__}")
-        raise RuntimeError("default query returned no rows; " + " | ".join(tried))
+                print(f"    {params or 'no parameters'} -> {type(exc).__name__}: {str(exc)[:200]}")
+        raise RuntimeError(f"default query returned no rows; queries that did: {working or 'none'} (details above)")
 
     def meetings() -> tuple[int, str]:
         rows = nse.board_meetings(c, today, today + timedelta(days=14))

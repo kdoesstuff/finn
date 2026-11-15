@@ -31,6 +31,7 @@ from psycopg.types.json import Jsonb
 
 from . import db
 from .classify import classify
+from .pledges import Pledge
 from .sources import nse
 from .sources.client import Source, SourceError
 from .xbrl import parse as parse_xbrl
@@ -38,6 +39,9 @@ from .xbrl import parse as parse_xbrl
 IST = timezone(timedelta(hours=5, minutes=30))  # India keeps no daylight saving: a fixed offset is exact
 RESULT_QUARTERS = 9  # eight quarters of trajectory, plus the year-ago quarter for the oldest YoY
 GIVE_UP_AFTER = 5    # consecutive failed days before a long job stops asking NSE (it is down, or refusing us)
+# Pledge figures change when companies file their quarterly shareholding, so a stored copy of NSE's
+# pledge feed stays current for weeks. While it is younger than this, an empty feed is a warning.
+PLEDGE_COPY_FRESH_FOR = timedelta(days=14)
 RECLASSIFY_BATCH = 5000
 
 _RULE_FILES = ("classify.py", "taxonomy.py", "text.py")
@@ -311,12 +315,40 @@ def ingest_equity_list(conn: psycopg.Connection, source: Source) -> int:
     return store_companies(conn, nse.equity_list(source))
 
 
-def ingest_pledges(conn: psycopg.Connection, source: Source) -> dict[str, int]:
+def ingest_pledges(conn: psycopg.Connection, source: Source, today: date | None = None) -> dict[str, Any]:
+    """NSE's pledge feed. An empty feed is a source problem, not "no pledges anywhere" (it held 1,558
+    companies on 9 Nov 2026 and none from 15 Nov): stored history is never touched. It is a warning
+    while the stored copy is younger than PLEDGE_COPY_FRESH_FOR, and a failure after that."""
     pledges = nse.pledges(source)
+    if pledges:
+        return store_pledges(conn, pledges)
+    with db.as_role(conn, "finn_ingest"):
+        latest = _scalar(conn.execute("select max(broadcast) from finn.pledges").fetchone())
+    if latest is None:
+        raise SourceError("NSE's pledge feed returned no rows, and no earlier copy is stored")
+    published = latest.astimezone(IST)
+    age = ((today or datetime.now(IST).date()) - published.date()).days
+    if age > PLEDGE_COPY_FRESH_FOR.days:
+        raise SourceError(f"NSE's pledge feed returned no rows; the stored copy, published by NSE on "
+                          f"{published:%d %b %Y}, is {age} days old")
+    return {"rows": 0, "warning": f"NSE's pledge feed returned no rows; keeping the copy NSE published on "
+                                  f"{published:%d %b %Y %H:%M} IST ({age} days old; a failure after "
+                                  f"{PLEDGE_COPY_FRESH_FOR.days})"}
+
+
+def import_pledges(conn: psycopg.Connection, path: Path) -> dict[str, Any]:
+    """Load a saved response of NSE's pledge feed, the JSON exactly as NSE served it, for when the live
+    feed is down. Each row keeps NSE's own publication time, so the app can say how old it is."""
+    pledges = nse.parse_pledges(json.loads(Path(path).read_text(encoding="utf-8")))
     if not pledges:
-        # On 11 Nov 2026 the feed held 1,558 companies; on Sunday 15 Nov it returned none. An empty
-        # feed is a source problem, not "no pledges anywhere": keep the stored history, fail loudly.
-        raise SourceError("NSE's pledge feed returned no rows; stored pledge history kept unchanged")
+        raise ValueError(f"{path}: no pledge rows (expected NSE's corporate-pledgedata response)")
+    with run(conn, f"pledges import {Path(path).name}") as counts:
+        counts.update(store_pledges(conn, pledges))
+    return counts
+
+
+def store_pledges(conn: psycopg.Connection, pledges: list[Pledge]) -> dict[str, Any]:
+    """Upsert by company, quarter and publication time; names matched to symbols exactly (normalised)."""
     with db.as_role(conn, "finn_ingest"):
         by_name: dict[str, str] = {}
         for symbol, name in conn.execute("select symbol, name from finn.companies where name is not null"):
@@ -381,11 +413,13 @@ def ingest_daily(conn: psycopg.Connection, source: Source, today: date) -> dict[
         part("equity_list", lambda: ingest_equity_list(conn, source))
         part("board_meetings", lambda: ingest_board_meetings(conn, source, today - timedelta(days=7),
                                                              today + timedelta(days=30)))
-        part("pledges", lambda: ingest_pledges(conn, source))
+        part("pledges", lambda: ingest_pledges(conn, source, today))
         symbols = covered(conn)
         part("corporate_actions", lambda: ingest_corporate_actions(conn, source, symbols))
         counts["results"] = {s: ingest_results(conn, source, s) for s in symbols}
         errors += [f"results {s}: {r['error']}" for s, r in counts["results"].items() if r.get("error")]
+        counts["warnings"] = [f"{name}: {v['warning']}" for name, v in counts.items()
+                              if isinstance(v, dict) and v.get("warning")]
         counts["errors"] = errors
     return counts
 
@@ -419,6 +453,7 @@ def backfill(conn: psycopg.Connection, source: Source, start: date, end: date,
     first = min(prices_start or start, start)
     out["eod"] = ingest_eod(conn, source, [first + timedelta(days=i) for i in range((end - first).days + 1)])
     out["errors"] = errors + list(out["eod"].get("errors") or [])
+    out["warnings"] = list(out["daily"].get("warnings") or [])
     return out
 
 

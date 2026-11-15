@@ -257,8 +257,13 @@ def bhavcopy(client: Source, day: date) -> list[EodRow] | None:
 # Pledges, board meetings, annual reports, insider trades, corporate actions -------------------------
 
 def pledges(client: Source) -> list[Pledge]:
+    return parse_pledges(client.api("corporate-pledgedata", index="equities"))
+
+
+def parse_pledges(data: Any) -> list[Pledge]:
+    """Rows of the pledge feed's response (live, or a saved copy of one); malformed rows are skipped."""
     out = []
-    for r in _rows(client.api("corporate-pledgedata", index="equities")):
+    for r in _rows(data):
         try:
             out.append(parse_pledge(r))
         except (KeyError, ValueError):

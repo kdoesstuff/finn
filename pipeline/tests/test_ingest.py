@@ -16,6 +16,7 @@ import pytest
 from finn import db, ingest
 from finn.sources import nse
 from finn.sources.client import SourceError
+from tests.dbtools import admin_url, scratch_database
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -326,18 +327,49 @@ class NoPledges(Recorded):
         return super().api(path, **params)
 
 
-def test_an_empty_pledge_feed_fails_loudly_and_keeps_history(admin):
+def test_an_empty_pledge_feed_keeps_history_and_warns_while_the_copy_is_fresh(admin):
     ingest.ingest_equity_list(admin, Recorded())
-    ingest.ingest_pledges(admin, Recorded())
+    ingest.ingest_pledges(admin, Recorded())  # the recorded feed, published by NSE on 9 Nov 16:31
     before = rows(admin, "select count(*) from finn.pledges")[0][0]
-    with pytest.raises(SourceError, match="no rows"):
-        ingest.ingest_pledges(admin, NoPledges())
+    fresh = ingest.ingest_pledges(admin, NoPledges(), today=date(2026, 11, 23))  # 14 days old
+    assert fresh["rows"] == 0 and "09 Nov 2026 16:31 IST (14 days old" in fresh["warning"]
     assert rows(admin, "select count(*) from finn.pledges")[0][0] == before > 0
-    counts = ingest.ingest_daily(admin, NoPledges(), date(2026, 11, 9))
-    assert any(e.startswith("pledges:") for e in counts["errors"])
+    with pytest.raises(SourceError, match="is 15 days old"):
+        ingest.ingest_pledges(admin, NoPledges(), today=date(2026, 11, 24))
+    assert rows(admin, "select count(*) from finn.pledges")[0][0] == before
+
+    counts = ingest.ingest_daily(admin, NoPledges(), date(2026, 11, 16))
+    assert counts["errors"] == [] and counts["warnings"][0].startswith("pledges: NSE's pledge feed returned no rows")
     (ok,), = rows(admin, "select ok from finn.ingest_runs where job = 'daily' order by id desc limit 1")
-    assert ok is False  # the run goes red, the other parts still ran
-    assert counts["board_meetings"] > 0
+    assert ok is True  # a known, dated gap: the run stays green and says so
+
+    counts = ingest.ingest_daily(admin, NoPledges(), date(2026, 12, 1))
+    assert any(e.startswith("pledges:") and "22 days old" in e for e in counts["errors"])
+    (ok,), = rows(admin, "select ok from finn.ingest_runs where job = 'daily' order by id desc limit 1")
+    assert ok is False  # stale: the run goes red, the other parts still ran
+    assert counts["equity_list"] == 2 and "board_meetings" in counts and counts["corporate_actions"]["rows"] > 0
+
+
+def test_an_empty_pledge_feed_with_nothing_stored_is_a_failure():
+    with scratch_database() as name:
+        conn = db.connect(admin_url(name))
+        db.migrate(conn)
+        with pytest.raises(SourceError, match="no earlier copy is stored"):
+            ingest.ingest_pledges(conn, NoPledges())
+        conn.close()
+
+
+def test_a_saved_pledge_feed_loads_with_nse_publication_time(admin):
+    ingest.ingest_equity_list(admin, Recorded())
+    first = ingest.import_pledges(admin, FIX / "pledges.json")
+    again = ingest.import_pledges(admin, FIX / "pledges.json")
+    assert first["rows"] == again["rows"] == 1558
+    (sym, broadcast), = rows(admin, """select symbol, broadcast from finn.pledges
+                                       where company_name = 'Kalyan Jewellers India Limited'
+                                         and as_of = '2026-09-30'""")
+    assert sym == "KALYANKJIL" and broadcast.astimezone(ingest.IST).strftime("%d %b %H:%M") == "09 Nov 16:31"
+    with pytest.raises(ValueError, match="no pledge rows"):
+        ingest.import_pledges(admin, FIX / "board_meetings.json")
 
 
 def test_cards_from_stored_results_match_the_verified_figures(admin):

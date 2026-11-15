@@ -9,6 +9,8 @@
     python scripts/ingest.py status                      last run of each job, rows per table, database size
     python scripts/ingest.py verify [--live] [--quarter 2026-09-30] [--since 2026-10-01]
                                                          is every covered company's data complete and right?
+    python scripts/ingest.py import-pledges FILE         a saved response of NSE's pledge feed, for when
+                                                         the live feed is down (keeps NSE's publication time)
 
 Exits 1 if the job failed or reported errors, so the workflow goes red.
 """
@@ -46,18 +48,23 @@ def symbol(text: str) -> str:
 
 def report(name: str, counts: Any) -> int:
     """Errors first, up to 40 of them, so a long run's cut-off counts can never hide why it failed;
-    then the counts. Exit status 1 if there were any errors."""
+    then warnings; then the counts. Exit status 1 if there were any errors; warnings never fail a run
+    (under GitHub Actions they are annotations on the run)."""
     errors = (counts.get("errors") or []) if isinstance(counts, dict) else []
+    warnings = (counts.get("warnings") or []) if isinstance(counts, dict) else []
     head = f"{name}: {'FAILED, ' + str(len(errors)) + ' error(s)' if errors else 'OK'}"
     shown = errors[:40] + ([f"... and {len(errors) - 40} more (all of them are in finn.ingest_runs)"]
                            if len(errors) > 40 else [])
-    lines = [head] + [f"  error: {e}" for e in shown]
+    lines = [head] + [f"  error: {e}" for e in shown] + [f"  warning: {w}" for w in warnings]
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        lines += [f"::warning title={name}::{w}" for w in warnings]
     text = ingest.summary(counts)
     print("\n".join(lines) + f"\n{text}")
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if path:
         with open(path, "a", encoding="utf-8") as fh:
-            fh.write(f"### {head}\n\n" + "".join(f"- {e}\n" for e in shown) + f"\n```json\n{text}\n```\n")
+            fh.write(f"### {head}\n\n" + "".join(f"- {e}\n" for e in shown)
+                     + "".join(f"- warning: {w}\n" for w in warnings) + f"\n```json\n{text}\n```\n")
     return 1 if errors else 0
 
 
@@ -97,6 +104,8 @@ def main() -> int:
     b.add_argument("--prices-from", dest="prices_start", type=day)
     sub.add_parser("seed")
     sub.add_parser("status")
+    ip = sub.add_parser("import-pledges")
+    ip.add_argument("file", type=Path)
     v = sub.add_parser("verify")
     v.add_argument("--live", action="store_true", help="ask NSE why a missing quarter is missing")
     v.add_argument("--quarter", type=day, default=date(2026, 9, 30))
@@ -109,6 +118,8 @@ def main() -> int:
             return status(conn)
         if args.job == "seed":
             return report("seed", seed.seed_demo(conn))
+        if args.job == "import-pledges":
+            return report("import-pledges", ingest.import_pledges(conn, args.file))
         if args.job == "verify":
             result = verify.check(conn, args.quarter, args.since, NSEClient() if args.live else None)
             text = verify.render(result)
