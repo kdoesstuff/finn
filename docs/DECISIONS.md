@@ -255,6 +255,12 @@ So, three changes:
 3. **The probe prints the full shape of every answer** (each list's length, the company list
    included) for eight ways of asking, including by symbol and by company name.
 
+Probe result (smoke run 43719842012, 15 Nov 19:07 IST): all eight ways of asking (default, 7-day
+and 90-day ranges, 1-year period, by symbol, by company name, the SME index, no parameters) answered
+with both lists empty: `comNameList: 0 items, data: 0 items`. NSE's pledge dataset itself is empty,
+not our query: there is nothing to fix in the fetcher. The stored 9 Nov copy carries the pledge
+cards; the daily run warns until 23 Nov and fails after, which is when to look again.
+
 **Verified live** (`verify --live`, run 43706396788): all 21 covered companies have the Sep 2026
 quarter and its year-ago quarter, and 98 sessions of prices; TCS, Asian Paints and HDFC Bank match
 the figures checked by hand. "No failures."
@@ -374,7 +380,7 @@ one); the contract's example routine counts did not add up to its own total.
   unreliable, the fix is an external trigger calling `workflow_dispatch` (the same pattern as the
   keep-warm monitor), decided then.
 
-## Gate G1 security review (15 Nov 2026; live checks pending)
+## Gate G1 security review (15 Nov 2026)
 
 Reviewed at lead commit `aa33523` (GitHub `main` at `dd42347` plus the pledge change awaiting push;
 neither touches the security surface). What is deployed: the API on Render (`finn-api-53vw`,
@@ -461,57 +467,58 @@ pipeline 175 passed (`tests/test_db.py` 30 of them), API 121 passed, web unit 79
 3. **Rate limits are in memory.** One instance, one worker: exact while that holds; they reset when
    the free service sleeps or restarts.
 4. **Availability.** Render's free service sleeps after 15 idle minutes and takes about a minute to
-   wake. Mitigated by keep-warm and the external monitor (steps E, F, pending) and by the saved copy
-   (step G, pending); until G, a cold API shows a "waking up" state, then an honest error.
+   wake. Mitigated by an external monitor (UptimeRobot, every 5 minutes, which also emails if
+   `/health` stops reporting the database), the keep-warm workflow as a backup, and the saved copy
+   (`web/public/snapshot.json`), which the app shows with its date if the API does not answer.
 5. **Actions pinned by tag, not commit SHA.** All are GitHub's own actions running with a read-only
    token; pinning by SHA is the next hardening step.
 6. **`connect-src https://*.ingest.de.sentry.io`** allows any Sentry EU ingest host. It matters only
    if script injection succeeded, which `script-src 'self'` and the lint rules prevent.
 7. **No HSTS preload.** `onrender.com` and `vercel.app` are not FINN's domains to list.
 
-**Not verified yet, and how to verify** (after step C, Render's origins, and step G for the saved
-copy). In PowerShell; replace `<core>` with the finn-core address. A sleeping API can take a minute
-to answer the first call.
+**Verified live** (15 Nov 2026, 19:21 IST, from Karthik's laptop, after Render's origins were set
+and the saved copy was deployed; the commands are below, to repeat after any change to headers,
+origins or sessions):
+
+| Check | Expected | Live result |
+| --- | --- | --- |
+| Web headers, `finn-lac` (full) and `finn-hkmn` (core) | All seven, CSP exactly as in `web/vercel.json` | Both sites: CSP identical to the file (`connect-src` names only the API and Sentry EU), COOP `same-origin`, Permissions-Policy, `Referrer-Policy: no-referrer`, HSTS 2 years, `nosniff`, `X-Frame-Options: DENY` |
+| API `/health` headers | 200 and the six security headers | 200; `default-src 'none'; frame-ancestors 'none'`, HSTS, `nosniff`, `no-referrer`, `DENY`, `Cache-Control: no-store`; no uvicorn `Server` header (the one shown is Cloudflare's, in front of Render) |
+| Preflight from each site | 204, that exact origin, `GET, POST, OPTIONS`, `Authorization, Content-Type`, max-age 600 | Both 204 with their own origin echoed and exactly those values |
+| Preflight from `https://example.com` | 403, no grant | 403, no `access-control-allow-origin`, `This website may not use FINN's API.` |
+| Session from each site, and from none | full: `network: true`; core: `network: false`; none: 403 | Exactly that; tokens carry `dep: full` / `dep: core`, `ro: true`, 12-hour expiry |
+| A token on the other site; no token | 401, 401 | 401, 401; the same token on its own site returned the 7-day summary |
+| Saved copy | 200 | 200 |
+
+Both sites, opened on a phone, start a session and show the brief. Still to see once: a deliberate
+test error reaching each Sentry project with nothing personal in it. Rate limits are not tested
+live (61 requests lock the address out of `/v1` for a minute); the tests cover them.
 
 ```powershell
 $api  = "https://finn-api-53vw.onrender.com"
 $full = "https://finn-lac.vercel.app"
-$core = "https://<core>"
-
-# 1. Web headers: expect each of the seven, the CSP exactly as in web/vercel.json
+$core = "https://finn-hkmn.vercel.app"
 curl.exe -sI "$full/" | Select-String "content-security-policy|strict-transport-security|x-frame-options|x-content-type-options|referrer-policy|cross-origin-opener-policy|permissions-policy"
 curl.exe -sI "$core/" | Select-String "content-security-policy|strict-transport-security|x-frame-options|x-content-type-options|referrer-policy|cross-origin-opener-policy|permissions-policy"
-
-# 2. API headers: expect 200, strict-transport-security, x-content-type-options: nosniff,
-#    referrer-policy: no-referrer, content-security-policy: default-src 'none'; frame-ancestors 'none',
-#    x-frame-options: DENY, cache-control: no-store
 curl.exe -sI --max-time 120 "$api/health"
-
-# 3. Preflight from each site: expect 204, access-control-allow-origin = that site,
-#    access-control-allow-methods: GET, POST, OPTIONS, access-control-allow-headers: Authorization, Content-Type
 curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: $full" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization"
 curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: $core" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization"
-
-# 4. Preflight from any other site: expect 403, no access-control-allow-origin, and
-#    {"error":{"code":"forbidden","message":"This website may not use FINN's API."}}
 curl.exe -si -X OPTIONS "$api/v1/digest" -H "Origin: https://example.com" -H "Access-Control-Request-Method: GET"
-
-# 5. Sessions: full site -> "network": true; core site -> "network": false; no Origin -> 403
-#    "Sessions are started only from FINN's own web app."
 curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $full"
 curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $core"
 curl.exe -s -X POST "$api/v1/session/demo"
-
-# 6. A token works only on the site that started it: expect the summary, then 401, then 401
 $t = (curl.exe -s -X POST "$api/v1/session/demo" -H "Origin: $full" | ConvertFrom-Json).token
 (curl.exe -s "$api/v1/digest?hours=168" -H "Origin: $full" -H "Authorization: Bearer $t" | ConvertFrom-Json).summary
 curl.exe -s -o NUL -w '%{http_code}\n' "$api/v1/digest" -H "Origin: $core" -H "Authorization: Bearer $t"
 curl.exe -s -o NUL -w '%{http_code}\n' "$api/v1/digest" -H "Origin: $full"
-
-# 7. Saved copy (after step G): expect 200 (404 before it)
 curl.exe -s -o NUL -w '%{http_code}\n' "$full/snapshot.json"
 ```
 
-Do not test the rate limits live: 61 requests lock the address out of `/v1` for a minute; the
-tests above cover them. Also still to see once: a deliberate test error reaching each Sentry
-project with nothing personal in it.
+**Deployed** (15 Nov 2026): API `https://finn-api-53vw.onrender.com`; full edition
+`https://finn-lac.vercel.app` (Vercel project `finn`); core edition `https://finn-hkmn.vercel.app`
+(Vercel project `finn-hkmn`, named so by Vercel; the address is what reviewers get). Keep-warm
+installed (variable `API_URL`), UptimeRobot keyword monitor on `/health` every 5 minutes, saved
+copy committed (`94b2e67`: 11 needing attention, 13 worth knowing, 34 routine, data as of 19:04).
+Gate G1 waits only on its own definition: a filing brought in by a *scheduled* run, seen as a card
+on a phone. GitHub had not started any scheduled run by 19:13 (see "Deploying B5 and B6"); the
+workflow was disabled and re-enabled at about 19:00 to re-register the schedule.
