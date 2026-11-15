@@ -3,9 +3,15 @@ import type { Item } from '../api/types'
 import { categoryLabel, detailInDocumentNote, shortCompany } from '../lib/labels'
 import { formatFull, formatRelative, formatStamp } from '../lib/time'
 import { DateColumn, SourceLink, Stamp } from './Evidence'
-import { MovesNote, ResultsTable } from './Numbers'
+import { KeyFigures, MoveFigure, MovesNote, ResultsTable } from './Numbers'
+import { Note } from './Note'
 import { NETWORK_BUILD } from '../network/flag'
 import { WhoToCall } from '../network/WhoToCall'
+
+/** The id an item's entry carries on the page: the target of story mode's "Dig in" and of "new since you last looked". */
+export function itemAnchor(id: string): string {
+  return `item-${id.replace(/[^A-Za-z0-9_-]/g, '')}`
+}
 
 interface Props {
   item: Item
@@ -16,7 +22,7 @@ interface Props {
 export function AttentionCard({ item, now }: Props) {
   const headingId = useId()
   return (
-    <article className="card" aria-labelledby={headingId}>
+    <article className={item.results ? 'card card--figures' : 'card'} id={itemAnchor(item.id)} aria-labelledby={headingId} tabIndex={-1}>
       <div className="card__head">
         <p className="kind">
           {categoryLabel(item.category)}
@@ -27,7 +33,9 @@ export function AttentionCard({ item, now }: Props) {
       <h3 className="company" id={headingId}>
         {shortCompany(item.company)} <span className="company__symbol">{item.symbol}</span>
       </h3>
+      {item.results ? <KeyFigures results={item.results} /> : <MoveFigure moves={item.moves} />}
       <p className="headline">{item.headline}</p>
+      <Note item={item} />
       {item.results && <ResultsTable results={item.results} company={item.company} />}
       <MovesNote moves={item.moves} />
       {item.detail_in_document && <p className="note">{detailInDocumentNote(item.category)}</p>}
@@ -40,7 +48,7 @@ export function AttentionCard({ item, now }: Props) {
 export function WorthLine({ item, now }: Props) {
   const headingId = useId()
   return (
-    <article className="line" aria-labelledby={headingId}>
+    <article className="line" id={itemAnchor(item.id)} aria-labelledby={headingId} tabIndex={-1}>
       <DateColumn ts={item.ts} />
       <div className="line__body">
         <h3 className="line__company" id={headingId}>
@@ -51,6 +59,7 @@ export function WorthLine({ item, now }: Props) {
           {item.alert && <span className="kind__alert">On your alert list</span>}
         </p>
         <p className="line__headline">{item.headline}</p>
+        <Note item={item} />
         {item.results && <ResultsTable results={item.results} company={item.company} />}
         <MovesNote moves={item.moves} />
         {item.detail_in_document && <p className="note">{detailInDocumentNote(item.category)}</p>}

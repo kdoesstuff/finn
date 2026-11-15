@@ -8,8 +8,11 @@ portfolio of 18 real NSE companies):
 - Full edition, with Network: https://finn-lac.vercel.app
 - Core edition, Push and Pull: https://finn-hkmn.vercel.app
 
-What to try: open the brief (results with their numbers, price moves, pledges, each item with why
-it was chosen and a link to the filing), then **Research** and pick a covered company such as TCS
+What to try: open the brief, the front page of your portfolio (how many filings FINN read and
+where they went, every holding at a glance, results with their numbers, price moves, pledges, a
+checked one-line note and a bio for management changes, each item with why it was chosen and a link
+to the filing); tap a holding to narrow the page to it, pick **Since…** for any window in the last
+31 days, set **Your alerts**, or press **Read in 30 seconds**; then **Research** and pick a covered company such as TCS
 (the promise ledger first: what management guided on its last four calls against what was
 delivered, every claim with its quote), and on the full edition **Your network** ("Who worked at
 Tata Power?"). The network is synthetic and labelled so.

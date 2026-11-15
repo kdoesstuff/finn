@@ -576,9 +576,41 @@ live is always coherent. Each stream's notes say what it built and what it did n
    token stored with a free cron service, Karthik's decision, not taken tonight. Gate G1's
    "scheduled filing on a phone" is therefore not met as worded.
 
-**Not built tonight** (each said in the app where it matters): an NBFC results template; alert
-settings, feedback and decision notes in the app; document search and the ask box (embeddings);
+**Not built tonight** (each said in the app where it matters): an NBFC results template; feedback
+and decision notes in the app; document search and the ask box (embeddings);
 deep analysis on demand for a company outside coverage; five-year annual figures, balance sheet and
 cash quality; narrative versus numbers as its own section; model evaluation (C4); importing a real
 Connections.csv; matching people named in filings to the network (G3); failure drills.
 
+
+## The last two hours: filtering made visible (15 Nov 2026, from 21:11)
+
+Karthik's direction: FINN's job is *filtering* — surface the few things that matter, bury the rest
+beautifully, and be something an investor reaches for through the day. Three more streams, merged by
+the lead:
+
+- **Controls.** The window is 24 hours, 3 days, 7 days or *since* any date in the last 31 days (the
+  date is in the address, so a link reproduces the view). An alert settings sheet sets the types that
+  count, the price move, the volume multiple and the rule; it is kept on the phone and sent with each
+  request, and the server refuses out-of-range values. Items published since the last visit are
+  marked new and counted in the tab title. Found on the way: the stored alert-type preferences were
+  never applied to the brief; now they are.
+- **Filing reader** (`finn/reader.py`, migration 0005). For filings that need the investor or are
+  worth knowing, a one-line note and, for management changes, a bio of the person — both only from
+  the filing itself, every sentence quote-checked against its page; an unverifiable name or role is
+  dropped. The `reader` model role (Gemini), not `fast`: in the live check the fast model quoted words
+  that were not in the source. A filing whose text addresses a model is not read at all, because a
+  quote check cannot catch a planted sentence that really is in the filing. No LinkedIn: there is no
+  legitimate access, and the filing is the primary source.
+- **Design.** Quant Desk was the reference offered, but its game-like density fights the job, so the
+  brief became the *front page of your portfolio*, in FINN's own paper and ink: the summary as lede;
+  "FINN read 24 filings for you" with one slim bar showing where they went (most of it set aside,
+  which is the point); every holding as a tile, solid when it needs you, outlined when worth knowing,
+  faint when quiet, and a tap narrows the page to one company ("Nothing from TCS in this window. Quiet
+  is good."); the lead story with its one big figure and QoQ/YoY marks; moves and pledges in a side
+  column on wide screens; a "Read in 30 seconds" story mode built from the brief already on screen.
+  Research leads with the promise ledger's scorecard and a quarters chart.
+
+Merge fixes: both the design and controls streams gave each item an `id`, which made two elements
+share one; one anchor per item now. The controls' wrapper reused the class `.entry`, which already
+styled the landing page and put a screen of padding above every item; renamed.

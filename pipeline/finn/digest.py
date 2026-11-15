@@ -13,7 +13,9 @@ rows back the same way).
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, TypedDict
 from uuid import UUID
@@ -23,10 +25,11 @@ import psycopg
 from . import db
 from .alerts import Thresholds, signals_for
 from .models import Announcement, Bar, DigestItem, Signal
-from .rank import build_digest
+from .rank import Prefs, build_digest
 from .results import BankQuarter, Quarter, bank_complete, bank_headline
 from .results import headline as results_headline
 from .stored import filing_from_row
+from .taxonomy import CATEGORIES
 from .text import own_words
 from .xbrl import to_quarter
 
@@ -117,6 +120,24 @@ class Pledge(TypedDict):
     change_pct_points: float | None
 
 
+class Person(TypedDict):
+    """A management change's person, from the filing's own profile (`finn.reader`)."""
+    name: str
+    role: str
+    action: str
+    effective_date: str
+    background: list[dict[str, Any]]
+    previous_roles: list[dict[str, str]]
+
+
+class Note(TypedDict):
+    """What the filing says, read from its attachment; every sentence carries a verified quote."""
+    summary: str
+    quote: str
+    page: int
+    person: Person | None
+
+
 class Item(TypedDict):
     id: str
     symbol: str
@@ -137,6 +158,7 @@ class Item(TypedDict):
     related: list[Related]
     results: Results | None
     moves: list[Move]
+    note: Note | None  # --- Reader stream ---
 
 
 # "from" is a Python keyword, so this one is declared in the functional form.
@@ -148,8 +170,14 @@ class Routine(TypedDict):
     by_kind: dict[str, int]
 
 
+class Company(TypedDict):
+    symbol: str
+    company: str
+
+
 class Portfolio(TypedDict):
     holdings: int
+    companies: list[Company]
     pledges: list[Pledge]
 
 
@@ -158,6 +186,7 @@ class Digest(TypedDict):
     data_as_of: str | None
     summary: str
     portfolio: Portfolio
+    filings_read: int
     attention: list[Item]
     worth: list[Item]
     routine: Routine
@@ -169,6 +198,38 @@ def iso(ts: datetime) -> str:
     if ts.tzinfo is None:
         raise ValueError("a time without a zone is ambiguous here; attach one first")
     return ts.astimezone(IST).isoformat(timespec="seconds")
+
+
+# --- Controls: the investor's alert settings for one request -------------------------------------
+# The demo investor is read-only in the database, so the app keeps its alert settings on the device
+# and sends them with each digest request; finn.prefs stays the default. Same ranges as the
+# check constraints on finn.prefs (0001_foundation.sql).
+MOVE_PCT_RANGE = (0.5, 30.0)
+VOLUME_MULTIPLE_RANGE = (1.1, 10.0)
+MOVE_RULES = ("pct", "sigma", "either")
+ALERT_CATEGORIES = tuple(c for c in CATEGORIES if c != "unclassified")
+
+
+@dataclass(frozen=True)
+class Overrides:
+    """Alert settings for one digest, in place of finn.prefs; None keeps the stored (or default) value."""
+
+    move_pct: float | None = None
+    volume_multiple: float | None = None
+    move_rule: str | None = None
+    alerts: frozenset[str] | None = None
+
+    def __post_init__(self) -> None:
+        if self.move_pct is not None and not MOVE_PCT_RANGE[0] <= self.move_pct <= MOVE_PCT_RANGE[1]:
+            raise ValueError(f"move_pct must be from {MOVE_PCT_RANGE[0]} to {MOVE_PCT_RANGE[1]}")
+        if (self.volume_multiple is not None
+                and not VOLUME_MULTIPLE_RANGE[0] <= self.volume_multiple <= VOLUME_MULTIPLE_RANGE[1]):
+            raise ValueError(f"volume_multiple must be from {VOLUME_MULTIPLE_RANGE[0]} to {VOLUME_MULTIPLE_RANGE[1]}")
+        if self.move_rule is not None and self.move_rule not in MOVE_RULES:
+            raise ValueError("move_rule must be one of: " + ", ".join(MOVE_RULES))
+        if self.alerts is not None and not self.alerts <= set(ALERT_CATEGORIES):
+            unknown = sorted(self.alerts - set(ALERT_CATEGORIES))
+            raise ValueError("unknown alert categories: " + ", ".join(unknown))
 
 
 def check_hours(hours: object) -> int:
@@ -301,7 +362,26 @@ def window_signals(bars: dict[str, list[Bar]], adjusted: dict[str, set[date]], t
     return out
 
 
-def item_json(item: DigestItem, results: Results | None = None, companies: dict[str, str] | None = None) -> Item:
+def reader_note(raw: Any) -> Note | None:
+    """A stored filing note (finn.filing_notes, written by `finn.reader`) in the contract's shape.
+    Kept here, not imported from finn.reader: the API must not import the fetchers (or their
+    dependencies) that the reader needs."""
+    n = raw if isinstance(raw, dict) else json.loads(raw)
+    p = n.get("person") or None
+    who: Person | None = None
+    if p is not None:
+        who = {"name": str(p.get("name", "")), "role": str(p.get("role", "")),
+               "action": str(p.get("action", "")), "effective_date": str(p.get("effective_date", "")),
+               "background": [{"text": str(b.get("text", "")), "quote": str(b.get("quote", "")),
+                               "page": int(b.get("page") or 0)} for b in p.get("background") or []],
+               "previous_roles": [{"org": str(r.get("org", "")), "title": str(r.get("title", ""))}
+                                  for r in p.get("previous_roles") or []]}
+    return {"summary": str(n.get("summary") or ""), "quote": str(n.get("quote") or ""),
+            "page": int(n.get("page") or 0), "person": who}
+
+
+def item_json(item: DigestItem, results: Results | None = None, companies: dict[str, str] | None = None,
+              note: Note | None = None) -> Item:
     a, c = item.announcement, item.classification
     names = companies or {}
     return {
@@ -324,6 +404,7 @@ def item_json(item: DigestItem, results: Results | None = None, companies: dict[
         "related": [_related(r) for r in item.related],
         "results": results,
         "moves": [move_json(s, names.get(s.symbol, a.company)) for s in item.signals],
+        "note": note,
     }
 
 
@@ -342,12 +423,29 @@ def _announcements(rows: Iterable[tuple[Any, ...]]) -> list[Announcement]:
             for seq_id, symbol, company, ts, source, label, subject, url, file_size in rows]
 
 
-def _thresholds(prefs: list[Any] | None) -> Thresholds:
-    if not prefs:
-        return Thresholds()
-    volume_multiple, move_pct, move_sigma, move_rule = prefs
-    return Thresholds(volume_multiple=float(volume_multiple), move_pct=float(move_pct),
-                      move_sigma=float(move_sigma), move_rule=str(move_rule))
+def _thresholds(prefs: list[Any] | None, overrides: Overrides | None = None) -> Thresholds:
+    th = Thresholds()
+    if prefs:
+        volume_multiple, move_pct, move_sigma, move_rule = prefs[:4]
+        th = Thresholds(volume_multiple=float(volume_multiple), move_pct=float(move_pct),
+                        move_sigma=float(move_sigma), move_rule=str(move_rule))
+    if overrides is not None:
+        if overrides.volume_multiple is not None:
+            th.volume_multiple = overrides.volume_multiple
+        if overrides.move_pct is not None:
+            th.move_pct = overrides.move_pct
+        if overrides.move_rule is not None:
+            th.move_rule = overrides.move_rule
+    return th
+
+
+def _rank_prefs(prefs: list[Any] | None, overrides: Overrides | None = None) -> Prefs:
+    """Which categories are on the investor's alert list: this request's, else finn.prefs', else the default."""
+    if overrides is not None and overrides.alerts is not None:
+        return Prefs(alert_categories=set(overrides.alerts))
+    if prefs and len(prefs) > 4 and prefs[4] is not None:
+        return Prefs(alert_categories=set(prefs[4]))
+    return Prefs()
 
 
 def _bars(rows: list[list[Any]]) -> tuple[dict[str, list[Bar]], dict[str, set[date]]]:
@@ -393,12 +491,13 @@ def _pledges(rows: list[list[Any]], companies: dict[str, str]) -> list[Pledge]:
 
 
 def digest_payload(conn: psycopg.Connection, investor_id: UUID | str, hours: int,
-                   now: datetime | None = None) -> Digest:
+                   now: datetime | None = None, overrides: Overrides | None = None) -> Digest:
     """The /v1/digest JSON for one investor: filings with ts in (now - hours, now], their results
     numbers, the price and volume moves in the window (attached to the filing that explains them, or
     listed as unexplained), and the promoter pledges on the holdings.
 
     `now` defaults to the current time; pass one (with its zone) for a reproducible digest.
+    `overrides` (alert categories and move thresholds for this request) replace finn.prefs.
     `conn` must be in autocommit with no transaction open (`db.connect` or the API's pool)."""
     hours = check_hours(hours)
     now = datetime.now(IST) if now is None else now
@@ -430,7 +529,8 @@ def digest_payload(conn: psycopg.Connection, investor_id: UUID | str, hours: int
                                                 order by p.symbol, p.day), '[]')
                        from finn.prices_eod p
                        where p.symbol in (select symbol from mine) and p.day between %(prices_from)s and %(last)s),
-                      (select json_build_array(volume_multiple, move_pct, move_sigma, move_rule) from finn.prefs
+                      (select json_build_array(volume_multiple, move_pct, move_sigma, move_rule, alert_categories)
+                       from finn.prefs
                        where investor_id = %(investor)s),
                       (select coalesce(json_agg(json_build_array(x.symbol, x.as_of, x.broadcast,
                                                 x.pledged_of_promoter_pct, x.promoter_holding_pct)
@@ -442,29 +542,39 @@ def digest_payload(conn: psycopg.Connection, investor_id: UUID | str, hours: int
             {"investor": investor, "first": (start - _SESSION_MARGIN).date(), "last": (now + _SESSION_MARGIN).date(),
              "job": _FILINGS_JOB, "facts": _CARD_FACTS, "results_from": (start - _RESULTS_HISTORY).date(),
              "prices_from": (start - _PRICE_HISTORY).date()}).fetchone() or ([], [], None, {}, [], [], None, [])
+        # --- Reader stream: each filing's note (finn.filing_notes), joined in the same statement ---
         rows = conn.execute(
-            """select seq_id, symbol, company, ts, source, label, subject, url, file_size from finn.filings
-               where symbol in (select symbol from finn.holdings where investor_id = %s)
-                 and ts > %s and ts <= %s
-               order by ts, seq_id""", [investor, start, now]).fetchall()
+            """select f.seq_id, f.symbol, f.company, f.ts, f.source, f.label, f.subject, f.url, f.file_size,
+                      case when n.seq_id is null then null
+                           else json_build_object('summary', n.summary, 'quote', n.quote, 'page', n.page,
+                                                  'person', n.person) end
+               from finn.filings f left join finn.filing_notes n on n.seq_id = f.seq_id
+               where f.symbol in (select symbol from finn.holdings where investor_id = %s)
+                 and f.ts > %s and f.ts <= %s
+               order by f.ts, f.seq_id""", [investor, start, now]).fetchall()
+    notes = {r[0]: reader_note(r[9]) for r in rows if r[9] is not None}
 
     bars, adjusted = _bars(prices)
-    signals = window_signals(bars, adjusted, _thresholds(prefs), start, now)
+    signals = window_signals(bars, adjusted, _thresholds(prefs, overrides), start, now)
     stored_results = _results_rows(results)
-    digest = build_digest(_announcements(rows), signals, trading_days=sessions or None)
+    digest = build_digest(_announcements(r[:9] for r in rows), signals, _rank_prefs(prefs, overrides),
+                          trading_days=sessions or None)
 
     def entry(item: DigestItem) -> Item:
         c = item.classification
         card = None
         if c.category == "results" and c.subtype not in _RESULT_FILINGS:
             card = results_card(item.announcement.symbol, stored_results, item.announcement.ts.date())
-        return item_json(item, card, names)
+        return item_json(item, card, names, notes.get(item.announcement.id))
 
     return {
         "window": {"hours": hours, "from": iso(start), "to": iso(now)},
         "data_as_of": iso(as_of) if as_of else None,
         "summary": digest["summary"],
-        "portfolio": {"holdings": len(holdings), "pledges": _pledges(pledges, names)},
+        "portfolio": {"holdings": len(holdings),
+                      "companies": [{"symbol": s, "company": names.get(s) or s} for s in holdings],
+                      "pledges": _pledges(pledges, names)},
+        "filings_read": len(rows),
         "attention": [entry(i) for i in digest["attention"]],
         "worth": [entry(i) for i in digest["worth"]],
         "routine": {"count": len(digest["routine"]), "by_kind": _by_kind(digest["routine_counts"])},

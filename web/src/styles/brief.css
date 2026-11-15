@@ -247,8 +247,16 @@
 .card {
   background: var(--paper-raised);
   border: var(--hairline) solid var(--rule);
-  border-radius: var(--radius-card);
+  border-top: 2px solid var(--ink);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
   padding: var(--space-4) var(--space-4) var(--space-2);
+  scroll-margin-top: var(--space-5);
+}
+
+.card:focus-visible,
+.line:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .card__head {
@@ -772,3 +780,481 @@
   display: grid;
   gap: var(--space-2);
 }
+
+/* ---------- The front page: the filter, the portfolio at a glance, the lead stories ---------- */
+
+.filter {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: var(--hairline) solid var(--rule-strong);
+}
+
+.filter__title {
+  font-size: var(--step--1);
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-2);
+}
+
+.filter .chart--stack {
+  display: block;
+}
+
+.filter__bar--need {
+  fill: var(--ink);
+}
+
+.filter__bar--worth {
+  fill: var(--ink-soft);
+}
+
+.filter__bar--grouped {
+  fill: var(--rule-strong);
+}
+
+.filter__bar--aside {
+  fill: var(--track);
+}
+
+.filter__piles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-4);
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--target);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--step--1);
+}
+
+a.filter__link:hover .filter__count {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.filter__pile--none .filter__link {
+  color: var(--ink-soft);
+}
+
+.filter__count {
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.filter__swatch {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+  margin-right: var(--space-1);
+}
+
+.filter__swatch--need {
+  background: var(--ink);
+}
+
+.filter__swatch--worth {
+  background: var(--ink-soft);
+}
+
+.filter__swatch--grouped {
+  background: var(--rule-strong);
+}
+
+.filter__swatch--aside {
+  background: var(--track);
+  border: var(--hairline) solid var(--rule-strong);
+}
+
+.play {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  border: var(--hairline) solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--step--1);
+  cursor: pointer;
+}
+
+.play:hover {
+  border-color: var(--ink);
+}
+
+.play__icon {
+  fill: currentColor;
+}
+
+.play__time {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.holdings {
+  margin-top: var(--space-6);
+}
+
+.holdings__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.holdings__title {
+  font-size: var(--step--1);
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.holdings__all {
+  min-height: var(--target);
+  padding: 0 var(--space-3);
+  border: var(--hairline) solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--step--1);
+  cursor: pointer;
+}
+
+.holdings__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--target);
+  padding: 0 var(--space-1);
+  border: var(--hairline) solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-strong);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+  cursor: pointer;
+}
+
+.tile--need {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.tile--worth {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.tile--quiet {
+  border-color: var(--rule);
+  color: var(--ink-soft);
+  font-weight: var(--weight-regular);
+}
+
+.tile--selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tile:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.tile__marks {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  gap: 2px;
+}
+
+.tile__mark {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+}
+
+.tile__mark--move {
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.tile__mark--pledge {
+  background: var(--down);
+}
+
+.tile--need .tile__mark--move {
+  box-shadow: 0 0 0 1px var(--paper);
+}
+
+.holdings__rest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.holdings__key {
+  margin-top: var(--space-2);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.tile-key {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-left: var(--space-2);
+  border-radius: 2px;
+  border: var(--hairline) solid var(--ink);
+  vertical-align: -1px;
+}
+
+.holdings__key > .tile-key:first-child {
+  margin-left: 0;
+}
+
+.tile-key--need {
+  background: var(--ink);
+}
+
+.tile-key--quiet {
+  border-color: var(--rule);
+}
+
+.holdings__key .tile__mark {
+  margin-left: var(--space-2);
+}
+
+.front__only {
+  margin-top: var(--space-3);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.lead-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.lead-figure__value {
+  font-family: var(--font-serif);
+  font-size: var(--figure);
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.lead-figure__unit {
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  color: var(--ink-soft);
+}
+
+.lead-figure__change {
+  font-size: var(--step--1);
+  font-weight: var(--weight-strong);
+}
+
+.lead-figure__change--up {
+  color: var(--up);
+}
+
+.lead-figure__change--down {
+  color: var(--down);
+}
+
+.results__change {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.move-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.move-figure__value {
+  font-size: var(--figure);
+  font-weight: var(--weight-strong);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.move-figure__value--up,
+.moves-list__value--up {
+  color: var(--up);
+}
+
+.move-figure__value--down,
+.moves-list__value--down {
+  color: var(--down);
+}
+
+.move-figure__meter {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.move-figure__caption {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.moves-list__figure {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-1) 0;
+}
+
+.moves-list__value {
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums lining-nums;
+  min-width: 6.5em;
+}
+
+.pledges__item {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.pledges__figure {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pledges__pct {
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums lining-nums;
+  min-width: 3.5em;
+}
+
+/* Charts: shapes coloured by class, never by attribute or inline style. */
+
+.chart {
+  display: inline-block;
+  flex: none;
+  overflow: visible;
+}
+
+.chart__up {
+  fill: var(--up);
+}
+
+.chart__down {
+  fill: var(--down);
+}
+
+.chart__accent,
+.chart__bar--latest {
+  fill: var(--accent);
+}
+
+.chart__bar {
+  fill: var(--rule-strong);
+}
+
+.chart__bar.chart__bar--latest {
+  fill: var(--accent);
+}
+
+.chart__inner {
+  fill: var(--paper-raised);
+  opacity: 0.85;
+}
+
+.chart__track {
+  fill: var(--track);
+}
+
+.chart__axis,
+.chart__tick {
+  stroke: var(--ink-soft);
+  stroke-width: 1.5;
+}
+
+/* Wide screens (after the rail layout above): a front page. Lead stories and the lists in the main column, moves and pledges beside. */
+@media (min-width: 80rem) {
+  .page--brief {
+    max-width: calc(var(--rail) + 58rem + 2 * var(--gutter) + var(--space-8));
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+
+  .front {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    grid-template-areas:
+      'lead side'
+      'worth side'
+      'routine side';
+    grid-template-rows: auto auto 1fr;
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  .front__lead {
+    grid-area: lead;
+  }
+
+  .front__worth {
+    grid-area: worth;
+  }
+
+  .front__routine {
+    grid-area: routine;
+  }
+
+  .front__side {
+    grid-area: side;
+    padding-left: var(--space-4);
+    border-left: var(--hairline) solid var(--rule);
+  }
+
+  .front__side .section:first-child {
+    margin-top: var(--space-7);
+  }
+}
+

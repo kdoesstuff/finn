@@ -40,16 +40,16 @@ as tasks pass their gates.
 
 | Requirement | Source | Task | Status |
 | --- | --- | --- | --- |
-| Windowed digest, default last 24 hours, investor picks the period | Both | D6, D7 | Done: 24 h, 3 d, 7 d |
+| Windowed digest, default last 24 hours, investor picks the period | Both | D6, D7, final sprint | Done: 24 h, 3 d, 7 d, or since any date in the last 31 days |
 | Every filing across the portfolio, filtered and prioritised; routine collapsed or hidden | Both | `rank.py` (A3), D6, D7 | Done |
-| Triggered alerts on material announcements of types the investor chooses | Both | D6 (alert categories per investor), D7 | Partly: alert categories applied from prefs; no settings screen |
+| Triggered alerts on material announcements of types the investor chooses | Both | D6 (alert categories per investor), D7, final sprint | Done: an alert settings sheet (types, move %, volume multiple, rule), kept on the phone and checked by the server |
 | Triggered alerts on unusual EOD moves: volume > ~2x average, price beyond ±X%; thresholds configurable | Both | `alerts.py` (A3), D4, D6 | Done: moves tied to a filing or listed as unexplained; thresholds from prefs |
-| "Tell me the moment": alerts reach the investor | Both | D6 alerts feed with unread badge; web push is a stretch item | Not built: no notifications; the brief shows what is new |
-| Management change: short bio of the incoming person (e.g. from LinkedIn) | Both | D2 (filing's own profile first; outside sources labelled) | Not built: the card links the filing |
+| "Tell me the moment": alerts reach the investor | Both | D6 alerts feed with unread badge; web push is a stretch item | Partly: no notifications; the brief marks what is new since the last visit and counts it in the tab title |
+| Management change: short bio of the incoming person (e.g. from LinkedIn) | Both | D2 (filing's own profile first; outside sources labelled) | Done from the filing only: name, role, date, background and past roles, each quote-checked; no LinkedIn (no legitimate access) |
 | ...and whether anyone in the network worked or studied with them, or sits one connection away | Founding | G4, G5 | Partly: who worked at the company, by company (no person matching) |
 | Quarterly results: Revenue, EBITDA, PBT, PAT, QoQ and YoY, from the actual filing | Both | `xbrl.py`, `results.py`; D1 adds the lender template | Done: general and bank templates; NBFCs show no numbers yet |
 | Material event at a company the investor knows people at (M&A, capex, litigation): the person best placed to give context, and why | Founding | G4, G5 | Done: who to call on brief items (full edition) |
-| Every other type: decide between a one-line summary and the filing at the right priority | Both | `rank.py` reasons; C3 one-line summaries | Ranking done |
+| Every other type: decide between a one-line summary and the filing at the right priority | Both | `rank.py` reasons; C3 one-line summaries (`reader.py`) | Done: ranked, and a quote-checked one-line note on filings that need you or are worth knowing |
 
 ## Pull
 

@@ -41,10 +41,13 @@ export function failureReason(error: unknown): FailureReason {
 }
 
 const DEFAULT_RETRY_AFTER_S = 30
+const NO_PARAMS: Readonly<Record<string, string>> = {}
 
-export function useBrief(api: Api, hours: number): BriefView {
+export function useBrief(api: Api, hours: number, params: Readonly<Record<string, string>> = NO_PARAMS): BriefView {
   const [attempt, setAttempt] = useState(0)
-  const key = `${hours}#${attempt}`
+  // --- Controls: the alert settings travel with the request; a change asks again ---
+  const query = new URLSearchParams(params).toString()
+  const key = `${hours}#${query}#${attempt}`
   const [result, setResult] = useState<{ key: string; outcome: Outcome } | null>(null)
   const [progress, setProgress] = useState<{ key: string; value: Progress; startedAt: number } | null>(null)
 
@@ -58,6 +61,7 @@ export function useBrief(api: Api, hours: number): BriefView {
 
     api
       .digest(hours, {
+        params: Object.fromEntries(new URLSearchParams(query)),
         signal,
         onProgress: (value) => {
           if (!signal.aborted) setProgress({ key, value, startedAt: started })
@@ -79,7 +83,7 @@ export function useBrief(api: Api, hours: number): BriefView {
         },
       )
     return () => controller.abort()
-  }, [api, hours, key])
+  }, [api, hours, query, key])
 
   const retry = useCallback(() => setAttempt((n) => n + 1), [])
 

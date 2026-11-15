@@ -39,6 +39,11 @@ export interface CallOptions {
   onProgress?: ((progress: Progress) => void) | undefined
 }
 
+/** --- Controls --- The digest's optional alert settings (docs/API.md), sent as query parameters. */
+export interface DigestOptions extends CallOptions {
+  params?: Readonly<Record<string, string>> | undefined
+}
+
 /** The API answered with an error (the contract's shape, or a bare status). */
 export class ApiError extends Error {
   override name = 'ApiError'
@@ -76,7 +81,7 @@ export interface ApiDeps {
 export interface Api {
   /** Starts the server waking (a GET /health nobody waits for). */
   prewarm(): void
-  digest(hours: number, options?: CallOptions): Promise<Digest>
+  digest(hours: number, options?: DigestOptions): Promise<Digest>
   /** The saved copy at /snapshot.json, or null when there is none (or it cannot be read). */
   snapshot(signal?: AbortSignal): Promise<Snapshot | null>
   investor(): Investor | null
@@ -298,7 +303,8 @@ export function createApi(deps: ApiDeps): Api {
     },
 
     async digest(hours, options = {}) {
-      const path = `/v1/digest?hours=${encodeURIComponent(String(hours))}`
+      const query = new URLSearchParams({ hours: String(hours), ...(options.params ?? {}) })
+      const path = `/v1/digest?${query.toString()}`
       const token = await ensureSession(options)
       try {
         return await call(path, request('GET', token), parseDigest, options)

@@ -1,4 +1,5 @@
 import type { Change, Move, Pledge, Results } from '../api/types'
+import { ChangeMark, Gauge, ThresholdMeter } from '../charts/Charts'
 import { shortCompany } from '../lib/labels'
 import { formatShortDate } from '../lib/time'
 
@@ -13,6 +14,56 @@ export function changeText(c: Change): string {
 
 function amount(value: number): string {
   return `${value < 0 ? '−' : ''}₹${crore.format(Math.abs(value))}`
+}
+
+function direction(c: Change): 'up' | 'down' | 'flat' {
+  if (c.pct === null || c.pct === 0) return 'flat'
+  return c.pct > 0 ? 'up' : 'down'
+}
+
+/** The two numbers a results card leads with: the top line and PAT, each with its year-on-year bar. */
+/** The one figure a results story leads with: the top line (revenue, or NII for a bank), against a year ago. */
+export function KeyFigures({ results }: { results: Results }) {
+  const top = results.rows[0]
+  if (!top) return null
+  return (
+    <p className="lead-figure">
+      <span className="lead-figure__value">
+        {amount(top.value)}
+        <span className="lead-figure__unit"> cr</span>
+      </span>
+      <span className={`lead-figure__change lead-figure__change--${direction(top.yoy)}`}>
+        {top.metric}, {changeText(top.yoy)} <abbr title="year on year">YoY</abbr>
+      </span>
+    </p>
+  )
+}
+
+/** The largest move a card carries, drawn against the threshold it crossed. */
+export function MoveFigure({ moves }: { moves: Move[] }) {
+  const [first] = [...moves].sort((a, b) => Math.abs(b.value) / Math.abs(b.threshold || 1) - Math.abs(a.value) / Math.abs(a.threshold || 1))
+  if (first === undefined) return null
+  return (
+    <div className="move-figure">
+      <p className={`move-figure__value move-figure__value--${first.value >= 0 ? 'up' : 'down'}`}>{moveValue(first)}</p>
+      <div className="move-figure__meter">
+        <ThresholdMeter value={first.value} threshold={first.threshold} />
+        <span className="move-figure__caption">{moveCaption(first)}</span>
+      </div>
+    </div>
+  )
+}
+
+/** "+6.0%" for a price move, "3.2× volume" for a volume crossing. */
+export function moveValue(m: Move): string {
+  if (m.kind === 'volume') return `${m.value.toFixed(1)}× volume`
+  return `${m.value > 0 ? '+' : '−'}${Math.abs(m.value).toFixed(1)}%`
+}
+
+function moveCaption(m: Move): string {
+  const when = formatShortDate(m.day)
+  if (m.kind === 'volume') return `${when}, your line ${m.threshold.toFixed(1)}× the average`
+  return `${when}, your line ±${Math.abs(m.threshold).toFixed(1)}%`
 }
 
 /** A results filing's numbers, from its XBRL: the quarter, then each line with QoQ and YoY. */
@@ -41,8 +92,18 @@ export function ResultsTable({ results, company }: { results: Results; company: 
                 {amount(row.value)}
                 {row.margin !== null && <span className="results__margin"> {row.margin.toFixed(1)}%</span>}
               </td>
-              <td>{changeText(row.qoq)}</td>
-              <td>{changeText(row.yoy)}</td>
+              <td>
+                <span className="results__change">
+                  {changeText(row.qoq)}
+                  <ChangeMark pct={row.qoq.pct} />
+                </span>
+              </td>
+              <td>
+                <span className="results__change">
+                  {changeText(row.yoy)}
+                  <ChangeMark pct={row.yoy.pct} />
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -87,6 +148,10 @@ export function UnexplainedMoves({ moves }: { moves: Move[] }) {
             <p className="line__company">
               {shortCompany(m.company)} <span className="company__symbol">{m.symbol}</span>
             </p>
+            <div className="moves-list__figure">
+              <span className={`moves-list__value moves-list__value--${m.value >= 0 ? 'up' : 'down'}`}>{moveValue(m)}</span>
+              <ThresholdMeter value={m.value} threshold={m.threshold} />
+            </div>
             <p className="line__headline">
               {formatShortDate(m.day)}: {m.detail}
             </p>
@@ -112,7 +177,11 @@ export function Pledges({ pledges }: { pledges: Pledge[] }) {
           <li key={p.symbol} className="pledges__item">
             <span className="line__company">
               {shortCompany(p.company)} <span className="company__symbol">{p.symbol}</span>
-            </span>{' '}
+            </span>
+            <span className="pledges__figure">
+              <span className="pledges__pct">{p.pct_of_promoter.toFixed(1)}%</span>
+              <Gauge pct={p.pct_of_promoter} />
+            </span>
             {p.pct_of_promoter.toFixed(2)}% of the promoters’ {p.promoter_stake_pct.toFixed(2)}% stake is pledged
             {p.change_pct_points !== null && p.change_pct_points !== 0 && (
               <>

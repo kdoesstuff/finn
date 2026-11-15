@@ -9,7 +9,10 @@ import type {
   Health,
   Item,
   Move,
+  Note,
+  NotePerson,
   Pledge,
+  QuotedLine,
   RelatedFiling,
   Results,
   ResultsRow,
@@ -162,6 +165,41 @@ function pledge(value: Json, path: string): Pledge {
   }
 }
 
+// --- Reader stream ---
+function quotedLine(value: Json, path: string): QuotedLine {
+  const o = obj(value, path)
+  return {
+    text: str(o.text, `${path}.text`),
+    quote: str(o.quote, `${path}.quote`),
+    page: int(o.page, `${path}.page`, 1, 10000),
+  }
+}
+
+function notePerson(value: Json, path: string): NotePerson {
+  const o = obj(value, path)
+  return {
+    name: str(o.name, `${path}.name`),
+    role: str(o.role, `${path}.role`),
+    action: str(o.action, `${path}.action`),
+    effective_date: str(o.effective_date, `${path}.effective_date`),
+    background: arr(o.background, `${path}.background`, quotedLine),
+    previous_roles: arr(o.previous_roles, `${path}.previous_roles`, (v, p) => {
+      const r = obj(v, p)
+      return { org: str(r.org, `${p}.org`), title: str(r.title, `${p}.title`) }
+    }),
+  }
+}
+
+function note(value: Json, path: string): Note {
+  const o = obj(value, path)
+  return {
+    summary: str(o.summary, `${path}.summary`),
+    quote: str(o.quote, `${path}.quote`),
+    page: int(o.page, `${path}.page`, 0, 10000),
+    person: nullable(o.person, `${path}.person`, notePerson),
+  }
+}
+
 function item(value: Json, path: string): Item {
   const o = obj(value, path)
   return {
@@ -184,6 +222,7 @@ function item(value: Json, path: string): Item {
     related: arr(o.related, `${path}.related`, related),
     results: added(o.results, null, () => nullable(o.results, `${path}.results`, results)),
     moves: added(o.moves, [], () => arr(o.moves, `${path}.moves`, move)),
+    note: added(o.note, null, () => nullable(o.note, `${path}.note`, note)), // --- Reader stream ---
     // --- Network stream: present only on the full edition ---
     // (only the full build reads it: in the core build this branch, and the parser, are dropped)
     ...(NETWORK_BUILD && o.who_to_call !== undefined
@@ -215,7 +254,9 @@ export function parseDigest(value: Json, path = 'digest'): Digest {
     portfolio: {
       holdings: int(portfolio.holdings, `${path}.portfolio.holdings`, 0, 10_000),
       pledges: added(portfolio.pledges, [], () => arr(portfolio.pledges, `${path}.portfolio.pledges`, pledge)),
+      companies: added(portfolio.companies, undefined, () => arr(portfolio.companies, `${path}.portfolio.companies`, (v, p) => ({ symbol: str(obj(v, p).symbol, `${p}.symbol`), company: str(obj(v, p).company, `${p}.company`) }))),
     },
+    filings_read: added(o.filings_read, undefined, () => int(o.filings_read, `${path}.filings_read`, 0, 1_000_000)),
     attention: arr(o.attention, `${path}.attention`, item),
     worth: arr(o.worth, `${path}.worth`, item),
     routine: {

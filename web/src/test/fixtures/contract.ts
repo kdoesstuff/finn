@@ -44,6 +44,7 @@ export const asianPaints: Item = {
   ],
   results: null,
   moves: [],
+  note: null,
 }
 
 /** Elgi's quarter, in the contract's Results shape; the figures are made up for the tests. */
@@ -133,6 +134,7 @@ export const elgiResults: Item = {
   ],
   results: elgiQuarter,
   moves: [elgiMove],
+  note: null,
 }
 
 /** detail_in_document: the summary only restates NSE's label. */
@@ -156,6 +158,7 @@ export const hdfcBank: Item = {
   related: [],
   results: null,
   moves: [],
+  note: null,
 }
 
 /** A source that is not an NSE archive address: shown as text, never as a link. */
@@ -179,6 +182,7 @@ export const manappuram: Item = {
   related: [],
   results: null,
   moves: [],
+  note: null,
 }
 
 /** The contract's digest example, with items behind each count. */
@@ -186,7 +190,32 @@ export const liveDigest: Digest = {
   window: { hours: 24, from: '2026-11-14T15:07:00+05:30', to: '2026-11-15T15:07:00+05:30' },
   data_as_of: '2026-11-15T15:07:41+05:30',
   summary: '1 item needs your attention, 1 unexplained price or volume move. 3 worth knowing; 18 routine filings set aside.',
-  portfolio: { holdings: 18, pledges: [kalyanPledge] },
+  // Added after v1: every holding, and every filing read in the window (related ones included).
+  portfolio: {
+    holdings: 18,
+    pledges: [kalyanPledge],
+    companies: [
+    { symbol: 'ABB', company: 'ABB India Limited' },
+    { symbol: 'ASIANPAINT', company: 'Asian Paints Limited' },
+    { symbol: 'BAJFINANCE', company: 'Bajaj Finance Limited' },
+    { symbol: 'BHARTIARTL', company: 'Bharti Airtel Limited' },
+    { symbol: 'DMART', company: 'Avenue Supermarts Limited' },
+    { symbol: 'ELGIEQUIP', company: 'Elgi Equipments Limited' },
+    { symbol: 'HDFCBANK', company: 'HDFC Bank Limited' },
+    { symbol: 'HINDUNILVR', company: 'Hindustan Unilever Limited' },
+    { symbol: 'ICICIBANK', company: 'ICICI Bank Limited' },
+    { symbol: 'INFY', company: 'Infosys Limited' },
+    { symbol: 'ITC', company: 'ITC Limited' },
+    { symbol: 'KALYANKJIL', company: 'Kalyan Jewellers India Limited' },
+    { symbol: 'LT', company: 'Larsen & Toubro Limited' },
+    { symbol: 'MANAPPURAM', company: 'Manappuram Finance Ltd.' },
+    { symbol: 'MARUTI', company: 'Maruti Suzuki India Limited' },
+    { symbol: 'RELIANCE', company: 'Reliance Industries Limited' },
+    { symbol: 'SUNPHARMA', company: 'Sun Pharmaceutical Industries Limited' },
+    { symbol: 'TCS', company: 'Tata Consultancy Services Limited' },
+    ],
+  },
+  filings_read: 24,
   attention: [elgiResults],
   worth: [asianPaints, manappuram, hdfcBank],
   // Verbatim from the contract, where the kinds add up to 15 of the 18: the app shows the remainder.

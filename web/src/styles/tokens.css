@@ -20,6 +20,12 @@
   --accent: #26388A;
   --accent-wash: #DCE1F0;
   --on-accent: #F7F8F4;
+  /* Direction of a change, used only beside its number (never the only signal). */
+  --up: #1E6A45;
+  --up-wash: #DCEDE2;
+  --down: #A3372A;
+  --down-wash: #F3DFDA;
+  --track: #D9DED5;
 
   /* Type: Castoro (Tiro Typeworks; the Latin of the Tiro Indic fonts) for what is read;
      Mukta (Ek Type, Mumbai) for what is used, with tabular figures for times and counts. */
@@ -35,6 +41,9 @@
   --step-2: 1.625rem;
   --step-3: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
   --step-4: clamp(3.75rem, 2.9rem + 4vw, 6rem);
+  /* Key figures: big, confident, tabular. */
+  --figure: clamp(2rem, 1.6rem + 2.2vw, 2.75rem);
+  --figure-story: clamp(3rem, 2.2rem + 6vw, 4.75rem);
   --leading-display: 1.18;
   --leading-serif: 1.38;
   --leading: 1.5;
@@ -57,6 +66,8 @@
 
   /* Shape */
   --radius-card: 6px;
+  --radius-board: 10px;
+  --radius-pill: 999px;
   --radius-control: 4px;
   --hairline: 1px;
   --rule-gap: 3px;
@@ -81,5 +92,10 @@
     --accent: #A9B7F0;
     --accent-wash: #26304D;
     --on-accent: #121722;
+    --up: #7FD3A4;
+    --up-wash: #1C3328;
+    --down: #F29A88;
+    --down-wash: #3A2320;
+    --track: #2A3242;
   }
 }

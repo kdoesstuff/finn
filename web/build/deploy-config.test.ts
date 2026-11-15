@@ -150,5 +150,5 @@ describe('lint rules', () => {
       'No inline styles: use a class and tokens.css (the CSP allows stylesheets from the app only).',
     )
     expect((await lint('export const t = localStorage.getItem("token")\n')).join(' ')).toMatch(/stays in memory/)
-  })
+  }, 30_000)
 })

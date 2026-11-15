@@ -14,6 +14,9 @@
                                                          the live feed is down (keeps NSE's publication time)
     python scripts/ingest.py analyse [SYMBOL ...]        read covered companies' transcripts and annual
                                                          report; build ledger, snapshot, bull and bear
+    python scripts/ingest.py read-filings [--days 30] [--guard-per-minute N] [SYMBOL ...]
+                                                         one-line summaries and people's backgrounds,
+                                                         read from covered companies' filings (models)
 
 Exits 1 if the job failed or reported errors, so the workflow goes red.
 """
@@ -33,7 +36,7 @@ from psycopg import sql
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from finn import db, guard, ingest, ledger, network, seed, verify  # noqa: E402
+from finn import db, guard, ingest, ledger, network, reader, seed, verify  # noqa: E402
 from finn.sources.client import NSEClient  # noqa: E402
 
 TABLES = ("filings", "results", "prices_eod", "trading_days", "pledges", "board_meetings", "corporate_actions",
@@ -113,6 +116,11 @@ def main() -> int:
     an.add_argument("--guard-per-minute", type=int, choices=range(1, 31), default=None, metavar="1-30",
                     help="injection-screen calls a minute for this run; parallel runs share Groq's ~30")
     an.add_argument("symbols", nargs="*", type=symbol, help="default: every covered company")
+    rf = sub.add_parser("read-filings")  # --- Reader stream ---
+    rf.add_argument("--days", type=int, default=reader.DEFAULT_DAYS, choices=range(1, 61), metavar="1-60")
+    rf.add_argument("--guard-per-minute", type=int, choices=range(1, 31), default=None, metavar="1-30",
+                    help="injection-screen calls a minute for this run; parallel runs share Groq's ~30")
+    rf.add_argument("symbols", nargs="*", type=symbol, help="default: every covered company")
     ip = sub.add_parser("import-pledges")
     ip.add_argument("file", type=Path)
     v = sub.add_parser("verify")
@@ -152,6 +160,11 @@ def main() -> int:
             if args.guard_per_minute:
                 guard.GUARD_PER_MINUTE = args.guard_per_minute
             return report("analyse", ledger.analyse_all(conn, source, args.symbols or ingest.covered(conn), today))
+        if args.job == "read-filings":  # --- Reader stream ---
+            if args.guard_per_minute:
+                guard.GUARD_PER_MINUTE = args.guard_per_minute
+            return report("read-filings", reader.read_filings(conn, source, args.symbols or ingest.covered(conn),
+                                                              args.days))
         if args.job == "results":
             out = {s: ingest.ingest_results(conn, source, s) for s in args.symbols}
             return report("results", {"results": out, "errors": [s for s, v in out.items() if v.get("error")]})

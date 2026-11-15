@@ -210,3 +210,55 @@ test('the security policy is enforced: an injected inline script does not run', 
   // Expected here; every other test requires none.
   problems.length = 0
 })
+
+test('story mode: plays the cards, closes, and digs into an item', async ({ page }) => {
+  const api = await mockApi(page)
+  await page.goto('/brief')
+  await expect(page.getByText(liveDigest.summary)).toBeVisible()
+  const asked = api.requests.length
+
+  const play = page.getByRole('button', { name: /Read in 30 seconds/ })
+  await play.click()
+  const story = page.getByRole('dialog', { name: 'Today’s brief, card by card' })
+  await expect(story).toBeVisible()
+  await expect(story.getByText(/^1 of 2/)).toBeVisible()
+  await expect(story.getByRole('heading', { level: 2 })).toContainText('Elgi')
+  await expectAccessible(page)
+  await expectNoSidewaysScroll(page)
+
+  await story.getByRole('button', { name: 'Next' }).click()
+  await expect(story.getByText(/^2 of 2/)).toBeVisible()
+  await expect(story.getByRole('heading', { level: 2 })).toContainText('ABB')
+  await page.keyboard.press('ArrowLeft')
+  await expect(story.getByText(/^1 of 2/)).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(story).toBeHidden()
+  await expect(play).toBeFocused()
+
+  await play.click()
+  await story.getByRole('button', { name: 'Dig in' }).click()
+  await expect(story).toBeHidden()
+  await expect(page.locator('#item-test-elgi-1')).toBeFocused()
+  // The story is made from the brief already on screen: it asks the server for nothing.
+  expect(api.requests.length).toBe(asked)
+})
+
+test('the front page: the filter made visible, and a holding narrows the page', async ({ page }) => {
+  await mockApi(page)
+  await page.goto('/brief')
+  await expect(page.getByRole('heading', { level: 2, name: 'FINN read 24 filings for you' })).toBeVisible()
+  const grid = page.getByRole('region', { name: 'Your portfolio today' })
+  await expect(grid.getByRole('button')).toHaveCount(18)
+
+  await grid.getByRole('button', { name: 'ELGIEQUIP: needs you' }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Showing ELGIEQUIP only.' })).toBeVisible()
+  await expect(page.getByRole('region', { name: /Worth knowing/ })).toHaveCount(0)
+  await expectAccessible(page)
+
+  await grid.getByRole('button', { name: 'TCS: quiet' }).click()
+  await expect(page.getByText('Nothing from TCS in this window. Quiet is good.')).toBeVisible()
+  await page.getByRole('button', { name: 'Show all' }).click()
+  await expect(page.getByRole('region', { name: /Worth knowing/ })).toBeVisible()
+  await expectNoSidewaysScroll(page)
+})

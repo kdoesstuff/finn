@@ -47,7 +47,8 @@ def test_the_real_week_ranks_as_the_ranker_ranks_it(client):
 
     assert body["window"] == {"hours": 144, "from": "2026-11-03T23:59:00+05:30", "to": "2026-11-09T23:59:00+05:30"}
     assert body["data_as_of"] == DATA_AS_OF
-    assert body["portfolio"] == {"holdings": 18, "pledges": []}
+    assert {k: body["portfolio"][k] for k in ("holdings", "pledges")} == {"holdings": 18, "pledges": []}
+    assert len(body["portfolio"]["companies"]) == 18
     assert [i["id"] for i in body["attention"]] == [i.announcement.id for i in want["attention"]]
     assert [i["id"] for i in body["worth"]] == [i.announcement.id for i in want["worth"]]
     assert body["routine"] == {"count": len(want["routine"]), "by_kind": want["routine_counts"]}
@@ -106,7 +107,9 @@ def test_one_investor_never_sees_another_investors_holdings(client):
     demo_symbols = {i["symbol"] for i in demo["attention"] + demo["worth"]}
     other_symbols = {i["symbol"] for i in other["attention"] + other["worth"]}
     assert demo_symbols <= DEMO_HOLDINGS and not demo_symbols & OTHER_HOLDINGS
-    assert other["portfolio"] == {"holdings": 2, "pledges": []} and other_symbols == OTHER_HOLDINGS
+    assert {k: other["portfolio"][k] for k in ("holdings", "pledges")} == {"holdings": 2, "pledges": []}
+    assert other_symbols == OTHER_HOLDINGS
+    assert {c["symbol"] for c in other["portfolio"]["companies"]} == set(OTHER_HOLDINGS)  # never another's
     # Sadbhav's statutory auditor left mid-term (100): it is the other investor's, and only theirs.
     assert other["attention"][0]["symbol"] == "SADBHAV" and other["attention"][0]["score"] == 100
     assert not {i["id"] for i in other["attention"] + other["worth"]} & {i["id"] for i in demo["attention"]}
@@ -114,10 +117,49 @@ def test_one_investor_never_sees_another_investors_holdings(client):
 
 def test_a_token_for_an_unknown_investor_sees_an_empty_portfolio(client):
     body = get(client, mint(UUID(int=0xDEAD)), hours=144).json()
-    assert body["portfolio"] == {"holdings": 0, "pledges": []}
+    assert body["portfolio"] == {"holdings": 0, "companies": [], "pledges": []}
     assert body["summary"] == "Nothing material across your portfolio."
 
 
 def test_digest_needs_a_session(client):
     assert_error(client.get("/v1/digest"), 401, "unauthorised")
     assert_error(client.get("/v1/digest", headers={"Origin": CORE}), 401, "unauthorised")
+
+
+# --- Controls: alert settings sent with the request ------------------------------------------------
+
+
+def test_alert_categories_sent_with_the_request_decide_the_alert_flags(client):
+    token = token_for(client)
+    default = get(client, token, hours=144).json()
+    assert any(i["alert"] for i in default["attention"] + default["worth"])
+    off = get(client, token, hours=144, alerts="").json()
+    assert not any(i["alert"] for i in off["attention"] + off["worth"])
+    assert [i["id"] for i in off["attention"]] == [i["id"] for i in default["attention"]]
+    results_only = get(client, token, hours=144, alerts="results").json()
+    assert all(i["category"] == "results" for i in results_only["attention"] + results_only["worth"] if i["alert"])
+
+
+def test_threshold_settings_within_range_are_served(client):
+    r = get(client, token_for(client), hours=24, move_pct="2.5", volume_multiple="1.5", move_rule="pct",
+            alerts="results,M&A,management_change")
+    assert r.status_code == 200 and r.json()["window"]["hours"] == 24
+
+
+@pytest.mark.parametrize(("param", "value", "says"), [
+    ("move_pct", "0.4", "move_pct must be from 0.5 to 30.0."),
+    ("move_pct", "31", "move_pct must be from 0.5 to 30.0."),
+    ("move_pct", "1e1", "move_pct must be a number such as 5 or 2.5."),
+    ("move_pct", "-5", "move_pct must be a number such as 5 or 2.5."),
+    ("volume_multiple", "1", "volume_multiple must be from 1.1 to 10.0."),
+    ("volume_multiple", "abc", "volume_multiple must be a number such as 5 or 2.5."),
+    ("move_rule", "loud", "move_rule must be one of: pct, sigma, either."),
+])
+def test_alert_settings_outside_the_contract_are_refused_by_name(client, param, value, says):
+    error = assert_error(get(client, token_for(client), **{param: value}), 422, "bad_request")
+    assert error["message"] == says
+
+
+def test_an_unknown_alert_category_is_refused_by_name(client):
+    error = assert_error(get(client, token_for(client), alerts="results,gossip"), 422, "bad_request")
+    assert error["message"].startswith("alerts may name only: results, M&A") and "(not gossip)" in error["message"]

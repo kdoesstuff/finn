@@ -1,0 +1,88 @@
+/* --- Reader stream --- The filing reader's note under a headline, and the bio of a management change. */
+
+.reader {
+  margin-top: var(--space-2);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.reader__summary,
+.bio__line {
+  font-size: var(--step--1);
+  line-height: var(--leading);
+}
+
+.reader__summary {
+  color: var(--ink);
+}
+
+.reader__toggle {
+  /* Keeps the 44 px target of every control (.action); only the words stay together. */
+  white-space: nowrap;
+}
+
+.reader__quote {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: var(--rule-gap) solid var(--rule-strong);
+  background: var(--paper);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step--1);
+  overflow-wrap: break-word;
+}
+
+.reader__page {
+  margin-top: var(--space-1);
+  font-family: var(--font-sans);
+  font-style: normal;
+  color: var(--ink-soft);
+}
+
+.bio {
+  padding: var(--space-3) var(--space-4);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--radius-control);
+  background: var(--paper-raised);
+}
+
+.bio__name {
+  font-family: var(--font-serif);
+  font-size: var(--step-0);
+  font-weight: var(--weight-regular);
+}
+
+.bio__meta {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.bio__roles {
+  margin-top: var(--space-2);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--step--1);
+}
+
+.bio__roles li {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  background: var(--accent-wash);
+}
+
+.bio__background {
+  margin-top: var(--space-2);
+  padding-left: 1.2em;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.bio__source {
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}

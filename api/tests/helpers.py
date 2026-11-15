@@ -101,17 +101,19 @@ def api_examples() -> dict[str, Any]:
         kind = next(k for k, key in (("error", "error"), ("session", "token"), ("health", "ok"),
                                      ("digest", "window"), ("companies", "companies"), ("company", "coverage"),
                                      ("item", "headline"), ("results", "quarter"),
-                                     ("move", "fired_by"), ("pledge", "pct_of_promoter")) if key in example)
+                                     ("move", "fired_by"), ("pledge", "pct_of_promoter"),
+                                     ("note", "person")) if key in example)
         out[kind] = example
     assert set(out) == {"error", "session", "health", "digest", "item", "results", "move", "pledge",
-                        "companies", "company"}, \
+                        "companies", "company", "note"}, \
         "docs/API.md examples changed"
     return out
 
 
 # Fields the contract allows to be null, and fields whose shape is a named example of its own.
-NULLABLE = {"results", "margin", "pct", "margin_bps", "sigma", "change_pct_points", "data_as_of"}
-NAMED = {"results": "results", "moves": "move", "unexplained_moves": "move", "pledges": "pledge"}
+NULLABLE = {"results", "margin", "pct", "margin_bps", "sigma", "change_pct_points", "data_as_of", "note",
+            "person"}
+NAMED = {"results": "results", "moves": "move", "unexplained_moves": "move", "pledges": "pledge", "note": "note"}
 _examples: dict[str, Any] = {}
 
 
@@ -129,7 +131,7 @@ def same_shape(actual: Any, example: Any, path: str = "$") -> None:
     if actual is None and key in NULLABLE:
         return
     if key in NAMED and example in (None, []):
-        example = _named(NAMED[key]) if key == "results" else [_named(NAMED[key])]
+        example = _named(NAMED[key]) if key in ("results", "note") else [_named(NAMED[key])]
     if path.endswith(".by_kind"):
         assert isinstance(actual, dict) and all(isinstance(k, str) and type(v) is int for k, v in actual.items()), path
         return

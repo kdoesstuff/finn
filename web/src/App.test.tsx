@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Routes } from './test/fakeServer'
@@ -7,6 +7,7 @@ import { digestFor, errorBody, health, liveDigest, NOW, quietDigest, session, sn
 import { App } from './App'
 import type { Timing } from './api/client'
 import type { AppConfig } from './config'
+import { LAST_SEEN_KEY, resetPreviousVisit } from './settings/lastSeen'
 
 const SESSION = 'POST /v1/session/demo'
 const DIGEST = 'GET /v1/digest'
@@ -250,9 +251,127 @@ describe('window', () => {
     await user.click(screen.getByRole('radio', { name: '3 days' }))
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByText(liveDigest.summary)).toBeInTheDocument()
-    expect(screen.getByRole('status')).toHaveTextContent('Fetching the last 3 days.')
+    expect(screen.getByRole('status')).toHaveTextContent('Fetching filings from the last 3 days.')
     await screen.findByText(/the 3 days to/)
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'false')
+  })
+})
+
+// --- Controls: since a date, the investor's alert settings, new since the last visit ---
+describe('controls', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+    resetPreviousVisit()
+    document.title = 'FINN'
+  })
+
+  const digestHours = (server: ReturnType<typeof renderAt>['server']) =>
+    server.callsTo(DIGEST).map((c) => c.url.searchParams.get('hours'))
+
+  it('reads filings since a date the investor picks, up to now', async () => {
+    const { server, user } = renderAt('/brief', {
+      [SESSION]: json(session),
+      [DIGEST]: [json(liveDigest), json(digestFor(352)), json(digestFor(136))],
+    })
+    await screen.findByText(liveDigest.summary)
+    await user.click(screen.getByRole('radio', { name: 'Since…' }))
+    // NOW is 15 Nov, 15:20 IST; the start of the month is 14 days and 15h20m back.
+    expect(window.location.search).toBe('?since=2026-11-01')
+    expect(screen.getByText('Filings since 1 Nov')).toBeInTheDocument()
+    const date = screen.getByLabelText('Since the start of')
+    expect(date).toHaveAttribute('min', '2026-10-16')
+    expect(date).toHaveAttribute('max', '2026-11-15')
+    await vi.waitFor(() => expect(digestHours(server)).toEqual(['24', '352']))
+
+    fireEvent.change(date, { target: { value: '2026-11-10' } })
+    expect(window.location.search).toBe('?since=2026-11-10')
+    await vi.waitFor(() => expect(digestHours(server)).toEqual(['24', '352', '136']))
+
+    fireEvent.change(date, { target: { value: '2026-09-01' } })
+    expect(date).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByText(/FINN reads back 31 days at most/)).toBeInTheDocument()
+    expect(window.location.search).toBe('?since=2026-11-10')
+    expect(digestHours(server)).toHaveLength(3)
+  })
+
+  it('reads a since date from the address', async () => {
+    const { server } = renderAt('/brief?since=2026-11-01', { [SESSION]: json(session), [DIGEST]: json(digestFor(352)) })
+    await screen.findByText('Filings since 1 Nov')
+    // A custom window names when it starts rather than a count of hours.
+    await waitFor(() => expect(document.querySelector('.summary__coverage')?.textContent).toMatch(/holdings, from 31 Oct.* to 15 Nov/))
+    expect(screen.getByRole('radio', { name: 'Since…' })).toBeChecked()
+    expect(screen.getByLabelText('Since the start of')).toHaveValue('2026-11-01')
+    expect(server.callsTo(DIGEST)[0]!.url.searchParams.get('hours')).toBe('352')
+  })
+
+  it('sends the investor’s alert settings with the brief, once saved, and keeps them on the device', async () => {
+    const { server, user } = renderAt('/brief', {
+      [SESSION]: json(session),
+      [DIGEST]: [json(liveDigest), json(liveDigest), json(liveDigest)],
+    })
+    await screen.findByText(liveDigest.summary)
+    // Until the investor saves settings, the server's stored ones apply.
+    expect([...server.callsTo(DIGEST)[0]!.url.searchParams.keys()]).toEqual(['hours'])
+
+    const opener = screen.getByRole('button', { name: 'Your alerts' })
+    await user.click(opener)
+    const dialog = screen.getByRole('dialog', { name: 'Your alerts' })
+    expect(within(dialog).getByRole('heading', { name: 'Your alerts' })).toHaveFocus()
+    await user.click(within(dialog).getByRole('checkbox', { name: /Litigation/ }))
+    await user.click(within(dialog).getByRole('checkbox', { name: /Dividend/ }))
+    fireEvent.change(within(dialog).getByRole('slider', { name: /Price moves more than/ }), { target: { value: '2.5' } })
+    expect(within(dialog).getByText('±2.5%')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('radio', { name: /Percentage only/ }))
+    await user.click(within(dialog).getByRole('button', { name: 'Save and refresh the brief' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Your alerts (custom)' })).toHaveFocus()
+    await vi.waitFor(() => expect(server.callsTo(DIGEST)).toHaveLength(2))
+    const sent = server.callsTo(DIGEST)[1]!.url.searchParams
+    expect(sent.get('hours')).toBe('24')
+    expect(sent.get('alerts')).toBe('results,M&A,management_change,pledging,dividend')
+    expect(sent.get('move_pct')).toBe('2.5')
+    expect(sent.get('volume_multiple')).toBe('2')
+    expect(sent.get('move_rule')).toBe('pct')
+    expect(JSON.parse(window.localStorage.getItem('finn.alerts.v1')!)).toMatchObject({ movePct: 2.5, moveRule: 'pct' })
+
+    await user.click(screen.getByRole('button', { name: 'Your alerts (custom)' }))
+    await user.click(screen.getByRole('button', { name: 'Use FINN’s defaults' }))
+    await vi.waitFor(() => expect(server.callsTo(DIGEST)).toHaveLength(3))
+    expect([...server.callsTo(DIGEST)[2]!.url.searchParams.keys()]).toEqual(['hours'])
+    expect(window.localStorage.getItem('finn.alerts.v1')).toBeNull()
+  })
+
+  it('closes the settings on Escape without changing anything', async () => {
+    const { server, user } = renderAt('/brief', live)
+    await screen.findByText(liveDigest.summary)
+    await user.click(screen.getByRole('button', { name: 'Your alerts' }))
+    await user.click(screen.getByRole('checkbox', { name: /Litigation/ }))
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Your alerts' })).toHaveFocus()
+    expect(server.callsTo(DIGEST)).toHaveLength(1)
+  })
+
+  it('marks what was published since the investor last looked', async () => {
+    window.localStorage.setItem(LAST_SEEN_KEY, String(NOW - 5 * 3_600_000))
+    resetPreviousVisit()
+    renderAt('/brief', live)
+    await screen.findByText(liveDigest.summary)
+    const link = screen.getByRole('link', { name: '1 new since you last looked' })
+    expect(link.getAttribute('href')).toMatch(/^#item-test-elgi-1$/)
+    expect(document.getElementById('item-test-elgi-1')?.closest('.seen-mark')).toHaveTextContent(/^New/)
+    expect(screen.getAllByText('New')).toHaveLength(1)
+    expect(document.title).toBe('(1) Your brief, FINN')
+    expect(Number(window.localStorage.getItem(LAST_SEEN_KEY))).toBe(NOW)
+  })
+
+  it('marks nothing new on a first visit', async () => {
+    resetPreviousVisit()
+    renderAt('/brief', live)
+    await screen.findByText(liveDigest.summary)
+    expect(screen.queryByText(/new since you last looked/)).not.toBeInTheDocument()
+    expect(screen.queryByText('New')).not.toBeInTheDocument()
   })
 })
 

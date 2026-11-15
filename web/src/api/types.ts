@@ -116,8 +116,38 @@ export interface Item {
   results: Results | null
   /** Price and volume moves this filing may explain. */
   moves: Move[]
+  /** --- Reader stream --- What the filing's attachment says, every line checked against it; null until read. */
+  note: Note | null
   /** --- Network stream --- Full edition only: who in the investor's network can explain this. */
   who_to_call?: WhoToCall[]
+}
+
+// --- Reader stream ---
+/** One sentence of a filing's attachment, as `quote`, on `page`. */
+export interface QuotedLine {
+  text: string
+  quote: string
+  page: number
+}
+
+/** The person a management-change filing is about. Only what the filing itself states. */
+export interface NotePerson {
+  name: string
+  /** "" when the filing does not state it. */
+  role: string
+  action: string
+  /** "" when the filing does not state it; as the filing writes it. */
+  effective_date: string
+  background: QuotedLine[]
+  previous_roles: { org: string; title: string }[]
+}
+
+/** The reader's note: `summary` and `quote` are "" (and `page` 0) when only the person was checked. */
+export interface Note {
+  summary: string
+  quote: string
+  page: number
+  person: NotePerson | null
 }
 
 export interface DigestWindow {
@@ -131,7 +161,10 @@ export interface Digest {
   window: DigestWindow
   data_as_of: string
   summary: string
-  portfolio: { holdings: number; pledges: Pledge[] }
+  /** companies: every holding, by symbol (added after v1; absent from older APIs and saved copies). */
+  portfolio: { holdings: number; pledges: Pledge[]; companies?: { symbol: string; company: string }[] | undefined }
+  /** Every filing about the holdings in the window, related ones included (added after v1). */
+  filings_read?: number | undefined
   attention: Item[]
   worth: Item[]
   routine: { count: number; by_kind: Record<string, number> }

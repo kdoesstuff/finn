@@ -56,14 +56,32 @@ API is up but cannot reach the database.
 
 `GET /v1/digest?hours=24`
 
-- `hours`: the window, 1 to 744 (31 days). Default 24.
+- `hours`: the window, 1 to 744 (31 days). Default 24. The app's "Since 1 Nov" is this, counted
+  in whole hours up to now.
+
+The investor's alert settings for this request (the app keeps them on the device, because the demo
+investor is read-only in the database). Each is optional; absent, `finn.prefs` decides, and without
+a row there, the defaults. Same ranges as `finn.prefs`; anything else is a 422 naming the parameter.
+
+- `move_pct`: a day's price move that counts as unusual, in percent, 0.5 to 30 (default 5).
+- `volume_multiple`: volume against its 20-session average that counts as unusual, 1.1 to 10
+  (default 2).
+- `move_rule`: `pct` (the percentage alone), `sigma` (beyond 3 standard deviations of the stock's
+  own daily moves), or `either` (default).
+- `alerts`: comma-separated categories that put an item on the alert list (`alert: true` when it
+  also scores 60 or more): `results`, `M&A`, `fund_raise`, `management_change`, `litigation`,
+  `insider_trading`, `earnings_call`, `investor_meetings`, `credit_rating`, `dividend`, `bonus_split`,
+  `capex`, `press_release`, `postal_ballot`, `agm_egm`, `pledging`, `governance`. Empty: none.
+  Default: `results,M&A,management_change,litigation,pledging`.
 
 ```json
 {
   "window": {"hours": 24, "from": "2026-11-14T15:07:00+05:30", "to": "2026-11-15T15:07:00+05:30"},
   "data_as_of": "2026-11-15T15:07:41+05:30",
   "summary": "1 item needs your attention. 8 worth knowing; 18 routine filings set aside.",
-  "portfolio": {"holdings": 18, "pledges": [Pledge]},
+  "portfolio": {"holdings": 18, "companies": [{"symbol": "ABB", "company": "ABB India Limited"}],
+                "pledges": [Pledge]},
+  "filings_read": 27,
   "attention": [Item],
   "worth": [Item],
   "routine": {"count": 18, "by_kind": {"earnings_call": 8, "newspaper": 4, "unclassified": 3, "agm_egm": 2,
@@ -71,6 +89,10 @@ API is up but cannot reach the database.
   "unexplained_moves": [Move]
 }
 ```
+
+`portfolio.companies` lists every holding (symbol and name, by symbol), so a client can show the quiet
+ones too; `filings_read` counts every filing about the holdings in the window, including those
+grouped under another item as related: the size of what FINN filtered for the reader.
 
 `Item` is one event: the filing that best says what happened, plus every other filing about it.
 
@@ -97,7 +119,8 @@ API is up but cannot reach the database.
      "headline": "Change in Director(s)", "url": "https://nsearchives.nseindia.com/corporate/..."}
   ],
   "results": null,
-  "moves": []
+  "moves": [],
+  "note": null
 }
 ```
 
@@ -114,6 +137,36 @@ API is up but cannot reach the database.
 - `moves` are the price and volume moves this filing may explain: sessions after it (the first two)
   or, for a filing published after the close, that day's session. The same move can sit on two
   items about one company.
+- `note` is null unless the filing has been read (`ingest.py read-filings`, task C3/D2): then a
+  one-line `summary` of what changed, with the exact `quote` of the filing it rests on and its
+  `page`, and for a management change the `person` it is about. Every sentence's quote was found in
+  the filing's own text; what could not be checked is not shown. `summary` and `quote` are "" (page
+  0) when only the person could be checked.
+
+`Note`:
+
+```json
+{
+  "summary": "Mr Leo Puri joins the board as an independent director for five years from 7 September 2026.",
+  "quote": "appointed as an Additional Director (Non-Executive, Independent) for a term of five years",
+  "page": 1,
+  "person": {
+    "name": "Mr. Leo Puri",
+    "role": "Independent Director",
+    "action": "appointed",
+    "effective_date": "September 07, 2026",
+    "background": [
+      {"text": "He was Managing Director of UTI Asset Management.",
+       "quote": "He was the Managing Director of UTI Asset Management Company", "page": 2}
+    ],
+    "previous_roles": [{"org": "UTI Asset Management Company", "title": "Managing Director"}]
+  }
+}
+```
+
+- `person` is null unless the filing is a management change and its own text names the person; its
+  `background` sentences (at most three) each carry their quote; `role` and `effective_date` are ""
+  when the filing does not state them; `previous_roles` are organisations the filing names.
 
 `Results` (all values in ₹ crore; `template` is `standard`, or `bank` for banks and lenders filing
 the banking format, which has no revenue or EBITDA):

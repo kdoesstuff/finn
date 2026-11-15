@@ -9,6 +9,7 @@ run time, and a postponed annotation cannot name `current_session`, which is loc
 """
 
 import logging
+import re
 import threading
 import time
 from collections.abc import AsyncIterator, Callable
@@ -25,7 +26,18 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
 
 from finn import db as fdb
-from finn.digest import DEFAULT_HOURS, IST, MAX_HOURS, MIN_HOURS, data_as_of, digest_payload, iso
+from finn.digest import (
+    ALERT_CATEGORIES,
+    DEFAULT_HOURS,
+    IST,
+    MAX_HOURS,
+    MIN_HOURS,
+    MOVE_RULES,
+    Overrides,
+    data_as_of,
+    digest_payload,
+    iso,
+)
 
 from . import errors, routes_network, routes_pull, sessions
 from .database import Database, Unavailable
@@ -53,6 +65,41 @@ def _whole_number(value: object) -> object:
 
 Hours = Annotated[int, BeforeValidator(_whole_number),
                   Query(ge=MIN_HOURS, le=MAX_HOURS, description="The window in hours, 1 to 744")]
+
+# --- Controls: alert settings for one request (docs/API.md, GET /v1/digest) ---
+# Plain strings, parsed here, so a bad value gets a sentence naming it rather than a schema dump.
+Setting = Annotated[str | None, Query(max_length=400)]
+_DECIMAL = re.compile(r"^\d{1,3}(\.\d{1,2})?$")
+
+
+def _decimal(name: str, raw: str | None) -> float | None:
+    if raw is None:
+        return None
+    if not _DECIMAL.match(raw):
+        raise ApiError(422, "bad_request", f"{name} must be a number such as 5 or 2.5.")
+    return float(raw)
+
+
+def digest_overrides(move_pct: str | None, volume_multiple: str | None, move_rule: str | None,
+                     alerts: str | None) -> Overrides | None:
+    """The request's alert settings, checked against the same ranges as finn.prefs; None if none were sent."""
+    if move_pct is None and volume_multiple is None and move_rule is None and alerts is None:
+        return None
+    if move_rule is not None and move_rule not in MOVE_RULES:
+        raise ApiError(422, "bad_request", "move_rule must be one of: " + ", ".join(MOVE_RULES) + ".")
+    categories = None
+    if alerts is not None:
+        categories = frozenset(a for a in alerts.split(",") if a)
+        unknown = sorted(categories - set(ALERT_CATEGORIES))
+        if unknown:
+            raise ApiError(422, "bad_request", "alerts may name only: " + ", ".join(ALERT_CATEGORIES)
+                           + f" (not {', '.join(unknown)}).")
+    try:
+        return Overrides(move_pct=_decimal("move_pct", move_pct),
+                         volume_multiple=_decimal("volume_multiple", volume_multiple),
+                         move_rule=move_rule, alerts=categories)
+    except ValueError as exc:
+        raise ApiError(422, "bad_request", str(exc) + ".") from None
 
 
 @dataclass
@@ -202,9 +249,13 @@ def create_app(settings: Settings, *, database: Database | None = None,
 
     @app.get("/v1/digest")
     def digest(session: Annotated[sessions.Session, Depends(current_session)],
-               hours: Hours = DEFAULT_HOURS) -> JSONResponse:
+               hours: Hours = DEFAULT_HOURS,
+               # --- Controls: the investor's alert settings for this request (else finn.prefs) ---
+               move_pct: Setting = None, volume_multiple: Setting = None, move_rule: Setting = None,
+               alerts: Setting = None) -> JSONResponse:
+        overrides = digest_overrides(move_pct, volume_multiple, move_rule, alerts)
         with database.connection() as conn:
-            payload = digest_payload(conn, session.investor_id, hours, now=now())
+            payload = digest_payload(conn, session.investor_id, hours, now=now(), overrides=overrides)
             # --- Network stream: who to call, full edition only ---
             routes_network.enrich_digest(conn, session, payload, now())
         return JSONResponse(payload)

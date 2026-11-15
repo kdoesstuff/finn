@@ -7,7 +7,9 @@ name: Ingest
 # By hand:   gh workflow run ingest.yml -f job=backfill -f args="--from 2026-10-01 --to 2026-11-15"
 #            gh workflow run ingest.yml -f job=analyse      (Pull: documents and promise ledgers, models)
 #            gh workflow run ingest.yml -f job=llm-check    (one live call per model role, and the guard)
-# Model keys reach only the two model jobs, in their own step; scheduled data jobs never see them.
+#            gh workflow run ingest.yml -f job=read-filings -f args="--days 30 --guard-per-minute 20"
+#                                                           (checked one-line notes and bios from filing PDFs)
+# Model keys reach only the model jobs, in their own step; scheduled data jobs never see them.
 on:
   schedule:
     - cron: "7,37 2-18 * * *"
@@ -18,7 +20,7 @@ on:
       job:
         description: "Which job"
         type: choice
-        options: [filings, eod, daily, results, backfill, seed, status, verify, seed-network, analyse, llm-check]
+        options: [filings, eod, daily, results, backfill, seed, status, verify, seed-network, analyse, llm-check, read-filings]
         default: status
       args:
         description: "Extra arguments, e.g. --from 2026-10-01 --to 2026-11-15, or symbols for results"
@@ -48,7 +50,7 @@ jobs:
           cache-dependency-path: pipeline/requirements.txt
       - run: pip install -r requirements.txt
       - name: Run
-        if: inputs.job != 'analyse' && inputs.job != 'llm-check'
+        if: inputs.job != 'analyse' && inputs.job != 'llm-check' && inputs.job != 'read-filings'
         env:
           SCHEDULE: ${{ github.event.schedule }}
           JOB: ${{ inputs.job }}
@@ -65,7 +67,7 @@ jobs:
           esac
           python scripts/ingest.py "$JOB" $ARGS
       - name: Run with models
-        if: inputs.job == 'analyse' || inputs.job == 'llm-check'
+        if: inputs.job == 'analyse' || inputs.job == 'llm-check' || inputs.job == 'read-filings'
         env:
           JOB: ${{ inputs.job }}
           ARGS: ${{ inputs.args }}

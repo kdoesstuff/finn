@@ -56,7 +56,8 @@ def ids(items: list) -> list[str]:
 def test_digest_agrees_with_the_ranker_on_the_real_week(stored):
     out = digest.digest_payload(stored, DEMO, HOURS, now=NOW)
     want = expected(set(seed.load()["holdings"]))
-    assert out["portfolio"] == {"holdings": 18, "pledges": []}
+    assert {k: out["portfolio"][k] for k in ("holdings", "pledges")} == {"holdings": 18, "pledges": []}
+    assert len(out["portfolio"]["companies"]) == 18 and out["filings_read"] >= len(out["attention"]) + len(out["worth"])
     assert ids(out["attention"]) == ids(want["attention"])
     assert ids(out["worth"]) == ids(want["worth"])
     assert out["routine"] == {"count": len(want["routine"]), "by_kind": want["routine_counts"]}
@@ -115,12 +116,13 @@ def test_quiet_window_says_so(stored):
 def test_an_investor_sees_only_their_own_holdings(stored):
     # Investor B holds MRF only; A holds TCS only (conftest). The demo investor holds 18 names.
     b = digest.digest_payload(stored, INVESTOR_B, HOURS, now=NOW)
-    assert b["portfolio"] == {"holdings": 1, "pledges": []}
+    assert {k: b["portfolio"][k] for k in ("holdings", "pledges")} == {"holdings": 1, "pledges": []}
+    assert [c["symbol"] for c in b["portfolio"]["companies"]] == ["MRF"]  # never another investor's
     assert {i["symbol"] for i in b["attention"] + b["worth"]} <= {"MRF"}
     a = digest.digest_payload(stored, INVESTOR_A, HOURS, now=NOW)
     assert {i["symbol"] for i in a["attention"] + a["worth"]} == {"TCS"}
     nobody = digest.digest_payload(stored, UUID(int=0xC), HOURS, now=NOW)
-    assert nobody["portfolio"] == {"holdings": 0, "pledges": []}
+    assert nobody["portfolio"] == {"holdings": 0, "companies": [], "pledges": []}
     assert nobody["summary"] == "Nothing material across your portfolio."
 
 
@@ -372,3 +374,56 @@ class _Equity:
 
     def api(self, path: str, **params: Any) -> Any:
         raise AssertionError("not used")
+
+
+# --- Controls: alert settings sent with the request ------------------------------------------------
+
+
+def test_alert_settings_sent_with_the_request_replace_the_stored_ones(stored):
+    store_moving_week(stored)
+    default = digest.digest_payload(stored, DEMO, HOURS, now=NOW)
+    alerted = {i["id"]: i["alert"] for i in default["attention"] + default["worth"]}
+    assert any(alerted.values())  # results and management changes are on the default list
+
+    none_on = digest.digest_payload(stored, DEMO, HOURS, now=NOW, overrides=digest.Overrides(alerts=frozenset()))
+    assert not any(i["alert"] for i in none_on["attention"] + none_on["worth"])
+    # The ranking itself does not change: only what counts as an alert.
+    assert ids(none_on["attention"]) == ids(default["attention"])
+
+    only_results = digest.digest_payload(stored, DEMO, HOURS, now=NOW,
+                                         overrides=digest.Overrides(alerts=frozenset({"results"})))
+    flagged = [i for i in only_results["attention"] + only_results["worth"] if i["alert"]]
+    assert flagged and all(i["category"] == "results" for i in flagged)
+
+
+def test_move_thresholds_sent_with_the_request_decide_what_is_a_move(stored):
+    store_moving_week(stored)
+    abb = lambda out: [m for m in out["unexplained_moves"] if m["symbol"] == "ABB"]  # noqa: E731
+    assert abb(digest.digest_payload(stored, DEMO, HOURS, now=NOW))  # 7% fall, default 5%
+    strict = digest.Overrides(move_pct=10.0, move_rule="pct")
+    assert not abb(digest.digest_payload(stored, DEMO, HOURS, now=NOW, overrides=strict))
+    loose_volume = digest.Overrides(volume_multiple=1.1, move_rule="pct", move_pct=30.0)
+    out = digest.digest_payload(stored, DEMO, HOURS, now=NOW, overrides=loose_volume)
+    assert [m for m in abb(out) if m["kind"] == "volume"]  # 1,200 against ~1,000 crosses 1.1x
+    assert not [m for m in abb(out) if m["kind"] == "move"]
+
+
+def test_stored_alert_categories_are_the_default_when_none_are_sent(stored):
+    with db.as_role(stored, "finn_api", DEMO):
+        stored.execute("""insert into finn.prefs (investor_id, alert_categories) values (%s, '{dividend}')
+                          on conflict (investor_id) do update set alert_categories = '{dividend}'""", [DEMO])
+    try:
+        out = digest.digest_payload(stored, DEMO, HOURS, now=NOW)
+        assert all(i["category"] == "dividend" for i in out["attention"] + out["worth"] if i["alert"])
+    finally:
+        with db.as_role(stored, "finn_api", DEMO):
+            stored.execute("delete from finn.prefs where investor_id = %s", [DEMO])
+
+
+@pytest.mark.parametrize("bad", [dict(move_pct=0.4), dict(move_pct=31.0), dict(volume_multiple=1.0),
+                                 dict(volume_multiple=10.5), dict(move_rule="loud"),
+                                 dict(alerts=frozenset({"results", "gossip"})),
+                                 dict(alerts=frozenset({"unclassified"}))])
+def test_alert_settings_outside_the_contract_are_refused(bad):
+    with pytest.raises(ValueError):
+        digest.Overrides(**bad)

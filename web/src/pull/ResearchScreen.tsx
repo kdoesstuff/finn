@@ -10,6 +10,7 @@ import { formatStamp } from '../lib/time'
 import { useNow } from '../lib/useNow'
 import { Colophon, SectionNav, Wordmark } from '../screens/Chrome'
 import { NETWORK_BUILD } from '../network/flag'
+import { QuarterBars, StackBar } from '../charts/Charts'
 
 interface Props {
   api: Api
@@ -258,10 +259,10 @@ function CompanyView({ api, symbol, navigate, heading, network }: { api: Api; sy
       {c.results && <ResultsSection results={c.results} company={c.name} />}
       {c.analyses.snapshot && <CitedSection title="The business" points={c.analyses.snapshot.points} company={c.name} id="snapshot" />}
       {c.analyses.bull_bear && (
-        <>
+        <div className="cases">
           <CitedSection title="The bull case" points={c.analyses.bull_bear.bull} company={c.name} id="bull" />
           <CitedSection title="The bear case" points={c.analyses.bull_bear.bear} company={c.name} id="bear" />
-        </>
+        </div>
       )}
       <FilingsSection company={c} now={now} />
       {c.documents.length > 0 && (
@@ -359,6 +360,7 @@ function LedgerSection({ company }: { company: Company }) {
       <h2 className="section__title" id="ledger-heading">
         Promised and delivered
       </h2>
+      <Scorecard counts={ledger.counts} />
       <p className="ledger__summary">{ledger.summary}</p>
       {ledger.statements.length > 0 && (
         <ol className="promises">
@@ -374,6 +376,28 @@ function LedgerSection({ company }: { company: Company }) {
       ))}
       <Provenance generatedAt={ledger.generated_at} model={ledger.model} />
     </section>
+  )
+}
+
+const SCORE_ORDER: Status[] = ['kept', 'partly', 'missed', 'too_early', 'not_measurable']
+
+/** The ledger at a glance: one bar, then each verdict counted. */
+function Scorecard({ counts }: { counts: Record<string, number> }) {
+  const parts = SCORE_ORDER.map((status) => ({ key: status, count: counts[status] ?? 0, className: `score__${status}` }))
+  if (parts.every((p) => p.count === 0)) return null
+  return (
+    <div className="scorecard">
+      <StackBar parts={parts} />
+      <ul className="scorecard__chips" aria-label="Promises by verdict">
+        {parts
+          .filter((p) => p.count > 0)
+          .map((p) => (
+            <li key={p.key} className={`chip chip--${p.key}`}>
+              <span className="chip__count">{p.count}</span> {STATUS_LABEL[p.key].toLowerCase()}
+            </li>
+          ))}
+      </ul>
+    </div>
   )
 }
 
@@ -467,6 +491,7 @@ function ResultsSection({ results, company }: { results: Results; company: strin
         {results.basis === 'consolidated' ? 'Consolidated' : 'Standalone'}, from the company’s XBRL filing.{' '}
         <SourceLink url={results.latest.source} company={company} label="The filing" />
       </p>
+      {quarters.length > 1 && <QuarterChart quarters={quarters} bank={results.template === 'bank'} unit={results.unit} />}
       {quarters.length > 1 && (
         <div className="figures__scroll" role="region" aria-label="Quarter by quarter" tabIndex={0}>
           <table className="figures figures--quarters">
@@ -502,6 +527,33 @@ function ResultsSection({ results, company }: { results: Results; company: strin
         </p>
       ))}
     </section>
+  )
+}
+
+/** Nine quarters as bars (revenue, or NII for a bank) with PAT inside each, oldest on the left. */
+function QuarterChart({ quarters, bank, unit }: { quarters: QuarterRow[]; bank: boolean; unit: string }) {
+  const ordered = [...quarters].sort((a, b) => a.period_end.localeCompare(b.period_end))
+  const points = ordered.map((q) => ({
+    label: q.period_end,
+    value: (bank ? q.nii : q.revenue) ?? 0,
+    inner: q.pat,
+  }))
+  if (points.every((p) => p.value <= 0)) return null
+  const first = ordered[0]
+  const last = ordered[ordered.length - 1]
+  if (!first || !last) return null
+  return (
+    <figure className="quarter-chart">
+      <QuarterBars points={points} />
+      <figcaption className="quarter-chart__caption">
+        <span>{quarterLabel(first.period_end)}</span>
+        <span className="quarter-chart__key">
+          <span className="quarter-chart__swatch quarter-chart__swatch--bar" aria-hidden="true" /> {bank ? 'Net interest income' : 'Revenue'}
+          <span className="quarter-chart__swatch quarter-chart__swatch--inner" aria-hidden="true" /> PAT, {unit}
+        </span>
+        <span>{quarterLabel(last.period_end)}</span>
+      </figcaption>
+    </figure>
   )
 }
 

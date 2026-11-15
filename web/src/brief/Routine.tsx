@@ -13,7 +13,7 @@ export function Routine({ routine }: { routine: Digest['routine'] }) {
   const remainder = routine.count - itemised
 
   return (
-    <section className="routine" aria-labelledby={headingId}>
+    <section className="routine" id="routine-heading" aria-labelledby={headingId}>
       <h2 className="visually-hidden" id={headingId}>
         Routine filings
       </h2>
