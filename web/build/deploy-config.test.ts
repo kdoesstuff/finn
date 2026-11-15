@@ -123,7 +123,13 @@ describe('design tokens', () => {
 })
 
 describe('lint rules', () => {
-  const eslint = new ESLint({ cwd: new URL('..', import.meta.url).pathname })
+  // With CI=true (as on GitHub's runners) typescript-eslint assumes a one-off run and lints the files
+  // as they are on disk, ignoring the text given here; the test would then lint the real, clean
+  // Summary.tsx and see nothing. Turning that inference off makes it lint this text, everywhere.
+  const eslint = new ESLint({
+    cwd: new URL('..', import.meta.url).pathname,
+    overrideConfig: { languageOptions: { parserOptions: { disallowAutomaticSingleRunInference: true } } },
+  })
   // Linted as if it were a file of the app (the text replaces the file's contents; nothing is written).
   const lint = async (code: string) => {
     const [result] = await eslint.lintText(code, { filePath: 'src/brief/Summary.tsx' })
